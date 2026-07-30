@@ -15,24 +15,15 @@
 MASTER AI DEVELOPMENT ROADMAP (UPDATED)
 ==========================================================================
 
-✅ COMPLETED (Built into engine)
-[1] [TOWER ANTI-AIR LIMITS] - Towers 1, 2, and 3 ignore flyers.
-[2] [BONUS BOUNTY UPGRADES] - bonus_bounty logic grants extra caps.
-[3] [DYNAMIC TACTICAL TOOLTIPS] - Matchups (Strong vs/Weak vs) display.
-[4] [FACTION UPGRADE PATHS] - All 40 towers have 4-tier upgrade arrays mapped out.
-[11] [VICTORY / POST-GAME SCREEN] - Game over screen calculates MVP, kills, caps, accuracy.
-[13] [UI QOL: CANCEL BARRAGE] - Right-click and Escape key cancel targeting modes.
-[14] [DYNAMIC TOP-BAR INTEL BRIEF] - Announcer system operational and reading intel.js.
-
 ⚠️ PARTIALLY COMPLETED (Needs Finishing)
-[9] [ADVANCED AUDIO MANAGEMENT] - Global sounds exist, but volume sliders are missing.
+[ADVANCED AUDIO MANAGEMENT] - Global sounds exist, but volume sliders are missing.
 
 ❌ STILL TO DO (Unfinished / Missing)
-[5] [CUSTOM MAP EDITOR - FILE I/O] - Missing browser download for .wd files and file input to load.
-[6] [WASTELAND ASSAULT MODE] - UI toggle exists, but core engine mechanics to flip roles are missing.
-[7 & 8] [PERSISTENT SAVE/LOAD SYSTEM] - Lacks automatic localStorage system to save/load progress.
-[10] [CURATED WAVE CONFIGURATIONS] - Missing custom wave scripter; relying on dynamic budget.
-[12] [ASSET MANAGEMENT] - Missing sprite rendering; using basic Canvas geometry.
+[CUSTOM MAP EDITOR - FILE I/O] - Missing browser download for .wd files and file input to load.
+[WASTELAND ASSAULT MODE] - UI toggle exists, but core engine mechanics to flip roles are missing.
+[PERSISTENT SAVE/LOAD SYSTEM] - Lacks automatic localStorage system to save/load progress.
+[CURATED WAVE CONFIGURATIONS] - Missing custom wave scripter; relying on dynamic budget.
+[ASSET MANAGEMENT] - Missing sprite rendering; using basic Canvas geometry.
 ==========================================================================
 */
 
@@ -561,6 +552,7 @@ MASTER AI DEVELOPMENT ROADMAP (UPDATED)
         /* GAME OVER STATE (Kill all power to buttons and Nixies) */
         body.game-over-dead .cmd-btn, body.game-over-dead .sys-btn {
             background-color: #333 !important; 
+            background-image: none !important; /* OVERRIDES VATS INLINE GRADIENT */
             color: #111 !important; 
             -webkit-text-fill-color: #111 !important; /* Force override any weird inline colors */
             border-top: 2px solid #222 !important; border-left: 2px solid #222 !important; border-bottom: 3px solid #000 !important; border-right: 3px solid #111 !important;
@@ -571,8 +563,10 @@ MASTER AI DEVELOPMENT ROADMAP (UPDATED)
         }
         body.game-over-dead .cmd-btn::before, body.game-over-dead .sys-btn::before {
             opacity: 0 !important;
+            animation: none !important; /* OVERRIDES VATS GLOW ANIMATION */
             transition: opacity 2s ease-out !important;
         }
+
 
         /* Soft Emergency Breathing Animation */
         @keyframes emergency-pulse {
@@ -687,8 +681,8 @@ MASTER AI DEVELOPMENT ROADMAP (UPDATED)
         
         /* NEW: Pause Menu Dimming & Flashing */
         /* 1. Unpower all OTHER buttons */
-        body.is-paused .cmd-btn:not(#ui-btn-pause), 
-        body.is-paused .sys-btn:not(#ui-btn-pause) {
+        body.is-paused .cmd-btn:not(#ui-btn-pause):not(#admin-panel .cmd-btn), 
+        body.is-paused .sys-btn:not(#ui-btn-pause):not(#admin-panel .sys-btn) {
             background-color: #555 !important; 
             color: #222 !important; 
             -webkit-text-fill-color: #222 !important;
@@ -702,10 +696,11 @@ MASTER AI DEVELOPMENT ROADMAP (UPDATED)
         }
 
         /* 2. Turn off the hidden lightbulb for all OTHER buttons */
-        body.is-paused .cmd-btn:not(#ui-btn-pause)::before, 
-        body.is-paused .sys-btn:not(#ui-btn-pause)::before {
+        body.is-paused .cmd-btn:not(#ui-btn-pause):not(#admin-panel .cmd-btn)::before, 
+        body.is-paused .sys-btn:not(#ui-btn-pause):not(#admin-panel .sys-btn)::before {
             display: none !important;
         }
+
 
         /* 3. The Flashing Animation for the Lightbulb (0.75s blink -> 1.5s total cycle) */
         @keyframes pause-light-blink {
@@ -793,7 +788,7 @@ MASTER AI DEVELOPMENT ROADMAP (UPDATED)
             <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>STRENGTH</b><br>Passive: Towers deal +15% Damage.<br>Active: 15s of 200% total damage.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
                 <input type="checkbox" class="special-chk" value="S"><div class="special-label">S</div>
             </label>
-            <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>PERCEPTION</b><br>Passive: Towers gain +2 Range.<br>Active: 15s of infinite map-wide range and stealth detection.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
+            <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>PERCEPTION</b><br>Passive: +2 Range & Global Tactical Intel (Reveals HP).<br>Active: 15s of infinite map-wide range and stealth detection.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
                 <input type="checkbox" class="special-chk" value="P"><div class="special-label">P</div>
             </label>
             <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>ENDURANCE</b><br>Passive: +50% Base Health/Lives.<br>Active: 15s of Invulnerability (Large enemies deal 1 dmg).';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
@@ -802,13 +797,13 @@ MASTER AI DEVELOPMENT ROADMAP (UPDATED)
             <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>CHARISMA</b><br>Passive: Towers & Upgrades cost 15% less.<br>Active: Drops 3-5 Cap stashes (25-50 caps each).';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
                 <input type="checkbox" class="special-chk" value="C"><div class="special-label">C</div>
             </label>
-            <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>INTELLIGENCE</b><br>Passive: Towers need 15% less XP to level.<br>Active: +3 Levels to all towers. Double XP and -50% Upgrade Cost for 15s.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
+            <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>INTELLIGENCE</b><br>Passive: -15% XP needed to level & Global Tactical Intel.<br>Active: +3 Levels to all towers. Double XP and -50% Upgrade Cost for 15s.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
                 <input type="checkbox" class="special-chk" value="I"><div class="special-label">I</div>
             </label>
             <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>AGILITY</b><br>Passive: +15% Fire Rate & Cooldown Speed.<br>Active: Resets consumable cooldowns, +30% Fire Rate for 15s.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
                 <input type="checkbox" class="special-chk" value="A"><div class="special-label">A</div>
             </label>
-            <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>LUCK</b><br>Passive: Flat +10% chance for enemies to drop loot.<br>Active: Drops random Lunchboxes on the map.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
+            <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>LUCK</b><br>Passive: Flat +10% chance for enemies to drop loot.<br>Active: Massively increases loot drop rate from enemies for 15s.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
                 <input type="checkbox" class="special-chk" value="L"><div class="special-label">L</div>
             </label>
         </div>
@@ -1292,8 +1287,9 @@ var _TD = {
             playSound: function(sound_id) {
 
 
-                if (!TD.is_paused && TD.sound_enabled) {
+                if (!TD.is_paused && TD.sound_enabled && !window.is_demo_mode) {
                     var snd = document.getElementById(sound_id);
+
 
                     if (snd) {
                         // cloneNode allows the same sound to play multiple times concurrently
@@ -1382,9 +1378,6 @@ var _TD = {
                 // Visuals
                 document.getElementById("vats-overlay").style.display = "block";
                 this.canvas.style.cursor = "crosshair";
-                
-                var d = document.getElementById("ui-intel-brief");
-                if (d) d.innerText = "V.A.T.S. DEACTIVATED.";
             },
 
 
@@ -1403,10 +1396,8 @@ var _TD = {
                 // Visuals
                 document.getElementById("vats-overlay").style.display = "block";
                 this.canvas.style.cursor = "crosshair";
-                
-                var d = document.getElementById("ui-intel-brief");
-                if (d) d.innerText = "V.A.T.S. ENGAGED. SELECT TARGETS.";
             },
+
             
             endVats: function() {
                 if (!TD.vats_active) return;
@@ -1433,11 +1424,7 @@ var _TD = {
                     vatsBtn.style.boxShadow = ""; // Clear glow
                     vatsBtn.style.color = "#4caf50";
                 }
-                
-                var d = document.getElementById("ui-intel-brief");
-                if (d) d.innerText = "V.A.T.S. DEACTIVATED.";
             },
-
 
 			start: function () {
 				clearTimeout(this._st);
@@ -1450,9 +1437,7 @@ var _TD = {
                 
                 // --- NEW: S.P.E.C.I.A.L. INITIALIZATION ---
                 TD.perks = { S: false, P: false, E: false, C: false, I: false, A: false, L: false };
-                if (!window.is_campaign_mode) {
-                    for (var k in TD.perks) TD.perks[k] = true; // All perks available in Endless
-                } else if (window.selectedSPECIALs) {
+                if (window.selectedSPECIALs) {
                     for (var i = 0; i < window.selectedSPECIALs.length; i++) {
                         TD.perks[window.selectedSPECIALs[i]] = true;
                     }
@@ -1465,6 +1450,7 @@ var _TD = {
                 for (var k in TD.perks) {
                     if (TD.perks[k]) TD.overdrive_cd[k] = (!window.is_campaign_mode) ? 9999999 : TD.exp_fps * 135; 
                 }
+
                 
 				this.stage = new TD.Stage("stage-main", TD.getDefaultStageData("stage_main"));
 				this.canvas.setAttribute("width", this.stage.width);
@@ -1561,7 +1547,21 @@ var _TD = {
 					if (window.is_demo_mode) return;
 					var xy = _this.getEventXY.call(_this, e);
 
+                    // Helper to trigger nearby tower reactions to consumables
+                    var triggerConsumableChatter = function(cx, cy, map) {
+                        if (!window.ChatterDB || !TD.current_faction) return;
+                        TD.lang.each(map.buildings, function(b) {
+                            if (b.is_valid && !b.is_pre_building) {
+                                var dist = Math.sqrt(Math.pow(b.cx - cx, 2) + Math.pow(b.cy - cy, 2));
+                                if (dist <= TD.grid_size * 4 && Math.random() < 0.4) {
+                                    b.say(window.ChatterDB.getChatter(TD.current_faction, "react_consumable"), "idle");
+                                }
+                            }
+                        });
+                    };
+
                     // --- NEW: V.A.T.S. Shooting Logic ---
+
                     if (TD.vats_active) {
                         var map = TD.stage.current_act.current_scene.map;
                         var hit_enemy = null;
@@ -1635,10 +1635,9 @@ var _TD = {
                             new TD.MrHandy("handy-" + TD.lang.rndStr(), { map: map, cx: xy[0], cy: xy[1] });
                             TD.mode = "normal";
                             TD.mouseHand(false);
-                            var d = document.getElementById("ui-action-desc");
-                            if (d) d.innerText = "MR. HANDY DEPLOYED.";
                         }
                     } else if (TD.mode === "deploy_cryomine" && TD.stage && TD.stage.current_act) {
+
 
                         var map = TD.stage.current_act.current_scene.map;
                         if (map) {
@@ -1652,19 +1651,18 @@ var _TD = {
                                 TD.updateItemButton("cryomine");
                                 
                                 new TD.CryoMine("cryo-" + TD.lang.rndStr(), { grid: grid, map: map });
+                                triggerConsumableChatter(grid.cx, grid.cy, map); // NEW: React!
                                 
                                 TD.mode = "normal";
                                 TD.mouseHand(false);
-                                var d = document.getElementById("ui-action-desc");
-                                if(d) d.innerText = "CRYO MINE PLANTED.";
                             } else {
+
                                 // --- NEW: Undo selection on invalid click ---
+
                                 TD.mode = "normal";
                                 TD.mouseHand(false);
                                 var tooltip = document.getElementById('tower-tooltip');
                                 if (tooltip) tooltip.style.display = "none";
-                                var d = document.getElementById("ui-intel-brief"); 
-                                if(d) d.innerText = "MINE PLACEMENT CANCELLED.";
                             }
                         }
 
@@ -1679,18 +1677,17 @@ var _TD = {
                                 TD.cooldowns.capmine = (TD.inventory.capmine > 0) ? TD.getCooldownFrames() : 0;
                                 TD.updateItemButton("capmine");
                                 new TD.CapMine("cap-" + TD.lang.rndStr(), { grid: grid, map: map });
+                                triggerConsumableChatter(grid.cx, grid.cy, map); // NEW: React!
                                 TD.mode = "normal";
                                 TD.mouseHand(false);
-                                var d = document.getElementById("ui-action-desc");
-                                if(d) d.innerText = "CAP MINE PLANTED.";
                             } else {
+
                                 // --- NEW: Undo selection on invalid click ---
+
                                 TD.mode = "normal";
                                 TD.mouseHand(false);
                                 var tooltip = document.getElementById('tower-tooltip');
                                 if (tooltip) tooltip.style.display = "none";
-                                var d = document.getElementById("ui-intel-brief"); 
-                                if(d) d.innerText = "MINE PLACEMENT CANCELLED.";
                             }
                         }
                     } else if (TD.mode === "deploy_artillery" && TD.stage && TD.stage.current_act) {
@@ -1714,12 +1711,12 @@ var _TD = {
                                     }
                                 });
                                 TD.mode = "normal"; TD.mouseHand(false);
-                                var d = document.getElementById("ui-action-desc"); if(d) d.innerText = "ARTILLERY STRIKE CONFIRMED.";
                             } else {
-                                var d = document.getElementById("ui-action-desc"); if(d) d.innerText = "ERROR: MUST TARGET MONSTER PATH.";
+                                TD.mode = "normal"; TD.mouseHand(false);
                             }
                         }
                     } else if (TD.mode === "deploy_ncr_artillery" && TD.stage && TD.stage.current_act) {
+
                         var map = TD.stage.current_act.current_scene.map;
                         if (map) {
                             var mx = Math.floor((xy[0] - map.x) / TD.grid_size);
@@ -1766,9 +1763,8 @@ var _TD = {
                                 });
 
                                 TD.mode = "normal"; TD.mouseHand(false);
-                                var d = document.getElementById("ui-action-desc"); if(d) d.innerText = "NCR BARRAGE COORDINATES LOCKED.";
                             } else {
-                                var d = document.getElementById("ui-action-desc"); if(d) d.innerText = "ERROR: MUST TARGET MONSTER PATH.";
+                                TD.mode = "normal"; TD.mouseHand(false);
                             }
                         }
                     } else if (TD.mode === "deploy_bos_laser" && TD.stage && TD.stage.current_act) {
@@ -1783,9 +1779,8 @@ var _TD = {
                                 TD.updateItemButton("bos_laser");
                                 new TD.OrbitalLaser("laser-" + TD.lang.rndStr(), { map: map, cx: xy[0], cy: xy[1] });
                                 TD.mode = "normal"; TD.mouseHand(false);
-                                var d = document.getElementById("ui-action-desc"); if(d) d.innerText = "ORBITAL STRIKE ACTIVE.";
                             } else {
-                                var d = document.getElementById("ui-action-desc"); if(d) d.innerText = "ERROR: MUST TARGET MONSTER PATH.";
+                                TD.mode = "normal"; TD.mouseHand(false);
                             }
                         }
                     } else if (TD.mode === "deploy_mm_flare" && TD.stage && TD.stage.current_act) {
@@ -1799,9 +1794,8 @@ var _TD = {
                             TD.updateItemButton("mm_flare");
                             new TD.MilitiaBlockade("militia-" + TD.lang.rndStr(), { map: map, cx: grid.cx, cy: grid.cy });
                             TD.mode = "normal"; TD.mouseHand(false);
-                            var d = document.getElementById("ui-action-desc"); if(d) d.innerText = "MILITIA DEPLOYED.";
                         } else {
-                            var d = document.getElementById("ui-action-desc"); if(d) d.innerText = "ERROR: MUST TARGET MONSTER PATH.";
+                            TD.mode = "normal"; TD.mouseHand(false);
                         }
                     } else if (TD.mode === "deploy_raider_nuka" && TD.stage && TD.stage.current_act) {
                         var map = TD.stage.current_act.current_scene.map;
@@ -1815,9 +1809,8 @@ var _TD = {
                                 TD.updateItemButton("raider_nuka");
                                 new TD.RadZone("nuka-" + TD.lang.rndStr(), { map: map, cx: xy[0], cy: xy[1] });
                                 TD.mode = "normal"; TD.mouseHand(false);
-                                var d = document.getElementById("ui-action-desc"); if(d) d.innerText = "NUKA GRENADE OUT!";
                             } else {
-                                var d = document.getElementById("ui-action-desc"); if(d) d.innerText = "ERROR: MUST TARGET MONSTER PATH.";
+                                TD.mode = "normal"; TD.mouseHand(false);
                             }
                         }
                     } else {
@@ -2825,15 +2818,8 @@ _TD.a.push(function (TD) {
         ctx.fillStyle = "rgba(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "," + alpha + ")";
         
 		ctx.beginPath(); ctx.arc(this.cx, this.cy, this.r, 0, Math.PI * 2, true); ctx.closePath(); ctx.fill(); ctx.stroke();
-		
-        // Only show health if they are visible enough
-        if (TD.show_monster_life && alpha > 0.3) {
-
-			var s = Math.floor(TD.grid_size / 4), l = s * 2 - 2 * _TD.retina;
-			ctx.fillStyle = "#000"; ctx.beginPath(); ctx.fillRect(this.cx - s, this.cy - this.r - 6, s * 2, 4 * _TD.retina); ctx.closePath();
-			ctx.fillStyle = "#f00"; ctx.beginPath(); ctx.fillRect(this.cx - s + _TD.retina, this.cy - this.r - (6 - _TD.retina), this.life * l / this.life0, 2 * _TD.retina); ctx.closePath();
-		}
 	}
+
 	TD.getDefaultMonsterAttributes = function (monster_idx) {
 		var monster_attributes = [
 			{ name: "Radroach", desc: "Weak, fast-ish pest", speed: 3, max_speed: 10, life: 50, damage: 1, shield: 0, money: 5 },
@@ -3173,7 +3159,22 @@ _TD.a.push(function (TD) {
 			this.map.buildings.push(building); this.building = building; this.build_flag = 2;
 			this.map.checkHasWeapon();
 			if (this.map.pre_building) this.map.pre_building.hide();
+            
+            // --- NEW: React to New Build Chatter ---
+            if (window.ChatterDB && TD.current_faction) {
+                var newX = this.cx; var newY = this.cy;
+                TD.lang.each(this.map.buildings, function(b) {
+                    if (b !== building && b.is_valid && !b.is_pre_building) {
+                        var dist = Math.sqrt(Math.pow(b.cx - newX, 2) + Math.pow(b.cy - newY, 2));
+                        // If within 3 grid squares, 30% chance to react
+                        if (dist <= TD.grid_size * 3 && Math.random() < 0.3) {
+                            b.say(window.ChatterDB.getChatter(TD.current_faction, "react_newbuild"), "idle");
+                        }
+                    }
+                });
+            }
 		},
+
 		removeBuilding: function () { if (this.build_flag == 2) this.build_flag = 1; if (this.building) this.building.remove(); this.building = null; },
 		addMonster: function (monster) { monster.beAddToGrid(this); this.map.monsters.push(monster); monster.start(); },
 		hightLight: function (show) { this.map.select_hl[show ? "show" : "hide"](this); },
@@ -3481,13 +3482,115 @@ checkPassable: function (mx, my) { var grid = this.getGrid(mx, my); return (grid
 
             // Trigger consumable timers
             if (TD.stepConsumables) TD.stepConsumables();
+
 		},
 
 
 		render: function () {
+
 			var ctx = TD.ctx; ctx.strokeStyle = "#99a"; ctx.lineWidth = _TD.retina; ctx.beginPath(); ctx.strokeRect(this.x + 0.5, this.y + 0.5, this.width, this.height); ctx.closePath(); ctx.stroke();
             
+            // --- NEW: TRUE PAUSE-SAFE CHATTER DIRECTOR & SCRIPT RUNNER ---
+            if (window.ChatterDB && TD.current_faction && this.buildings && this.buildings.length > 0) {
+                // 1. Script Runner
+                if (!this.active_scripts) this.active_scripts = [];
+                for (var s = this.active_scripts.length - 1; s >= 0; s--) {
+                    var scriptObj = this.active_scripts[s];
+                    scriptObj.timer--;
+                    
+                    if (scriptObj.timer <= 0) {
+                        var currentSpeaker = (scriptObj.index % 2 === 0) ? scriptObj.towerA : scriptObj.towerB;
+                        if (currentSpeaker.is_valid) {
+                            var line = scriptObj.lines[scriptObj.index];
+                            currentSpeaker.say(line, "convo", true, true); // force_override = true
+                            
+                            scriptObj.index++;
+                            if (scriptObj.index >= scriptObj.lines.length) {
+                                this.active_scripts.splice(s, 1); // Script finished
+                            } else {
+                                // Set timer for next line: Display time + 1 second pause
+                                scriptObj.timer = Math.floor(window.ChatterDB.getDisplayTime(line) * TD.exp_fps) + TD.exp_fps;
+                            }
+                        } else {
+                            this.active_scripts.splice(s, 1); // Speaker died, abort script
+                        }
+                    }
+                }
+
+                // 2. Autonomous Director
+                if (typeof this._chatter_director_timer === 'undefined') this._chatter_director_timer = TD.exp_fps * 3;
+                this._chatter_director_timer--;
+                
+                if (this._chatter_director_timer <= 0) {
+                    this._chatter_director_timer = TD.exp_fps * 3;
+                    
+                    var idleTowers = [];
+                    for (var i = 0; i < this.buildings.length; i++) {
+                        var b = this.buildings[i];
+                        if (b.is_valid && !b.is_pre_building && !b.target && b.chatter_timer <= 0) {
+                            if (!b.chatter_cooldowns || ((!b.chatter_cooldowns["idle"] || b.chatter_cooldowns["idle"] <= 0) && (!b.chatter_cooldowns["convo"] || b.chatter_cooldowns["convo"] <= 0))) {
+                                idleTowers.push(b);
+                            }
+                        }
+                    }
+
+                    if (idleTowers.length > 0) {
+                        var towerA = idleTowers[Math.floor(Math.random() * idleTowers.length)];
+                        var roll = Math.random();
+                        
+                        if (TD.is_paused && roll < 0.3) {
+                            towerA.say(window.ChatterDB.getChatter(TD.current_faction, "wallbreak_pause"), "idle");
+                        } else if (!TD.is_paused) {
+                            if (roll < 0.15) { 
+                                // --- NEW: NON-SHOOTER CHATTER CHECK ---
+                                // If the tower is a weapon, it uses standard idle. If it's a wall/detector, it uses noncombat idle.
+                                var chatCategory = towerA.is_weapon ? "idle_solo" : "idle_noncombat";
+                                var soloStr = window.ChatterDB.getChatter(TD.current_faction, chatCategory);
+                                
+                                if (towerA.visual_type && window.ChatterDB.factions[TD.current_faction]["type_" + towerA.visual_type] && Math.random() < 0.3) {
+                                    var specificPool = window.ChatterDB.factions[TD.current_faction]["type_" + towerA.visual_type];
+                                    soloStr = specificPool[Math.floor(Math.random() * specificPool.length)];
+                                }
+                                towerA.say(soloStr, "idle");
+                            } else if (roll < 0.30 && idleTowers.length > 1) {
+                                var possiblePartners = [];
+                                for (var j = 0; j < idleTowers.length; j++) {
+                                    var b2 = idleTowers[j];
+                                    if (b2 !== towerA) {
+                                        var dist = Math.sqrt(Math.pow(b2.cx - towerA.cx, 2) + Math.pow(b2.cy - towerA.cy, 2));
+                                        if (dist <= TD.grid_size * 4) possiblePartners.push(b2); 
+                                    }
+                                }
+                                
+                                if (possiblePartners.length > 0) {
+                                    var towerB = possiblePartners[Math.floor(Math.random() * possiblePartners.length)];
+                                    var script = window.ChatterDB.getChatter(TD.current_faction, "convo_script");
+                                    if (!Array.isArray(script)) script = [script, window.ChatterDB.getChatter(TD.current_faction, "convo_reply")];
+
+                                    // Lock both towers into conversation cooldown so they aren't picked again
+                                    if (!towerA.chatter_cooldowns) towerA.chatter_cooldowns = {};
+                                    if (!towerB.chatter_cooldowns) towerB.chatter_cooldowns = {};
+                                    towerA.chatter_cooldowns["convo"] = 60 * TD.exp_fps; 
+                                    towerB.chatter_cooldowns["convo"] = 60 * TD.exp_fps;
+                                    
+                                    // Start the script!
+                                    this.active_scripts.push({
+                                        towerA: towerA,
+                                        towerB: towerB,
+                                        lines: script,
+                                        index: 0,
+                                        timer: 1 // Start immediately on next frame
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            // --- END PAUSE-SAFE CHATTER ---
+
             var renderQueue = [];
+
 
             // 1. Gather Assets & Draw Paths Immediately
             if (this.assets) {
@@ -3685,14 +3788,16 @@ _TD.a.push(function (TD) {
 
             TD.score += scoreGained;
             
-            // Add a very small trickle to V.A.T.S. charge on hit
-            if (typeof TD.vats_charge !== 'undefined' && !TD.vats_active) {
-                TD.vats_charge += (scoreGained * 0.1); // Reduced from 0.5 to prevent massive spikes
+            // Add a very small trickle to V.A.T.S. charge on hit, but NOT during demo or wave 0
+            if (typeof TD.vats_charge !== 'undefined' && !TD.vats_active && !window.is_demo_mode && this.map && this.map.scene && this.map.scene.wave > 0) {
+                TD.vats_charge += (scoreGained * 0.1); 
                 if (TD.vats_charge > TD.vats_max_charge) TD.vats_charge = TD.vats_max_charge;
             }
+
             
             // --- NEW: Award XP just for hitting the target (2 to 5 XP) ---
             if (building && building.gainXp) {
+
                 var hitXp = Math.floor(Math.random() * 4) + 2; 
                 building.gainXp(hitXp);
             }
@@ -3721,10 +3826,19 @@ _TD.a.push(function (TD) {
                     building.gainXp(killXp);
                 }
                 
-                // NEW: Scaled Chance to drop Loot (Base 5% + 1.5% per monster index level)
+                // --- NEW: Scaled Chance to drop Loot (Base 5% + 1.5% per monster index level)
                 var base_chance = 0.05;
+                
+                // LUCK PASSIVE (+10% base chance)
+                if (typeof TD !== 'undefined' && TD.perks && TD.perks.L) base_chance += 0.10;
+                
                 var scaling_bonus = (this.idx * 0.015);
                 var dropChance = (window.devForcedDrop && window.devForcedDrop !== "none") ? 1.0 : (base_chance + scaling_bonus);
+                
+                // LUCK OVERDRIVE ACTIVE (Massive 50% flat boost)
+                if (typeof TD !== 'undefined' && TD.overdrive && TD.overdrive.L > 0) {
+                    dropChance += 0.50;
+                }
                 
                 // GUARANTEED WAVE DROPS (First kill of the specific wave)
 
@@ -3747,7 +3861,7 @@ _TD.a.push(function (TD) {
                     }
                 }
                 
-                if (forceLoot || Math.random() < dropChance) {
+                if (!window.is_demo_mode && (forceLoot || Math.random() < dropChance)) {
                     var newLoot = new TD.Loot("loot-" + TD.lang.rndStr(), {
                         cx: this.cx,
                         cy: this.cy,
@@ -3769,16 +3883,22 @@ _TD.a.push(function (TD) {
             
 			var balloontip = this.scene.panel.balloontip;
 			if (balloontip.el == this) { 
-                var tags = [];
-                if (this.is_flying) tags.push("[FLYING]");
-                if (this.is_stealthed) tags.push("[STEALTH]");
-                if (this.speed >= 15) tags.push("[FAST]");
-                if (this.life0 >= 500) tags.push("[VERY STRONG]");
-                if (this.life0 >= 2000) tags.push("[BOSS]");
-                var tagStr = tags.length > 0 ? "\n" + tags.join(" ") : "";
-                balloontip.text = this.name.toUpperCase() + "\nHP: " + this.life + " / " + this.life0 + tagStr; 
+                if (this.is_hp_visible) {
+                    var tags = [];
+                    if (this.is_flying) tags.push("[FLYING]");
+                    if (this.is_stealthed) tags.push("[STEALTH]");
+                    if (this.speed >= 15) tags.push("[FAST]");
+                    if (this.life0 >= 500) tags.push("[VERY STRONG]");
+                    if (this.life0 >= 2000) tags.push("[BOSS]");
+                    var tagStr = tags.length > 0 ? "\n" + tags.join(" ") : "";
+                    balloontip.text = this.name.toUpperCase() + "\nHP: " + this.life + " / " + this.life0 + tagStr; 
+                } else {
+                    // No Intel: Keep the generic name
+                    balloontip.text = this.name.toUpperCase();
+                }
             }
 		},
+
 
 		beKilled: function (building) {
 			if (!this.is_valid) return;
@@ -3786,25 +3906,10 @@ _TD.a.push(function (TD) {
 			if (typeof TD !== 'undefined' && TD.log) TD.log("Monster killed: " + this.name);
 
             
-            // --- NEW: ANNOUNCE KILL ---
-            if (window.IntelData && TD.Announcer) {
-                // Was it a clutch kill right near the exit? (Calculate distance from exit grid)
-                var clutch = false;
-                if (this.map && this.map.exit) {
-                    var distToExit = Math.sqrt(Math.pow(this.cx - this.map.exit.cx, 2) + Math.pow(this.cy - this.map.exit.cy, 2));
-                    if (distToExit < (TD.grid_size * 2)) clutch = true; // Within 2 grid squares!
-                }
-
-                if (clutch) {
-                    // Highest priority, absolute clutch save!
-                    var killerName = (building && building.name) ? building.name.toUpperCase() : "DEFENSES";
-                    TD.Announcer.add("CRITICAL SAVE: " + this.name.toUpperCase() + " ELIMINATED AT THE PERIMETER BY " + killerName, 5);
-                } else if (this.life0 >= 2000) {
-                    // Boss Kill!
-                    TD.Announcer.add(window.IntelData.getEvent("kill", TD.current_faction, null, this.name), 5);
-                } else if (Math.random() < 0.15) {
-                    // Normal Kill (Throttled so swarms don't spam)
-                    TD.Announcer.add(window.IntelData.getEvent("kill", TD.current_faction, null, this.name), 2);
+            // --- NEW: Combat Kill Chatter ---
+            if (building && window.ChatterDB && TD.current_faction) {
+                if (Math.random() < 0.15 || this.life0 >= 2000) { // 15% normal, 100% on bosses
+                    building.say(window.ChatterDB.getChatter(TD.current_faction, "combat_kill"), "combat");
                 }
             }
             
@@ -3833,12 +3938,11 @@ _TD.a.push(function (TD) {
             
             // --- NEW: V.A.T.S. Charge Generation ---
 
-            if (typeof TD.vats_charge !== 'undefined' && !TD.vats_active) {
+            if (typeof TD.vats_charge !== 'undefined' && !TD.vats_active && !window.is_demo_mode && this.scene && this.scene.wave > 0) {
                 // Fixed kill charge: base 3, scales up slightly for stronger enemies
                 TD.vats_charge += 3 + Math.floor(this.idx * 1.5);
                 if (TD.vats_charge > TD.vats_max_charge) TD.vats_charge = TD.vats_max_charge;
             }
-
 
             // --- NEW: Shatter AoE ---
             if (this.is_frozen && building && building.shatter_aoe) {
@@ -3894,12 +3998,23 @@ _TD.a.push(function (TD) {
                     }
                 }
 
+                var is_critical = false;
+                var took_damage = false;
+
                 if (this.map.map_type === "siege") {
                     TD.base_health -= (final_damage * 10);
-                    if (TD.base_health <= 0) { TD.base_health = 0; TD.stage.gameover(); } else { this.pause(); this.del(); }
+                    if (TD.base_health <= 0) { TD.base_health = 0; TD.stage.gameover(); } else { this.pause(); this.del(); took_damage = true; is_critical = (TD.base_health <= 300); }
                 } else {
                     TD.life -= final_damage;
-                    if (TD.life <= 0) { TD.life = 0; TD.stage.gameover(); } else { this.pause(); this.del(); }
+                    if (TD.life <= 0) { TD.life = 0; TD.stage.gameover(); } else { this.pause(); this.del(); took_damage = true; is_critical = (TD.life <= 25); }
+                }
+                
+                // --- NEW: Base Health Chatter Trigger ---
+                if (took_damage && final_damage > 0 && typeof TD.triggerMetaChatter === 'function') {
+                    // Throttle chatter so it doesn't spam on every single roach
+                    if (Math.random() < 0.3) {
+                        TD.triggerMetaChatter(is_critical ? "base_critical" : "base_damage");
+                    }
                 }
 			}
 		},
@@ -4137,21 +4252,28 @@ _TD.a.push(function (TD) {
                     }
                 }
                 
-                // --- NEW: Process Environmental Auras ---
+                // --- NEW: Process Environmental Auras & Tactical Intel ---
                 var aura_slow_mult = 1.0;
+                this.is_hp_visible = false;
+                // Global Intel Check
+                if (typeof TD !== 'undefined' && TD.perks && (TD.perks.P || TD.perks.I)) this.is_hp_visible = true;
+
                 if (this.map && this.map.buildings) {
                     TD.lang.each(this.map.buildings, function(b) {
                         if (b.is_valid) {
                             var dist2 = Math.pow(b.cx - _this.cx, 2) + Math.pow(b.cy - _this.cy, 2);
                             if (dist2 <= Math.pow(b.range_px, 2)) {
-                                if (b.aura_slow) aura_slow_mult = Math.min(aura_slow_mult, b.aura_slow); // Apply the strongest slow (lowest mult)
+                                if (b.is_detector) _this.is_hp_visible = true; // Local Intel Check!
+                                if (b.aura_slow) aura_slow_mult = Math.min(aura_slow_mult, b.aura_slow); 
                                 if (b.aura_dot && TD.iframe % 30 === 0) {
-                                    _this.beHit(b, b.aura_dot); // Apply flat damage twice a second
+                                    _this.beHit(b, b.aura_dot); 
                                 }
                             }
                         }
                     });
                 }
+
+
 
                 // Base speed calculation
                 var current_speed = this.speed * TD.global_speed;
@@ -4184,18 +4306,24 @@ _TD.a.push(function (TD) {
 			var balloontip = this.scene.panel.balloontip;
 			if (balloontip.el == this) { balloontip.hide(); balloontip.el = null; } 
             else { 
-                var tags = [];
-                if (this.is_flying) tags.push("[FLYING]");
-                if (this.is_stealthed) tags.push("[STEALTH]");
-                if (this.speed >= 15) tags.push("[FAST]");
-                if (this.life0 >= 500) tags.push("[VERY STRONG]");
-                if (this.life0 >= 2000) tags.push("[BOSS]");
-                
-                var tagStr = tags.length > 0 ? "\n" + tags.join(" ") : "";
-                var msg = this.name.toUpperCase() + "\nHP: " + this.life + " / " + this.life0 + tagStr;
-                balloontip.msg(msg, this); 
+                if (this.is_hp_visible) {
+                    var tags = [];
+                    if (this.is_flying) tags.push("[FLYING]");
+                    if (this.is_stealthed) tags.push("[STEALTH]");
+                    if (this.speed >= 15) tags.push("[FAST]");
+                    if (this.life0 >= 500) tags.push("[VERY STRONG]");
+                    if (this.life0 >= 2000) tags.push("[BOSS]");
+                    
+                    var tagStr = tags.length > 0 ? "\n" + tags.join(" ") : "";
+                    var msg = this.name.toUpperCase() + "\nHP: " + this.life + " / " + this.life0 + tagStr;
+                    balloontip.msg(msg, this); 
+                } else {
+                    // No Intel: Just show the generic name
+                    balloontip.msg(this.name.toUpperCase(), this);
+                }
             }
 		},
+
 		onOut: function () { 
 
             // FIXED: Tell the global UI to hide the balloon when mouse leaves
@@ -4312,6 +4440,12 @@ _TD.a.push(function (TD) {
                     this.innerText = "CONTINUE"; 
                     _this.btn_upgrade.hide(); _this.btn_sell.hide(); _this.btn_build.hide(); _this.btn_restart.show(); 
                     document.body.classList.add("is-paused");
+                    
+                    // --- NEW: Wallbreak Pause Chatter ---
+                    if (_this.map && _this.map.buildings && window.ChatterDB && TD.current_faction) {
+                        var b = _this.map.buildings[Math.floor(Math.random() * _this.map.buildings.length)];
+                        if (b && b.is_valid && Math.random() < 0.5) b.say(window.ChatterDB.getChatter(TD.current_faction, "wallbreak_pause"), "idle");
+                    }
                 } 
                 else if (_this.scene.state == 2) { 
                     _this.scene.start(); 
@@ -4321,6 +4455,7 @@ _TD.a.push(function (TD) {
                     document.body.classList.remove("is-paused");
                 }
             };
+
 
             
             // --- NEW: MAP ENTRY SNAPSHOT & RESTART LOGIC ---
@@ -4420,19 +4555,41 @@ _TD.a.push(function (TD) {
             // Wire up the new HTML tower buying buttons and update text feedback safely
             var setDesc = function(txt) { var d = document.getElementById("ui-action-desc"); if(d) d.innerText = txt; };
 
+            // --- NEW: Helper for Meta Chatter ---
+            TD.triggerMetaChatter = function(category) {
+                if (window.is_demo_mode || !window.ChatterDB || !TD.current_faction || !TD.stage || !TD.stage.current_act) return;
+                var map = TD.stage.current_act.current_scene.map;
+                if (!map || !map.buildings || map.buildings.length === 0) return;
+                var validTowers = [];
+                for (var i = 0; i < map.buildings.length; i++) {
+                    if (map.buildings[i].is_valid && !map.buildings[i].is_pre_building) validTowers.push(map.buildings[i]);
+                }
+                if (validTowers.length > 0) {
+                    var b = validTowers[Math.floor(Math.random() * validTowers.length)];
+                    b.say(window.ChatterDB.getChatter(TD.current_faction, category), "idle", true); // Pass true to ignore overlap check for system messages
+                }
+            };
+
             // Wire up the Time Controls
             var btnStartWave = document.getElementById("ui-btn-start-wave");
             if (btnStartWave) btnStartWave.onclick = function() { 
                 if (TD.stage.wait_new_wave > 0) { 
                     var secondsSkipped = Math.floor(TD.stage.wait_new_wave / TD.exp_fps);
                     
+                    if (secondsSkipped > 0 && typeof TD.triggerMetaChatter === 'function') TD.triggerMetaChatter("wave_early");
+                    
                     // --- NEW: Guaranteed Minimum Wave Income ---
+
                     // Base 25 caps, plus 15 extra caps for every wave you have survived
                     var currentWaveIdx = (_this.scene && _this.scene.wave) ? _this.scene.wave : 0;
+                    
+                    // Hard reset VATS to 0 at the exact moment Wave 1 starts
+                    if (currentWaveIdx === 0) TD.vats_charge = 0;
+
                     var guaranteedCaps = 25 + (currentWaveIdx * 15);
                     
                     var bonusCaps = (secondsSkipped * 5) + guaranteedCaps; // Combine them
-                    
+
                     TD.stage.wait_new_wave = 0; 
                     
                     if (bonusCaps > 0 && _this.map) {
@@ -4482,9 +4639,7 @@ _TD.a.push(function (TD) {
                                 }, delay * 100); 
                             })(i, i);
                         }
-                    } else {
-                        setDesc("INITIATING EARLY WAVE..."); 
-                    }
+                    } 
 
                 } 
             };
@@ -4535,33 +4690,39 @@ _TD.a.push(function (TD) {
                 var newSpeed = Math.round((TD.global_speed - 0.2) * 10) / 10;
                 if (newSpeed >= 0.2) {
                     changeGameSpeed(newSpeed);
-                    setDesc("TIME DILATION: DECREASED TO " + Math.round(TD.global_speed / 0.2) + "X"); 
                 }
             };
+
 
             var btnSpeed = document.getElementById("ui-btn-speed");
             if (btnSpeed) btnSpeed.onclick = function() { 
                 var newSpeed = Math.round((TD.global_speed + 0.2) * 10) / 10;
                 if (newSpeed <= 1.0) { // Caps the maximum speed at 5x
                     changeGameSpeed(newSpeed);
-                    setDesc("TIME DILATION: ACCELERATED TO " + Math.round(TD.global_speed / 0.2) + "X"); 
+                    
+                    // --- NEW: Wallbreak Speed Chatter ---
+                    if (newSpeed >= 0.6 && _this.map && _this.map.buildings && window.ChatterDB && TD.current_faction) {
+                        var b = _this.map.buildings[Math.floor(Math.random() * _this.map.buildings.length)];
+                        if (b && b.is_valid && Math.random() < 0.5) b.say(window.ChatterDB.getChatter(TD.current_faction, "wallbreak_fastforward"), "idle");
+                    }
                 }
             };
+
+
             
             // Wire up Audio Toggles
             var btnSound = document.getElementById("ui-btn-sound");
             if (btnSound) {
                 btnSound.onclick = function() {
                     TD.sound_enabled = !TD.sound_enabled;
+                    if (typeof TD.triggerMetaChatter === 'function') TD.triggerMetaChatter("sys_audio");
                     if (TD.sound_enabled) {
                         this.classList.remove("unlit");
                         this.style.removeProperty("cursor"); // Restore default hover cursor
                         this.className = this.className.replace(/warm-up-[\w-]+/g, "").trim(); // Strip animations so it instantly lights up solid
-                        setDesc("AUDIO: SOUND EFFECTS ENABLED");
                     } else {
                         this.classList.add("unlit");
                         this.style.setProperty("cursor", "pointer", "important"); // Keep clickable cursor
-                        setDesc("AUDIO: SOUND EFFECTS MUTED");
                     }
                 };
             }
@@ -4570,16 +4731,15 @@ _TD.a.push(function (TD) {
             if (btnMusic) {
                 btnMusic.onclick = function() {
                     TD.music_enabled = !TD.music_enabled;
+                    if (typeof TD.triggerMetaChatter === 'function') TD.triggerMetaChatter("sys_audio");
                     if (TD.music_enabled) {
                         this.classList.remove("unlit");
                         this.style.removeProperty("cursor");
                         this.className = this.className.replace(/warm-up-[\w-]+/g, "").trim(); // Strip animations so it instantly lights up solid
-                        setDesc("AUDIO: MUSIC ENABLED");
                         TD.playMusic("bgm_game"); // Start music
                     } else {
                         this.classList.add("unlit");
                         this.style.setProperty("cursor", "pointer", "important");
-                        setDesc("AUDIO: MUSIC MUTED");
                         TD.stopMusic(); // Stop music
                     }
                 };
@@ -4588,7 +4748,9 @@ _TD.a.push(function (TD) {
             var btnSave = document.getElementById("ui-btn-save");
             if (btnSave) {
                 btnSave.onclick = function() {
+                    if (typeof TD.triggerMetaChatter === 'function') TD.triggerMetaChatter("sys_save");
                     // Gather critical game state
+
                     var saveData = {
                         money: TD.money,
                         score: TD.score,
@@ -4615,8 +4777,6 @@ _TD.a.push(function (TD) {
                     document.body.appendChild(downloadAnchorNode); // required for Firefox
                     downloadAnchorNode.click();
                     downloadAnchorNode.remove();
-                    
-                    setDesc("SYSTEM STATE SAVED TO WASTELAND_SAVE.JSON");
                 };
             }
 
@@ -4734,14 +4894,10 @@ _TD.a.push(function (TD) {
 
                                             _this.map.cancelPreBuild();
                                             TD.mode = "deploy_handy";
-                                            setDesc("DEPLOYING MR. HANDY. Click map to place.");
                                             TD.mouseHand(true);
                                         } else {
                                             _this.map.preBuild("tower_" + index); 
-                                            setDesc("DEPLOYING " + tData.name + ". Click map to place.");
                                         }
-                                    } else {
-                                        setDesc("NOT ENOUGH CAPS TO BUILD! Need " + buildCost);
                                     }
                                 }
                             } else {
@@ -4752,16 +4908,14 @@ _TD.a.push(function (TD) {
                                     tData.is_unlocked = true;
                                     tData.free_first_build = true; // NEW: Set the free build flag
                                     TD.loadFaction(TD.current_faction); // Refresh buttons
-                                    setDesc(tData.name + " AUTHORIZED.");
                                     if (typeof TD.logEvent === 'function') TD.logEvent("NEW TECH AUTHORIZED: " + tData.name + " DEPLOYMENT READY");
-                                } else {
-                                    setDesc("NOT ENOUGH CAPS TO UNLOCK! Need " + unlockCost);
                                 }
                             }
                         };
                     }
                 })(i);
             }
+
             // SHIFT + A Listener for Admin Mode
             document.onkeydown = function(e) {
                 if (e.shiftKey && (e.key === "A" || e.key === "a")) {
@@ -4813,7 +4967,7 @@ _TD.a.push(function (TD) {
 
 
             // Wire up the Admin Brushes
-            var setBrush = function(brushName) { TD.admin_brush = brushName; var d = document.getElementById("ui-action-desc"); if(d) d.innerText = "BRUSH SELECTED: " + brushName.toUpperCase(); };
+            var setBrush = function(brushName) { TD.admin_brush = brushName; };
             var bPath = document.getElementById("admin-brush-path"); if(bPath) bPath.onclick = function() { setBrush("path"); };
             var bBlock = document.getElementById("admin-brush-block"); if(bBlock) bBlock.onclick = function() { setBrush("block"); };
             var bClear = document.getElementById("admin-brush-clear"); if(bClear) bClear.onclick = function() { setBrush("clear"); };
@@ -5010,8 +5164,6 @@ _TD.a.push(function (TD) {
                         });
                     }
 
-                    var d = document.getElementById("ui-action-desc");
-                    if(d) d.innerText = "GRID DATA LOADED: " + lvl;
                 }
             };
 
@@ -5026,8 +5178,6 @@ _TD.a.push(function (TD) {
                         board.style.backgroundImage = "url('" + url + "')";
                         board.style.backgroundSize = "100% 100%";
                         board.style.backgroundRepeat = "no-repeat";
-                        var d = document.getElementById("ui-action-desc");
-                        if(d) d.innerText = "BACKGROUND LOADED: " + url;
                     }
                 }
             };
@@ -5041,8 +5191,6 @@ _TD.a.push(function (TD) {
 
                 if (!src) {
                     envOverlay.style.display = "none";
-                    var d = document.getElementById("ui-action-desc");
-                    if(d) d.innerText = "ENVIRONMENT CLEARED.";
                     return;
                 }
 
@@ -5069,9 +5217,8 @@ _TD.a.push(function (TD) {
                 }
                 
                 envOverlay.style.display = "block";
-                var d = document.getElementById("ui-action-desc");
-                if(d) d.innerText = "ENVIRONMENT EFFECT APPLIED.";
             };
+
 
             
             // --- NEW: BULLETPROOF PATH VALIDATOR ---
@@ -5214,9 +5361,6 @@ _TD.a.push(function (TD) {
                         outBox.value = finalCode;
                         outBox.select();
                     }
-                    
-                    var d = document.getElementById("ui-action-desc");
-                    if(d) d.innerText = "CODE GENERATED! Click COPY CODE.";
                 };
             }
 
@@ -5228,9 +5372,6 @@ _TD.a.push(function (TD) {
                     if (outBox && outBox.value) {
                         outBox.select();
                         document.execCommand("copy"); // Copies to clipboard
-                        
-                        var d = document.getElementById("ui-action-desc");
-                        if(d) d.innerText = "CODE COPIED TO CLIPBOARD!";
                     }
                 };
             }
@@ -5322,21 +5463,25 @@ _TD.a.push(function (TD) {
                     
                 } else if (vatsPercent >= 100) {
                     vatsBtn.disabled = TD.is_paused; // Block activation if paused!
-                    vatsBtn.innerHTML = "ACTIVATE<br>V.A.T.S.";
-                    vatsBtn.style.lineHeight = "1.2"; 
+                    vatsBtn.innerHTML = "READY";
+                    vatsBtn.style.lineHeight = "normal"; 
                     vatsBtn.style.cursor = TD.is_paused ? "not-allowed" : "pointer";
                     vatsBtn.style.backgroundImage = "none";
                     vatsBtn.classList.add("vats-charged-glow");
                     
                 } else {
                     vatsBtn.disabled = true;
-                    vatsBtn.innerText = "V.A.T.S. " + vatsPercent + "%";
+                    vatsBtn.innerHTML = "NOT<br>READY";
                     vatsBtn.style.cursor = "not-allowed";
-                    vatsBtn.style.lineHeight = "normal";
-                    vatsBtn.style.backgroundImage = "none";
+                    vatsBtn.style.lineHeight = "1.2";
+
+                    
+                    // --- NEW: Visual Background Fill ---
+                    vatsBtn.style.backgroundImage = "linear-gradient(to top, #f2d57e " + vatsPercent + "%, #555 " + vatsPercent + "%)";
                     
                     // Reset everything completely so inline styles stop interfering
-                    vatsBtn.style.removeProperty("color");
+                    vatsBtn.style.color = "#222";
+                    vatsBtn.style.textShadow = "none";
                     vatsBtn.style.removeProperty("box-shadow");
                     vatsBtn.style.removeProperty("background-color");
                     vatsBtn.classList.remove("vats-charged-glow");
@@ -5346,6 +5491,7 @@ _TD.a.push(function (TD) {
 		},
 
 		render: function () {
+
             // True Physical Nixie Tube Simulator
             var updateNixie = function(containerId, targetValue, length, suffix) {
                 var container = document.getElementById(containerId);
@@ -5740,118 +5886,67 @@ _TD.a.push(function (TD) {
                     }
                     var monsterString = monsterNames.length > 0 ? monsterNames.join(", ") : "UNKNOWN THREATS";
 
-                    // Bypass the queue and force the countdown directly into the ticker text instantly every frame
+                    // LOOK AHEAD to the wave after this one for the "NEXT WAVE" preview
+                    var futureWaveIdx = nextWaveIdx + 1;
+                    var futureWaveData = wavesCfg[futureWaveIdx];
+                    var futureNames = [];
+                    if (futureWaveData && futureWaveData.length > 0) {
+                        for (var f = 0; f < futureWaveData.length; f++) {
+                            var fQty = futureWaveData[f][0];
+                            var fIdx = futureWaveData[f][1];
+                            var fName = TD.getDefaultMonsterAttributes(fIdx).name;
+                            futureNames.push(fQty + "X " + fName.toUpperCase());
+                        }
+                    }
+                    var futureString = futureNames.length > 0 ? futureNames.join(", ") : "UNKNOWN";
+
                     var tickerEl = document.getElementById("intel-ticker-text");
                     if (tickerEl) {
-                        // --- CHANGED: Display "HOLDING" if waiting for Wave 1 ---
-                        var timeStr = (currentWaveIdx === 0) ? "HOLDING (PRESS START WAVE)" : (sec + "s");
-                        
-                        TD.typewriter_target = "<span style='color:#fff;'>T-MINUS:</span> " + timeStr + " <span style='color:#6a7354;'>|</span> <span style='color:#fff;'>THREAT:</span> " + monsterString;
-                        TD.typewriter_current = TD.typewriter_target; // Bypass typing animation for live timer
+                        if (currentWaveIdx === 0) {
+                            TD.typewriter_target = "<span style='color:#fff;'>HOLDING (PRESS START WAVE)</span> <span style='color:#6a7354;'>|</span> <span style='color:#fff;'>NEXT THREAT:</span> " + monsterString;
+                        } else {
+                            TD.typewriter_target = "<span style='color:#fff;'>T-MINUS:</span> " + sec + "s <span style='color:#6a7354;'>|</span> <span style='color:#fff;'>NEXT THREAT:</span> " + monsterString;
+                        }
+                        TD.typewriter_current = TD.typewriter_target; 
                         tickerEl.innerHTML = TD.typewriter_target;
                     }
 
-                    
                 } else {
 
                     // --- STATE 2: WAVE IN MOTION ---
                     document.getElementById("intel-wave-label").innerText = "WAVE " + currentWaveIdx + ":";
                     
-                    // Generate initial chatter when the wave starts
-                    if (!this.scene._intel_chatter_generated && window.IntelData) {
-                        this.scene._intel_chatter_generated = true;
-                        
-                        if (typeof TD !== 'undefined' && TD.logEvent) {
-                            // --- EARLY WARNING & COUNTER-MEASURE CHECK ---
-                            var has_aa = false;
-                            var has_detect = false;
-                            var incoming_stealth = false;
-                            var incoming_flyer = false;
-
-                            // 1. Check what the player has built
-                            if (this.map && this.map.buildings) {
-                                TD.lang.each(this.map.buildings, function(b) {
-                                    if (b.is_valid) {
-                                        var vType = b.visual_type || b.type;
-                                        var isEarly = (b.type === "tower_1" || b.type === "tower_2" || b.type === "tower_3" || (b.id && (b.id.endsWith("_1") || b.id.endsWith("_2") || b.id.endsWith("_3"))));
-                                        if (!isEarly && (vType === "laser_gun" || vType === "LMG" || vType === "HMG" || vType === "rifle")) has_aa = true;
-                                        if (b.is_detector) has_detect = true;
-                                    }
-                                });
-                            }
-
-                            // 2. Generate SMART Organic Wave Report
-                            var currentWaveData = (stg.config && stg.config.waves) ? stg.config.waves[currentWaveIdx] : null;
-                            var threatPhrases = [];
-                            
-                            // A. Tally and Consolidate identical enemies
-                            var consolidatedWave = {};
-                            if (currentWaveData) {
-                                for (var k = 0; k < currentWaveData.length; k++) {
-                                    var mIdx = currentWaveData[k][1];
-                                    var mQty = currentWaveData[k][0];
-                                    if (!consolidatedWave[mIdx]) consolidatedWave[mIdx] = { qty: 0, attr: TD.getDefaultMonsterAttributes(mIdx) };
-                                    consolidatedWave[mIdx].qty += mQty;
-                                    
-                                    // Track critical threats
-                                    if (consolidatedWave[mIdx].attr.is_flying || mIdx === 8 || mIdx === 9 || mIdx === 10) incoming_flyer = true;
-                                    if (consolidatedWave[mIdx].attr.is_stealthed || mIdx === 11) incoming_stealth = true;
-                                }
-                            }
-
-                            // B. Convert to text based on the number of unique types
-                            var uniqueTypes = Object.keys(consolidatedWave).length;
-                            var monsterStr = "UNKNOWN HOSTILES";
-                            
-                            if (uniqueTypes >= 3) {
-                                // Too many types = Truncate to a Horde description
-                                monsterStr = "A MASSIVE MIXED HORDE";
-                                if (incoming_flyer && incoming_stealth) monsterStr += " (CLOAKED AND AERIAL THREATS EMBEDDED)";
-                                else if (incoming_flyer) monsterStr += " (AERIAL THREATS EMBEDDED)";
-                                else if (incoming_stealth) monsterStr += " (CLOAKED THREATS EMBEDDED)";
-                            } else if (uniqueTypes > 0) {
-                                // 1 or 2 types = List them specifically with human quantities
-                                for (var key in consolidatedWave) {
-                                    var group = consolidatedWave[key];
-                                    var qtyStr = "A FEW";
-                                    if (group.qty === 1) qtyStr = "A LONE";
-                                    else if (group.qty >= 2 && group.qty <= 4) qtyStr = "A SMALL GROUP OF";
-                                    else if (group.qty >= 5 && group.qty <= 9) qtyStr = "A HEAVY PRESENCE OF";
-                                    else if (group.qty >= 10) qtyStr = "A MASSIVE SWARM OF";
-                                    
-                                    threatPhrases.push(qtyStr + " " + group.attr.name.toUpperCase() + (group.qty > 1 && !group.attr.name.endsWith("S") ? "S" : ""));
-                                }
-                                monsterStr = threatPhrases.join(" AND ");
-                            }
-
-                            // C. Pull the faction-specific Mad-Libs sentence and inject the Smart string!
-                            var baseSentence = window.IntelData.getEvent("wave_start", TD.current_faction);
-                            var finalReport = baseSentence.replace("{M}", monsterStr);
-                            TD.logEvent(finalReport);
-
-                            // 3. Log Missing Counter-Measures (We skipped the "Now" alerts because the new summary includes them naturally)
-
-                            if (incoming_flyer && !has_aa) TD.logEvent(window.IntelData.getEvent("tactical_no_antiair", "GENERAL"));
-                            else if (incoming_flyer) TD.logEvent(window.IntelData.getEvent("threat_flying_now", "GENERAL"));
-
-                            if (incoming_stealth && !has_detect) TD.logEvent(window.IntelData.getEvent("tactical_no_detector", "GENERAL"));
-                            else if (incoming_stealth) TD.logEvent(window.IntelData.getEvent("threat_stealth_now", "GENERAL"));
-
-                            // 4. Look Ahead to the NEXT wave for early prep warnings
-                            var nextWaveData = (stg.config && stg.config.waves) ? stg.config.waves[currentWaveIdx + 1] : null;
-                            if (nextWaveData) {
-                                var next_stealth = false;
-                                var next_flyer = false;
-                                for (var n = 0; n < nextWaveData.length; n++) {
-                                    var nAttr = TD.getDefaultMonsterAttributes(nextWaveData[n][1]);
-                                    if (nAttr.is_flying || nextWaveData[n][1] === 8 || nextWaveData[n][1] === 9 || nextWaveData[n][1] === 10) next_flyer = true;
-                                    if (nAttr.is_stealthed || nextWaveData[n][1] === 11) next_stealth = true;
-                                }
-                                if (next_flyer && !incoming_flyer) TD.logEvent(window.IntelData.getEvent("threat_flying_prep", "GENERAL"));
-                                if (next_stealth && !incoming_stealth) TD.logEvent(window.IntelData.getEvent("threat_stealth_prep", "GENERAL"));
-                            }
-
+                    var wavesCfg = stg.config ? stg.config.waves : [];
+                    var activeWaveData = wavesCfg[currentWaveIdx];
+                    var monsterNames = [];
+                    if (activeWaveData && activeWaveData.length > 0) {
+                        for (var i = 0; i < activeWaveData.length; i++) {
+                            var mQty = activeWaveData[i][0];
+                            var mIdx = activeWaveData[i][1];
+                            var mName = TD.getDefaultMonsterAttributes(mIdx).name;
+                            monsterNames.push(mQty + "X " + mName.toUpperCase());
                         }
+                    }
+                    var monsterString = monsterNames.length > 0 ? monsterNames.join(", ") : "UNKNOWN THREATS";
+
+                    var futureWaveIdx = currentWaveIdx + 1;
+                    var futureWaveData = wavesCfg[futureWaveIdx];
+                    var futureNames = [];
+                    if (futureWaveData && futureWaveData.length > 0) {
+                        for (var f = 0; f < futureWaveData.length; f++) {
+                            var fQty = futureWaveData[f][0];
+                            var fIdx = futureWaveData[f][1];
+                            var fName = TD.getDefaultMonsterAttributes(fIdx).name;
+                            futureNames.push(fQty + "X " + fName.toUpperCase());
+                        }
+                    }
+                    var futureString = futureNames.length > 0 ? futureNames.join(", ") : "UNKNOWN";
+
+                    var tickerEl = document.getElementById("intel-ticker-text");
+                    if (tickerEl) {
+                        TD.typewriter_target = "<span style='color:#fff;'>CURRENT THREAT:</span> " + monsterString + " <span style='color:#6a7354;'>|</span> <span style='color:#fff;'>NEXT WAVE:</span> " + futureString;
+                        TD.typewriter_current = TD.typewriter_target; 
+                        tickerEl.innerHTML = TD.typewriter_target;
                     }
                 }
 
@@ -5919,7 +6014,7 @@ _TD.a.push(function (TD) {
             if (this.el.is_monster) {
                 // --- V.A.T.S. STYLE RENDER FOR MONSTERS ---
                 var w = this.width;
-                var h = this.height + 15 * _TD.retina; // extra space for HP bar
+                var h = this.height; // Removed extra space for HP bar
                 
                 // Main Box
                 ctx.fillStyle = "rgba(0, 40, 0, 0.7)";
@@ -5939,23 +6034,12 @@ _TD.a.push(function (TD) {
                 ctx.moveTo(this.x + w - bS, this.y + h); ctx.lineTo(this.x + w, this.y + h); ctx.lineTo(this.x + w, this.y + h - bS); // Bottom Right
                 ctx.stroke();
                 
-                // Health Bar (Top)
-                var barW = w - 16 * _TD.retina;
-                var barH = 5 * _TD.retina;
-                var barX = this.x + 8 * _TD.retina;
-                var barY = this.y + 6 * _TD.retina;
-                var hpPercent = Math.max(0, this.el.life / this.el.life0);
-                
-                ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(barX, barY, barW, barH);
-                ctx.fillStyle = "#0f0"; ctx.fillRect(barX, barY, barW * hpPercent, barH);
-                ctx.lineWidth = 1; ctx.strokeStyle = "#0f0"; ctx.strokeRect(barX, barY, barW, barH);
-                
                 // Text Lines
                 ctx.textAlign = "center"; ctx.textBaseline = "top"; ctx.fillStyle = "#0f0";
                 ctx.font = "bold " + (12 * _TD.retina) + "px 'Courier New'";
                 var lines = this.text.split('\n');
                 for (var i = 0; i < lines.length; i++) {
-                    ctx.fillText(lines[i], this.x + w/2, this.y + 16 * _TD.retina + (i * 15 * _TD.retina));
+                    ctx.fillText(lines[i], this.x + w/2, this.y + 4 * _TD.retina + (i * 15 * _TD.retina)); // Adjusted Y start
                 }
             } else {
                 // --- STANDARD YELLOW TOOLTIP FOR EVERYTHING ELSE ---
@@ -6211,9 +6295,69 @@ _TD.a.push(function (TD) {
         // Use visual_type if defined, otherwise fallback to the type, otherwise wall
         var renderType = building.visual_type || building.type;
 		(renderFunctions[renderType] || renderFunctions["wall"])(building, ctx, map, gs, gs2);
+
+        // --- NEW: Render Chatter Bubble ---
+        if (building.chatter_timer > 0 && building.chatter_msg && building.chatter_max_timer) {
+            ctx.save();
+            ctx.font = "bold " + Math.floor(14 * _TD.retina) + "px 'Courier New', monospace";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            
+            // 0.0 at start, 1.0 at end of life
+            var progress = 1 - (building.chatter_timer / building.chatter_max_timer); 
+            
+            // Fade In (first 0.5s) and Fade Out (last 0.5s)
+            var fadeTime = TD.exp_fps * 0.5;
+            if (building.chatter_timer < fadeTime) {
+                ctx.globalAlpha = building.chatter_timer / fadeTime;
+            } else if (building.chatter_max_timer - building.chatter_timer < fadeTime) {
+                ctx.globalAlpha = (building.chatter_max_timer - building.chatter_timer) / fadeTime;
+            } else {
+                ctx.globalAlpha = 1.0;
+            }
+
+            // TEXT WRAPPING LOGIC
+            var words = building.chatter_msg.split(' ');
+            var lines = [];
+            var currentLine = words[0] || "";
+            var maxWidth = 160 * _TD.retina; // Max width for chatter bubbles
+            
+            for (var w = 1; w < words.length; w++) {
+                var word = words[w];
+                var width = ctx.measureText(currentLine + " " + word).width;
+                if (width < maxWidth) {
+                    currentLine += " " + word;
+                } else {
+                    lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+            lines.push(currentLine);
+
+            // Starts near the tower, floats UPward over its entire lifespan
+            var floatOffset = progress * 20 * _TD.retina; 
+            var lineHeight = 16 * _TD.retina;
+            
+            // Push starting Y up slightly based on number of lines so it doesn't overlap the tower
+            var startY = building.cy - (TD.grid_size * 0.6) - floatOffset - ((lines.length - 1) * lineHeight);
+            
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.6)"; 
+            ctx.lineWidth = 3 * _TD.retina;
+            ctx.fillStyle = "#000000"; 
+            
+            // Draw each line sequentially
+            for (var j = 0; j < lines.length; j++) {
+                var textY = startY + (j * lineHeight);
+                ctx.strokeText(lines[j], building.cx, textY);
+                ctx.fillText(lines[j], building.cx, textY);
+            }
+            
+            ctx.restore();
+        }
 	}
 
 });
+
 
 
 _TD.a.push(function (TD) {
@@ -6241,12 +6385,51 @@ _TD.a.push(function (TD) {
                 if (TD.perks.A) this.speed *= 1.15; // Agility: 15% faster fire rate
             }
             
-            this.range_px = this.range * TD.grid_size; this.money = this.cost; 
+			this.range_px = this.range * TD.grid_size; this.money = this.cost; 
+			this.chatter_msg = ""; this.chatter_timer = 0; this.chatter_cooldowns = {};
 			this.caculatePos();
 		},
 
+        // --- NEW: Chatter Function ---
+        say: function(text, category, ignore_overlap, force_override) {
+            if (!text || !window.ChatterDB || window.is_demo_mode) return false;
+            
+            // 0. DON'T INTERRUPT CURRENT CHATTER! (Unless forced by a multi-line script OR it's a combat bark)
+            if (this.chatter_timer > 0 && !force_override && category !== "combat") return false;
+            
+            if (!this.chatter_cooldowns) this.chatter_cooldowns = {};
+            
+            // 1. Block if this specific category is on cooldown (unless forced)
+            if (!force_override && this.chatter_cooldowns[category] && this.chatter_cooldowns[category] > 0) return false;
+            
+            // 2. Spatial Overlap Preventer
+            if (!ignore_overlap && !force_override && this.map && this.map.buildings) {
+                for (var i = 0; i < this.map.buildings.length; i++) {
+                    var b = this.map.buildings[i];
+                    if (b !== this && b.chatter_timer > 0) {
+                        var dist = Math.sqrt(Math.pow(this.cx - b.cx, 2) + Math.pow(this.cy - b.cy, 2));
+                        if (dist <= TD.grid_size * 3) {
+                            return false; 
+                        }
+                    }
+                }
+            }
+
+            this.chatter_msg = text;
+            this.chatter_timer = Math.floor(window.ChatterDB.getDisplayTime(text) * TD.exp_fps);
+            this.chatter_max_timer = this.chatter_timer; 
+            
+            if (category === "combat") this.chatter_cooldowns[category] = 15 * TD.exp_fps;
+            if (category === "convo") this.chatter_cooldowns[category] = 25 * TD.exp_fps;
+            if (category === "idle") this.chatter_cooldowns[category] = 20 * TD.exp_fps;
+            
+            return true;
+        },
+
+
 
 		getUpgradeCost: function () { return Math.floor(this.money * 0.75); },
+
 		getSellMoney: function () { return Math.floor(this.money * 0.5) || 1; },
 		getBuyCost: function () { return Math.floor(this.money * 0.5) || 1; },
 		toggleSelected: function () {
@@ -6303,56 +6486,86 @@ _TD.a.push(function (TD) {
             }
 			
             var valid_targets = [];
+            var saw_hidden = false;
+
+            var valid_targets = [];
+            var saw_hidden = false;
 
             TD.lang.each(this.map.monsters, function (obj) {
                 if (obj.is_valid) {
                     var is_perception_active = (typeof TD !== 'undefined' && TD.overdrive && TD.overdrive.P > 0);
                     var in_range = is_perception_active || (Math.pow(obj.cx - cx, 2) + Math.pow(obj.cy - cy, 2) <= range2);
                     var isFlying = !!obj.is_flying || obj.idx === 8 || obj.idx === 9 || obj.idx === 10;
-                    var isStealthed = !!obj.is_stealthed || obj.idx === 11 || obj.is_burrowing; // Mole rats hide too!
+                    var isStealthed = !!obj.is_stealthed || obj.idx === 11 || obj.is_burrowing; 
                     
                     if (in_range) {
-                        if (isFlying && !canHitAir) return; // Anti-Air restriction
-                        if (isStealthed && !obj.is_revealed && !is_perception_active) return; // Detect stealth during Perception Overdrive
+                        if (isFlying && !canHitAir) return; 
+                        if (isStealthed && !obj.is_revealed && !is_perception_active) {
+                            saw_hidden = true; // Track that we heard something nearby!
+                            return; 
+                        }
                         valid_targets.push(obj);
                     }
-
                 }
             });
 
             if (valid_targets.length === 0) {
                 this.target = null;
+                // --- NEW: Hidden Monster Chatter ---
+                if (saw_hidden && Math.random() < 0.05) {
+                    var hidden_barks = ["Did you hear that?", "I swear I heard footsteps...", "Something's out there.", "Keep your eyes peeled."];
+                    this.say(hidden_barks[Math.floor(Math.random() * hidden_barks.length)], "idle");
+                }
                 return;
             }
 
             // 2. Sort by player-selected targeting mode (default: closest)
             var mode = this.target_mode || "closest";
             valid_targets.sort(function(a, b) {
-                if (mode === "strongest") return b.life - a.life;
-                if (mode === "weakest") return a.life - b.life;
-                if (mode === "leader") return a.way.length - b.way.length; // Fewer steps to exit = further ahead
-                
-                // Fallback / "closest"
                 var distA = Math.pow(a.cx - cx, 2) + Math.pow(a.cy - cy, 2);
                 var distB = Math.pow(b.cx - cx, 2) + Math.pow(b.cy - cy, 2);
-                return distA - distB;
+
+                // Target by HP ONLY if we have tactical intel on BOTH enemies, otherwise default to closest!
+                if (mode === "strongest" && a.is_hp_visible && b.is_hp_visible) return b.life - a.life;
+                if (mode === "weakest" && a.is_hp_visible && b.is_hp_visible) return a.life - b.life;
+                
+                if (mode === "leader") return a.way.length - b.way.length; 
+                
+                return distA - distB; // Fallback / "closest"
             });
 
             var new_target = valid_targets[0];
             
-            // --- NEW: ANNOUNCE TARGET ACQUISITION ---
-            if (this.target !== new_target && new_target && window.IntelData && TD.Announcer) {
-                // If it's a Boss (2000+ HP), it's a Critical "Hero Duel" announcement
-                if (new_target.life0 >= 2000) {
-                    TD.Announcer.add(window.IntelData.getEvent("intercept", TD.current_faction, this.name, new_target.name), 5);
-                } 
-                // Otherwise, normal priority, and we throttle it so cheap towers don't spam the log
-                else if (Math.random() < 0.1) { 
-                    TD.Announcer.add(window.IntelData.getEvent("intercept", TD.current_faction, this.name, new_target.name), 3);
+            // --- NEW: Combat Engage Chatter ---
+            if (this.target !== new_target && new_target && window.ChatterDB && TD.current_faction) {
+                if (Math.random() < 0.2) { 
+                    var is_flying = !!new_target.is_flying || new_target.idx === 8 || new_target.idx === 9 || new_target.idx === 10;
+                    if (is_flying) {
+                        var fly_barks = ["Eyes to the sky!", "Taking aim at that flyer!", "Swatter ready!", "Bogey inbound!"];
+                        this.say(fly_barks[Math.floor(Math.random() * fly_barks.length)], "combat");
+                    } else {
+                        this.say(window.ChatterDB.getChatter(TD.current_faction, "combat_engage"), "combat");
+                    }
                 }
             }
 
             this.target = new_target;
+            
+            // --- NEW: Combat Engage Chatter ---
+            if (this.target !== new_target && new_target && window.ChatterDB && TD.current_faction) {
+                if (Math.random() < 0.2) { 
+                    var isFlying = !!new_target.is_flying || new_target.idx === 8 || new_target.idx === 9 || new_target.idx === 10;
+                    if (isFlying) {
+                        var fly_barks = ["Eyes to the sky!", "Taking aim at that flyer!", "Swatter ready!", "Bogey inbound!"];
+                        this.say(fly_barks[Math.floor(Math.random() * fly_barks.length)], "combat");
+                    } else {
+                        this.say(window.ChatterDB.getChatter(TD.current_faction, "combat_engage"), "combat");
+                    }
+                }
+            }
+
+            this.target = new_target;
+
 		},
 
 		getTargetPosition: function () {
@@ -6467,25 +6680,13 @@ _TD.a.push(function (TD) {
 				// Scales by exactly +25 XP per level (Level 1->2 is 50, 2->3 is 75, etc.)
 				this.xp_needed = 50 + (this.level - 1) * 25;
 				
-                // --- NEW: Level Up Floating Text ---
-                if (this.map && this.map.scene) {
-                    new TD.FloatingText("lvlup-" + TD.lang.rndStr(), {
-                        cx: this.cx, 
-                        cy: this.cy - (TD.grid_size / 2), // Start slightly above the tower
-                        text: "LVL UP ⬆", 
-                        color: "#00ff00", // Bright Green
-                        size: 14,
-                        life: 48, // Lasts a full 2 seconds
-                        map: this.map
-                    });
-                    
-                    if (typeof TD.logEvent === 'function') {
-                        if (this.level === 2) TD.logEvent(this.name + " UNIT PROMOTED TO VETERAN STATUS");
-                        else if (this.level === 4) TD.logEvent(this.name + " UNIT ACHIEVED ELITE COMBAT RATING");
-                    }
+                // --- NEW: Level Up Chatter ---
+                if (this.map && this.map.scene && window.ChatterDB && TD.current_faction) {
+                    this.say(window.ChatterDB.getChatter(TD.current_faction, "level_up"), "idle");
                 }
 
 				// Auto-level base stats slightly
+
 
 				this.damage = Math.floor(this.damage * 1.1) + 1;
 				this.range = this.range + 0.1;
@@ -6501,6 +6702,8 @@ _TD.a.push(function (TD) {
 			if (this.blink) { this.wait_blink--; if (this.wait_blink < -this._default_wait_blink) this.wait_blink = this._default_wait_blink; }
             
             // NEW: Flight Mechanics (Lissajous Figure-8 curve)
+
+
             if (this.is_flying && !this.is_pre_building && this.anchor_cx) {
                 this.flight_angle += this.flight_speed * TD.global_speed;
                 this.cx = this.anchor_cx + Math.cos(this.flight_angle) * this.flight_radius;
@@ -6550,20 +6753,23 @@ _TD.a.push(function (TD) {
 		},
 
 
-
 		render: function () {
 			if (!this.is_visiable || this.wait_blink < 0) return;
+            
+            // --- NEW: Process Chatter Timers globally, even if hidden or in Y-Sort queue! ---
+            if (this.chatter_timer > 0) this.chatter_timer--;
+            if (this.chatter_cooldowns) {
+                for (var k in this.chatter_cooldowns) {
+                    if (this.chatter_cooldowns[k] > 0) this.chatter_cooldowns[k]--;
+                }
+            }
             
             // NEW: If on the main map, building rendering is handled by the Y-Sort queue in Map.render
             if (this.map.is_main_map && !this.is_pre_building) return;
 
 			var ctx = TD.ctx; 
-                      
             TD.renderBuilding(this);
-            // NEW: Added "this.is_hover" to the condition so it draws the range circle when moused over
 
-			var ctx = TD.ctx; TD.renderBuilding(this);
-            // NEW: Added "this.is_hover" to the condition so it draws the range circle when moused over
 			if (this.map.is_main_map && (this.is_selected || this.is_hover || (this.is_pre_building) || this.map.show_all_ranges) && this.is_weapon && this.range > 0 && this.grid) {
 				ctx.lineWidth = _TD.retina; ctx.fillStyle = "rgba(187, 141, 32, 0.15)"; ctx.strokeStyle = "#bb8d20"; ctx.beginPath(); ctx.arc(this.cx, this.cy, this.range_px, 0, Math.PI * 2, true); ctx.closePath(); ctx.fill(); ctx.stroke();
 			}
@@ -6573,8 +6779,8 @@ _TD.a.push(function (TD) {
 				ctx.lineWidth = _TD.retina; ctx.strokeStyle = "rgba(150, 150, 255, 0.5)"; ctx.beginPath(); ctx.lineTo(this.cx, this.cy); ctx.closePath(); ctx.stroke();
 			}
 		},
-
 		onEnter: function () {
+
 			if (this.is_pre_building || !this.map.is_main_map) return;
             var tooltip = document.getElementById("tower-tooltip");
             if (tooltip) {
@@ -6586,17 +6792,24 @@ _TD.a.push(function (TD) {
                 var tact = TD.getTacticalMatchups(this);
                 var cannotStr = tact.cannot ? "\nCANNOT: " + tact.cannot : "";
                 
+                var targetModeDisplay = (this.target_mode || "closest").toUpperCase();
+                if ((targetModeDisplay === "WEAKEST" || targetModeDisplay === "STRONGEST") && !(TD.perks && (TD.perks.P || TD.perks.I))) {
+                    targetModeDisplay += " (REQ. INTEL)";
+                }
+                
                 var stats = "UNIT  : " + this.name.toUpperCase() + "\n" +
                             "LEVEL : " + this.level + "\n" +
                             "XP    : " + Math.floor(this.xp) + " / " + this.xp_needed + "\n" +
                             "DMG   : " + this.damage + "\n" +
                             "RANGE : " + this.range.toFixed(1) + "\n" +
                             "KILLS : " + this.killed + "\n" +
+                            "TARGET: " + targetModeDisplay + "\n" +
                             "PATH 1: " + p1Name + "\n" +
                             "PATH 2: " + p2Name + "\n" +
                             "STRONG: " + tact.strong + "\n" +
                             "WEAK  : " + tact.weak + cannotStr;
                 tooltip.innerText = stats;
+
 
                 tooltip.style.display = "block";
             }
@@ -6629,7 +6842,7 @@ _TD.a.push(function (TD) {
             // NEW: Reset the Targeting Dropdown back to standard Tower modes
             var selTarget = document.getElementById("modal-target-mode");
             if (selTarget) {
-                selTarget.innerHTML = '<option value="closest">Closest</option><option value="leader">Leader</option><option value="strongest">Strongest</option><option value="weakest">Weakest</option>';
+                selTarget.innerHTML = '<option value="closest">Closest</option><option value="leader">Leader</option><option value="strongest">Strongest (Req. Intel)</option><option value="weakest">Weakest (Req. Intel)</option>';
                 selTarget.value = this.target_mode || "closest";
                 var _building = this;
                 selTarget.onchange = function() { _building.target_mode = this.value; };
@@ -6856,7 +7069,12 @@ _TD.a.push(function (TD) {
 			var cx = this.cx, cy = this.cy, r = this.r * _TD.retina;
             var is_perception_active = (typeof TD !== 'undefined' && TD.overdrive && TD.overdrive.P > 0);
             
+            if (!this.hit_list) this.hit_list = [];
+            var _this = this;
+
             var monster = this.map.anyMonster(function (obj) {
+                if (_this.hit_list.indexOf(obj.id) > -1) return false; // NEW: Prevent multi-hitting same monster on pierce
+
                 // If it's a hidden monster, it dodges normal bullets (unless Perception is active or it's revealed)
                 if (obj.is_stealthed && !obj.is_revealed && !is_perception_active) return false;
                 if (obj.is_burrowing && !is_perception_active) return false;
@@ -6864,10 +7082,12 @@ _TD.a.push(function (TD) {
                 return Math.pow(obj.cx - cx, 2) + Math.pow(obj.cy - cy, 2) <= Math.pow(obj.r + r, 2) * 2; 
             });
 			if (monster) {
+                this.hit_list.push(monster.id); // Add to hit list!
+
 			    // NEW: Radius Damage (AoE) Logic
 			    var bName = this.building.name.toUpperCase();
 			    // Identify explosive ordnance (Slow cannons, explicitly named weapons, or upgraded Scrap Turret)
-			    var is_aoe = (this.building.visual_type === "cannon" && (this.building.speed <= 1.5 || bName.indexOf("SCRAP TURRET") > -1)) || 
+			    var is_aoe = this.building.is_aoe || (this.building.visual_type === "cannon" && (this.building.speed <= 1.5 || bName.indexOf("SCRAP TURRET") > -1)) || 
                              bName.indexOf("PLASMA") > -1 || bName.indexOf("MISSILE") > -1 || bName.indexOf("ARTILLERY") > -1;
 			    
 			    if (is_aoe) {
@@ -7130,15 +7350,27 @@ TD.getCooldownFrames = function() {
             for (var key in TD.overdrive) {
                 if (TD.overdrive[key] > 0) {
                     TD.overdrive[key]--;
-                    if (TD.overdrive[key] <= 0 && key === 'P' && TD.stage && TD.stage.current_act) {
-                        // Remove infinite range snipers when Perception ends
-                        var map = TD.stage.current_act.current_scene.map;
-                        if (map) { TD.lang.each(map.buildings, function(b) { b.target = null; }); } 
-                    }
-                    if (TD.overdrive[key] <= 0 && key === 'E') {
-                        // Remove green shield when Endurance ends
-                        var board = document.getElementById("td-board");
-                        if (board) board.style.boxShadow = "none";
+                    if (TD.overdrive[key] <= 0) {
+                        // Active duration just ended!
+                        if (key === 'P' && TD.stage && TD.stage.current_act) {
+                            var map = TD.stage.current_act.current_scene.map;
+                            if (map) { TD.lang.each(map.buildings, function(b) { b.target = null; }); } 
+                        }
+                        if (key === 'E') {
+                            var board = document.getElementById("td-board");
+                            if (board) board.style.boxShadow = "none";
+                        }
+                        
+                        // --- NEW: STRIP PERK IN ENDLESS MODE ---
+                        if (!window.is_campaign_mode) {
+                            TD.perks[key] = false; // Remove passive ability!
+                            TD.overdrive_cd[key] = 0; // Reset cooldown so it can drop as loot again
+                            var btn = document.getElementById("btn-special-" + key.toLowerCase());
+                            if (btn) {
+                                btn.classList.add("unlit");
+                                btn.className = btn.className.replace(/warm-up-[\w-]+/g, "").trim();
+                            }
+                        }
                     }
                 } else if (TD.overdrive_cd[key] > 0) {
                     // --- CHANGED: Only tick cooldown if Wave 1 has started ---
@@ -7210,15 +7442,17 @@ TD.getCooldownFrames = function() {
                 // Button is owned! Check cooldowns.
                 if (TD.overdrive_cd[letter] > 0) {
                     btn.disabled = true;
-                    if (!window.is_campaign_mode) {
-                        // --- CHANGED: Endless mode waiting for drop ---
+                    var is_holding = (TD.stage && TD.stage.current_act && TD.stage.current_act.current_scene && TD.stage.current_act.current_scene.wave === 0);
+                    if (!window.is_campaign_mode || is_holding) {
+                        // --- CHANGED: Endless mode waiting for drop, OR holding at Wave 0 ---
                         btn.style.backgroundImage = "none";
                         btn.classList.add("unlit");
                     } else {
                         btn.classList.remove("unlit");
                         var percent = 100 - ((TD.overdrive_cd[letter] / (TD.exp_fps * 135)) * 100); // 135s cooldown
-                        btn.style.backgroundImage = "linear-gradient(to top, #f2d57e " + Math.max(0, percent) + "%, #333 " + Math.max(0, percent) + "%)";
-                        btn.style.color = "#888";
+                        btn.style.backgroundImage = "linear-gradient(to top, #f2d57e " + Math.max(0, percent) + "%, #555 " + Math.max(0, percent) + "%)";
+                        btn.style.color = "#222";
+                        btn.style.textShadow = "none";
                     }
                 } else if (TD.overdrive[letter] > 0) {
                     btn.classList.remove("unlit");
@@ -7299,19 +7533,12 @@ TD.getCooldownFrames = function() {
                         // INSTANT COOLDOWN RESET
                         for (var k in TD.cooldowns) TD.cooldowns[k] = 0;
                     } else if (letter === 'L') {
-                        // LUCK EXPLOSION
-                        var dropCount = Math.floor(Math.random() * 3) + 3; // Random 3 to 5 drops
-                        for (var i = 0; i < dropCount; i++) {
-                            new TD.Loot("loot-" + TD.lang.rndStr(), { 
-                                cx: activeMap.x + (activeMap.width/2) + (Math.random()*600-300), 
-                                cy: activeMap.y + (activeMap.height/2) + (Math.random()*400-200), 
-                                map: activeMap,
-                                forced_type: "lunchbox"
-                            });
-                        }
+                        // LUCK OVERDRIVE
+                        // Passive logic is handled in beKilled
                     }
 
                 }
+
             };
             // --- NEW: Hover Tooltips for S.P.E.C.I.A.L. Buttons ---
             btn.onmouseover = function() {
@@ -7321,12 +7548,12 @@ TD.getCooldownFrames = function() {
                         var title = "<strong style='color:#f2d57e; font-size:14px;'>" + letter + " ATTRIBUTE</strong><br><br>";
                         var desc = "";
                         if (letter === 'S') desc = "<span style='color:#0f0'>Passive:</span> Towers deal +15% Damage.<br><br><span style='color:#ffaa00'>Active:</span> 15s of 200% total damage.";
-                        if (letter === 'P') desc = "<span style='color:#0f0'>Passive:</span> Towers gain +2 Range.<br><br><span style='color:#ffaa00'>Active:</span> 15s of infinite map-wide range and stealth detection.";
+                        if (letter === 'P') desc = "<span style='color:#0f0'>Passive:</span> +2 Range & Global Tactical Intel (Reveals HP).<br><br><span style='color:#ffaa00'>Active:</span> 15s of infinite map-wide range and stealth detection.";
                         if (letter === 'E') desc = "<span style='color:#0f0'>Passive:</span> +50% Base Health/Lives.<br><br><span style='color:#ffaa00'>Active:</span> 15s of Invulnerability (Large enemies deal 1 dmg).";
                         if (letter === 'C') desc = "<span style='color:#0f0'>Passive:</span> Towers & Upgrades cost 15% less.<br><br><span style='color:#ffaa00'>Active:</span> Drops 3-5 Cap stashes (25-50 caps each).";
-                        if (letter === 'I') desc = "<span style='color:#0f0'>Passive:</span> Towers need 15% less XP to level.<br><br><span style='color:#ffaa00'>Active:</span> +3 Levels to all towers. Double XP and -50% Upgrade Cost for 15s.";
+                        if (letter === 'I') desc = "<span style='color:#0f0'>Passive:</span> -15% XP needed to level & Global Tactical Intel.<br><br><span style='color:#ffaa00'>Active:</span> +3 Levels to all towers. Double XP and -50% Upgrade Cost for 15s.";
                         if (letter === 'A') desc = "<span style='color:#0f0'>Passive:</span> +15% Fire Rate & Cooldown Speed.<br><br><span style='color:#ffaa00'>Active:</span> Resets consumable cooldowns, +30% Fire Rate for 15s.";
-                        if (letter === 'L') desc = "<span style='color:#0f0'>Passive:</span> Flat +10% chance for enemies to drop loot.<br><br><span style='color:#ffaa00'>Active:</span> Drops random Lunchboxes on the map.";
+                        if (letter === 'L') desc = "<span style='color:#0f0'>Passive:</span> Flat +10% chance for enemies to drop loot.<br><br><span style='color:#ffaa00'>Active:</span> Massively increases loot drop rate from enemies for 15s.";
                         
                         tooltip.innerHTML = title + "<span style='color:#ccc; font-size:12px;'>" + desc + "</span>";
                         tooltip.style.display = "block";
@@ -7415,6 +7642,7 @@ TD.getCooldownFrames = function() {
             
             // Announce that Loot has dropped!
             if (window.IntelData && TD.Announcer) TD.Announcer.add(window.IntelData.getEvent("loot_drop", TD.current_faction), 3);
+            if (typeof TD.triggerMetaChatter === 'function') TD.triggerMetaChatter("loot_drop");
 
 			var duration = 20; 
 
@@ -7438,9 +7666,11 @@ TD.getCooldownFrames = function() {
                     var letters = ['S','P','E','C','I','A','L'];
                     for (var b = 0; b < letters.length; b++) {
                         var let = letters[b];
-                        if (TD.overdrive_cd[let] > 0 && TD.bobblehead_drop_cd[let] <= 0) available.push(let);
+                        // NEW: Drop if we DO NOT own the perk, and it isn't on the 60s drop cooldown
+                        if (!TD.perks[let] && TD.bobblehead_drop_cd[let] <= 0) available.push(let);
                     }
                     if (available.length > 0) {
+
                         this.loot_type = "bobblehead_" + available[Math.floor(Math.random() * available.length)];
                         TD.bobblehead_drop_cd[this.loot_type.split("_")[1]] = TD.exp_fps * 60; // 60s drop cooldown
                     } else {
@@ -7456,8 +7686,6 @@ TD.getCooldownFrames = function() {
                     this.loot_type = window.devForcedDrop;
                 }
                 window.devForcedDrop = "none"; 
-                var d = document.getElementById("ui-intel-brief");
-                if (d) d.innerText = "FORCED DROP ACQUIRED.";
             } else {
                 // Standard RNG 
                 var roll = Math.random();
@@ -7474,9 +7702,11 @@ TD.getCooldownFrames = function() {
                         var letters = ['S','P','E','C','I','A','L'];
                         for (var b = 0; b < letters.length; b++) {
                             var let = letters[b];
-                            if (TD.overdrive_cd[let] > 0 && TD.bobblehead_drop_cd[let] <= 0) available.push(let);
+                            // NEW: Drop if we DO NOT own the perk, and it isn't on the 60s drop cooldown
+                            if (!TD.perks[let] && TD.bobblehead_drop_cd[let] <= 0) available.push(let);
                         }
                         if (available.length > 0) {
+
                             this.loot_type = "bobblehead_" + available[Math.floor(Math.random() * available.length)];
                             TD.bobblehead_drop_cd[this.loot_type.split("_")[1]] = TD.exp_fps * 60; // 60s drop cooldown
                         } else {
@@ -7547,6 +7777,7 @@ TD.getCooldownFrames = function() {
 			    this.is_valid = false;
 			    // Announce that we lost the loot!
 			    if (window.IntelData && TD.Announcer) TD.Announcer.add(window.IntelData.getEvent("loot_lost", TD.current_faction), 4);
+                if (typeof TD.triggerMetaChatter === 'function') TD.triggerMetaChatter("loot_vanish");
 			}
 		};
 
@@ -7754,11 +7985,23 @@ TD.getCooldownFrames = function() {
             } else if (_type.indexOf("bobblehead_") === 0) {
                 var letter = _type.split("_")[1];
                 setTimeout(function() {
+                    TD.perks[letter] = true; // --- NEW: Grant the passive ability! ---
+                    
+                    // --- NEW: APPLY INSTANT PASSIVES ---
+                    if (letter === 'E') { 
+                        TD.life = Math.floor(TD.life * 1.5); 
+                        TD.base_health = Math.floor(TD.base_health * 1.5); 
+                    }
+                    if (letter === 'A') {
+                        TD.getCooldownFrames = function() { var base = (TD.difficulty < 1) ? 24 : (TD.difficulty > 1) ? 288 : 120; return Math.floor(base * 0.85); };
+                    }
+                    
                     TD.overdrive_cd[letter] = 0; // Instantly ready!
                     if (TD.updateSpecialButtons) TD.updateSpecialButtons();
                 }, 500);
                 msg = letter + " BOBBLEHEAD SECURED!"; // CHANGED: More thematic popup text
                 color = "#f2d57e";
+
             } else {
 
                 if (TD.inventory[_type] < 5) {
@@ -7799,6 +8042,7 @@ TD.getCooldownFrames = function() {
             
             // Announce we secured it! (Priority 2, it's good but not critical)
             if (window.IntelData && TD.Announcer) TD.Announcer.add(window.IntelData.getEvent("consumable_used", TD.current_faction), 2);
+            if (typeof TD.triggerMetaChatter === 'function') TD.triggerMetaChatter("loot_pickup");
         };
 
 
@@ -7905,12 +8149,14 @@ TD.getCooldownFrames = function() {
 			this.base_speed = 10;
 			this.loot_speed = this.base_speed * 2.0; // 100% faster sprint
 			
-			this.target_loot = null;
-			this.wander_target = null;
-			this.wander_timer = 0;
-			
-			this.img = new Image();
-			this.img.src = "assets/images/mrhandy.png";
+        			this.target_loot = null;
+        			this.wander_target = null;
+        			this.wander_timer = 0;
+        			this.hover_y = 0; // Initialize hover offset to prevent NaN crash on first render
+        			
+        			this.img = new Image();
+        			this.img.src = "assets/images/mrhandy.png";
+
 			
 			this.addToScene(this.map.scene, 1, 9); // Render level 9 so he floats above towers
 		};
@@ -8665,11 +8911,10 @@ TD.getCooldownFrames = function() {
             if (isDeploying) {
                 TD.mode = "normal";
                 TD.mouseHand(false);
-                var d = document.getElementById("ui-intel-brief");
-                if (d) d.innerText = "DEPLOYMENT CANCELLED.";
             }
 
             if (map.selected_building) {
+
                 map.selected_building.is_selected = false;
 
                 map.selected_building = null;
@@ -8679,8 +8924,13 @@ TD.getCooldownFrames = function() {
                 map.scene.panel.balloontip.hide();
             }
             
+            // Hide the HTML tooltip
+            var tooltip = document.getElementById("tower-tooltip");
+            if (tooltip) tooltip.style.display = "none";
+            
             // NEW: Clear the asset brush safely
             if (TD.current_editor_asset) {
+
                 TD.current_editor_asset = null;
                 TD.admin_brush = "clear";
                 var d = document.getElementById("ui-action-desc");
@@ -9222,6 +9472,7 @@ _TD.a.push(function (TD) {
             // Firing Patterns
             if (effects.fire_pattern) building.special_fire_pattern = effects.fire_pattern;
             if (effects.pellet_count) building.special_pellet_count = effects.pellet_count;
+            if (effects.is_aoe || effects.splash || effects.aoe) building.is_aoe = true;
             
             // Special Active Abilities (Secondary weapons, Auras, etc.)
             if (effects.secondary) { building.special_secondary = effects.secondary; building.special_secondary_cooldown = effects.secondary_cd || 5; }
@@ -9477,11 +9728,23 @@ _TD.a.push(function (TD) {
             if (bld.has_knockback && monster.life0 < 2000) {
                 monster.cx -= (bullet.vx * 5.0); 
                 monster.cy -= (bullet.vy * 5.0);
+                
+                // Keep monster physically on the map
+                if (monster.cx < monster.map.x) monster.cx = monster.map.x;
+                if (monster.cx > monster.map.x2) monster.cx = monster.map.x2;
+                if (monster.cy < monster.map.y) monster.cy = monster.map.y;
+                if (monster.cy > monster.map.y2) monster.cy = monster.map.y2;
+                
                 monster.caculatePos();
+                
+                // CRITICAL FIX: Force the monster to recalculate its path immediately 
+                // so it doesn't wander off the edge of the road!
+                monster.findWay();
             }
 
             // 3. Guaranteed Crits
             if (bld.special_crit) {
+
                 if (typeof bld._shot_tracker === 'undefined') bld._shot_tracker = 0;
                 bld._shot_tracker++;
                 if (bld._shot_tracker >= bld.special_crit_req) {
@@ -9705,37 +9968,7 @@ document.addEventListener("mousemove", function(e) {
 
 
 
-    // 2. Bind the dropdown change listener
-    if (gameTypeSelect) {
-        gameTypeSelect.addEventListener("change", function() {
-            if (this.value === "campaign") {
-                mapGroup.style.display = "none";
-                specialGroup.style.display = "block";
-            } else {
-                mapGroup.style.display = "block";
-                specialGroup.style.display = "none";
-            }
-            updatePlayButtonLighting();
-        });
-    }
 
-    // 3. Bind the S.P.E.C.I.A.L. checkbox listeners
-    var specialCheckboxes = document.querySelectorAll(".special-chk");
-    for (var i = 0; i < specialCheckboxes.length; i++) {
-        specialCheckboxes[i].addEventListener("change", function() {
-            var checkedCount = document.querySelectorAll(".special-chk:checked").length;
-            for (var j = 0; j < specialCheckboxes.length; j++) {
-                var box = specialCheckboxes[j];
-                if (checkedCount >= 3) {
-                    if (box.checked) box.disabled = true;
-                } else {
-                    box.disabled = false;
-                }
-            }
-            updatePlayButtonLighting();
-        });
-    }
-    
 
     // Dynamically generate the Admin Dropdown menu by reading the internal StageData
     var populateAdminDropdown = function() {
@@ -10051,7 +10284,10 @@ document.addEventListener("mousemove", function(e) {
                         TD.playMusic("bgm_game");
                     }
                     
+                    if (typeof TD.triggerMetaChatter === 'function') setTimeout(function(){ TD.triggerMetaChatter("sys_load"); }, 1500);
+                    
                 } catch(err) {
+
                     alert("ERROR: Save file corrupted or invalid JSON.");
                     console.error(err);
                 }
@@ -10293,9 +10529,11 @@ document.addEventListener("mousemove", function(e) {
                 <select id="modal-target-mode" style="background: #222; color: #0f0; border: 1px solid #0f0; padding: 5px; font-family: 'Courier New', monospace; flex: 0.8;">
                     <option value="closest">Closest</option>
                     <option value="leader">Leader</option>
-                    <option value="strongest">Strongest</option>
-                    <option value="weakest">Weakest</option>
+                    <option value="strongest">Strongest (Req. Intel)</option>
+                    <option value="weakest">Weakest (Req. Intel)</option>
                 </select>
+
+
             </div>
             
             <!-- NEW: UPGRADE PATHS (BTD5 Style) -->
