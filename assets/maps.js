@@ -124,14 +124,18 @@ _TD.a.push(function (TD) {
 			if (TD.difficulty < 1) TD.difficulty = 1;
 			var wave_data = this.config.waves[wave] || TD.makeMonsters(Math.min(Math.floor(Math.pow(wave, 1.1)), this.config.max_monsters_per_wave));
 			
-            // --- FIX: Clone the wave data so it isn't permanently deleted when the engine shifts it! ---
-            var wave_clone = [];
-            for (var i = 0; i < wave_data.length; i++) {
-                wave_clone.push(wave_data[i].slice());
-            }
-            map.addMonsters2(wave_clone); TD.wave_damage = 0;
-		};
-
+                // --- FIX: Clone the wave data so it isn't permanently deleted when the engine shifts it! ---
+                var wave_clone = [];
+                for (var i = 0; i < wave_data.length; i++) {
+                    wave_clone.push(wave_data[i].slice());
+                }
+                map.addMonsters2(wave_clone); TD.wave_damage = 0;
+                
+                // --- NEW: Trigger Mysterious Stranger Roll for Wave Start ---
+                if (typeof TD.rollMysteriousStranger === 'function') {
+                    TD.rollMysteriousStranger("wave", map);
+                }
+            };
 
 		var data = {
 			stage_main: { width: 1920 * _TD.retina, height: 900 * _TD.retina, init: _stage_main_init, step2: _stage_main_step2 },

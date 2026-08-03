@@ -26,7 +26,7 @@ var ncr_towers = [
                 { name: "Riot Sweeper", cost: 1100, desc: "Fires 5 pellets. Pellets apply brief 0.5s stun.", effects: { stun_chance: 1.0, pellet_count: 5 } }
             ],
             path2: [
-                { name: "Ammo Pouches", cost: 100, desc: "+10% Fire Rate to this tower.", effects: { speed_mult: 1.10 } },
+                { name: "Tracer Rounds", cost: 100, desc: "Every 5th shot deals double damage and applies a 4s burn.", effects: { tracer_rounds: true } },
                 { name: "Spotter", cost: 200, desc: "Grants +1 Range to adjacent allied towers.", effects: { aura_type: "range" } },
                 { name: "Command Aura", cost: 500, desc: "Grants +15% Fire Rate to adjacent allied towers.", effects: { aura_type: "speed" } },
                 { name: "Tactical Hub", cost: 1500, desc: "Grants +30% Damage to all towers within 3 grids.", effects: { aura_type: "damage" } }
@@ -45,7 +45,7 @@ var ncr_towers = [
             path2: [
                 { name: "Upgraded Optics", cost: 100, desc: "+1 Grid Range.", effects: { range_add: 1 } },
                 { name: "Advanced Calculation", cost: 200, desc: "10% chance to deal double damage.", effects: { crit_chance: 0.10, crit_mult: 2.0 } },
-                { name: "V.A.T.S. Uplink", cost: 800, desc: "Every 5th shot is a guaranteed 5x critical hit.", effects: { crit_req: 5 } },
+                { name: "V.A.T.S. Uplink", cost: 800, desc: "Can target Flying enemies. Every 5th shot is a 5x critical hit.", effects: { crit_req: 5, anti_air: true } },
                 { name: "Scrap Recycler", cost: 1400, desc: "Extracts 15-20 bonus Caps when landing a killing blow.", effects: { bonus_bounty: true } }
             ]
 
@@ -222,7 +222,7 @@ var bos_towers = [
             path2: [
                 { name: "Kinetic Dampers", cost: 400, desc: "Basic attacks cause knockback.", effects: { knockback: true } },
                 { name: "Brotherhood Tactics", cost: 800, desc: "Grants +10% Damage aura to nearby allies.", effects: { aura_type: "damage" } },
-                { name: "Inspiring Presence", cost: 1500, desc: "Grants +15% Speed aura to nearby allies.", effects: { aura_type: "speed" } },
+                { name: "Sky Watcher", cost: 1500, desc: "Can target Flying enemies. Grants +15% Speed aura to allies.", effects: { aura_type: "speed", anti_air: true } },
                 { name: "Paladin Commander", cost: 3000, desc: "Periodically drops a frag grenade.", effects: { secondary: "grenade", secondary_cd: 4 } }
             ]
         }
@@ -395,7 +395,7 @@ var mm_towers = [
             path2: [
                 { name: "Bipod", cost: 100, desc: "+1 Range.", effects: { range_add: 1 } },
                 { name: "Incendiary Rounds", cost: 350, desc: "Adds a burn DoT.", effects: { dot_duration: 2 } },
-                { name: "Frag Grenades", cost: 700, desc: "Periodically tosses a grenade.", effects: { secondary: "grenade", secondary_cd: 4 } },
+                { name: "Flak Grenades", cost: 700, desc: "Can target Flying enemies. Periodically tosses a grenade.", effects: { secondary: "grenade", secondary_cd: 4, anti_air: true } },
                 { name: "Artillery Flare", cost: 1800, desc: "Periodically drops a massive heavy bomb.", effects: { secondary: "heavy_bomb", secondary_cd: 10 } }
             ]
         }
@@ -568,7 +568,7 @@ var raider_towers = [
             path2: [
                 { name: "Scrap Armor", cost: 150, desc: "+1 Range.", effects: { range_add: 1 } },
                 { name: "Intimidation", cost: 450, desc: "Vulnerability aura (enemies take +15% dmg).", effects: { aura_vulnerability: 1.15 } },
-                { name: "Terror Aura", cost: 900, desc: "Enemies in range are slowed by 25%.", effects: { aura_slow: 0.75 } },
+                { name: "Terror Aura", cost: 900, desc: "Can target Flying enemies. Enemies in range are slowed by 25%.", effects: { aura_slow: 0.75, anti_air: true } },
                 { name: "Overboss Gear", cost: 2000, desc: "Guaranteed 5x Crit every 5 shots.", effects: { crit_req: 5 } }
             ]
         }

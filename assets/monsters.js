@@ -29,8 +29,18 @@ _TD.a.push(function (TD) {
         // Draw the solid core fading in and out based on alpha
         ctx.fillStyle = "rgba(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "," + alpha + ")";
         
+        // --- NEW: MUTATION GLOW ---
+        if (this.is_mutated) {
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = "#00ff00"; // Intense green glow
+            ctx.strokeStyle = "#00ff00";
+            ctx.lineWidth = 2 * _TD.retina;
+        }
+        
 		ctx.beginPath(); ctx.arc(this.cx, this.cy, this.r, 0, Math.PI * 2, true); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.shadowBlur = 0; // Reset shadow so the whole screen doesn't glow!
 	}
+
 
 	TD.getDefaultMonsterAttributes = function (monster_idx) {
 		var monster_attributes = [
@@ -40,14 +50,20 @@ _TD.a.push(function (TD) {
 			{ name: "Super Mutant", desc: "Large, mutated brute", speed: 5, max_speed: 10, life: 500, damage: 3, shield: 1 },
 			{ name: "Protectron", desc: "Armored security bot", speed: 5, max_speed: 10, life: 50, damage: 3, shield: 20 },
 			{ name: "Glowing One", desc: "Highly irradiated, deals massive base damage", speed: 7, max_speed: 14, life: 50, damage: 10, shield: 2 },
-			{ name: "Deathclaw", desc: "Extremely fast, tough apex predator", speed: 15, max_speed: 30, life: 100, damage: 3, shield: 3 },
+			{ name: "Deathclaw", desc: "Extremely fast, tough apex predator", speed: 15, max_speed: 30, life: 1200, damage: 15, shield: 5 },
 			{ name: "Sentry Bot", desc: "Heavily armored military robot", speed: 3, max_speed: 10, life: 300, damage: 5, shield: 15 },
             
             // --- NEW: PHASED MONSTERS ---
 			{ name: "Cazador", is_flying: true, desc: "Lightning fast flying wasp", speed: 15, max_speed: 25, life: 40, damage: 4, shield: 1, color: "#dd9900" },
             { name: "Stingwing", is_flying: true, desc: "Agile flying pest", speed: 12, max_speed: 20, life: 25, damage: 2, shield: 0, color: "#88cc33" },
             { name: "Scorchbeast", is_flying: true, desc: "Massive flying terror", speed: 4, max_speed: 10, life: 2500, damage: 30, shield: 5, color: "#551111" },
-            { name: "Nightkin", is_stealthed: true, desc: "Tough, stealthed mutant", speed: 8, max_speed: 15, life: 800, damage: 8, shield: 2, color: "#330066" }
+            { name: "Nightkin", is_stealthed: true, desc: "Tough, stealthed mutant", speed: 8, max_speed: 15, life: 800, damage: 8, shield: 2, color: "#330066" },
+            
+            // --- NEW: PRE-MUTATED LEGENDARIES ---
+            { name: "Legendary Ghoul", is_mutated: true, desc: "Glowing, hyper-fast ghoul", speed: 8, max_speed: 25, life: 75, damage: 4, shield: 2 },
+            { name: "Legendary Mutant", is_mutated: true, desc: "Enraged giant brute", speed: 6, max_speed: 15, life: 750, damage: 6, shield: 2 },
+            { name: "Legendary Deathclaw", is_mutated: true, desc: "Unstoppable apex predator", speed: 19, max_speed: 35, life: 1800, damage: 25, shield: 8 },
+            { name: "Legendary Nightkin", is_mutated: true, is_stealthed: true, desc: "Invisible enraged assassin", speed: 10, max_speed: 20, life: 1200, damage: 15, shield: 3, color: "#330066" }
 		];
 
 		if (typeof monster_idx == "undefined") { return monster_attributes.length; }
@@ -247,7 +263,8 @@ _TD.a.push(function (TD) {
 			var attr = TD.getDefaultMonsterAttributes(this.idx);
 			this.name = attr.name || "Unknown"; // NEW: Store the name so VATS tooltip can read it without crashing
 			this.is_flying = !!attr.is_flying;
-            		this.is_stealthed = !!attr.is_stealthed;
+            this.is_stealthed = !!attr.is_stealthed;
+            this.is_mutated = !!attr.is_mutated; // NEW: Apply mutation flag on spawn
 			this.speed = Math.floor((attr.speed + this.difficulty / 2) * (Math.random() * 0.5 + 0.75));
 			if (this.speed < 1) this.speed = 1; if (this.speed > cfg.max_speed) this.speed = cfg.max_speed;
             // Universally increased HP modifier (changed from 0.5 to 1.5 for a massive 300% boost)
@@ -341,9 +358,33 @@ _TD.a.push(function (TD) {
             
 			if (this.life <= 0) { 
 
+                // --- NEW: LEGENDARY MUTATION MECHANIC ---
+                // Only allow mutation once, and prevent weak swarms (idx 0,8,9 = Roaches/Wasps) from mutating
+                if (!this.is_mutated && this.idx !== 0 && this.idx !== 8 && this.idx !== 9) {
+                    var mutChance = (window.customDifficulty > 1) ? 0.05 : 0.03; // 3% Normal, 5% Hard
+                    if (Math.random() <= mutChance) {
+                        this.is_mutated = true;
+                        
+                        // 1. Fully heal and buff stats
+                        this.life0 = Math.floor(this.life0 * 1.5); // 150% Max HP
+                        this.life = this.life0;                    // Fully Healed
+                        this.speed = this.speed * 1.25;            // 25% Faster
+                        
+                        // 2. Announce
+                        if (window.IntelData && TD.Announcer) TD.Announcer.add("LEGENDARY ENEMY HAS MUTATED!", 5);
+                        if (typeof TD.triggerMetaChatter === 'function') TD.triggerMetaChatter("react_mutation");
+                        
+                        // 3. Visuals
+                        TD.Explode("mutate-" + TD.lang.rndStr(), { cx: this.cx, cy: this.cy, r: 40 * _TD.retina, step_level: 1, render_level: 9, color: "#00ff00", scene: this.map.scene, time: 1.0 });
+                        new TD.FloatingText("mut-text-" + TD.lang.rndStr(), { cx: this.cx, cy: this.cy - 20, text: "MUTATED!", color: "#00ff00", map: this.map, size: 20, life: 40 });
+                        
+                        return; // ABORT THE DEATH SEQUENCE!
+                    }
+                }
 
                 // --- NEW: Tiered XP for landing the killing blow ---
                 if (building && building.gainXp) {
+
                     // Base kill XP is 10. Max index is 8 (Sentry Bot).
                     // The formula gives roughly 10 to 25 XP based on how tough the monster is.
                     var killXp = 10 + Math.floor(this.idx * 1.8);
@@ -435,14 +476,13 @@ _TD.a.push(function (TD) {
 			this.life = 0; this.is_valid = false; building.killed++;
 			if (typeof TD !== 'undefined' && TD.log) TD.log("Monster killed: " + this.name);
 
-            
             // --- NEW: Combat Kill Chatter ---
-            if (building && window.ChatterDB && TD.current_faction) {
+            if (building && typeof building.say === 'function' && window.ChatterDB && TD.current_faction) {
                 if (Math.random() < 0.15 || this.life0 >= 2000) { // 15% normal, 100% on bosses
                     building.say(window.ChatterDB.getChatter(TD.current_faction, "combat_kill"), "combat");
                 }
             }
-            
+
             // --- NEW: Scaling Kill Bounty ---
 
             var wave_bonus = 0;

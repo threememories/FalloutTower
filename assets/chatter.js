@@ -135,6 +135,19 @@ window.ChatterDB = {
                 "The bait is set. Come and get it."
             ],
             
+            react_stranger: [
+                "Who was that?!",
+                "Did Ranger Command send him?",
+                "Nice coat.",
+                "I didn't even see him draw!",
+                "Talk about a quick draw."
+            ],
+            react_mutation: [
+                "Legendary enemy has mutated! Focus fire!",
+                "It's getting back up! Keep shooting!",
+                "Target is regenerating!",
+                "It's glowing! Hit it with everything!"
+            ],
             // SYSTEM / META TRIGGERS
             base_damage: [
                 "They broke the line!", 
@@ -372,7 +385,19 @@ window.ChatterDB = {
                 "Ordnance primed. Waiting for the trigger.",
                 "Calculated blast radius: lethal."
             ],
-            
+            react_stranger: [
+                "Unidentified civilian! With lethal force!",
+                "His tech... it's unregistered.",
+                "Who was that man?",
+                "The Scribes are going to want to hear about this.",
+                "Incredible firepower."
+            ],
+            react_mutation: [
+                "Target has mutated! Extreme prejudice authorized!",
+                "Abomination is regenerating tissue!",
+                "It refuses to die! Purge it!",
+                "Mutation confirmed. Increase weapon yield!"
+            ],         
             // SYSTEM / META TRIGGERS
             base_damage: [
                 "Perimeter breached!", 
@@ -606,7 +631,18 @@ window.ChatterDB = {
                 "Watch the tripwire!",
                 "Let's see them walk through this."
             ],
-            
+            react_stranger: [
+                "Who was that masked man?",
+                "Friend of yours, General?",
+                "I thought I was a goner!",
+                "The Commonwealth provides!",
+                "We take all the help we can get."
+            react_mutation: [
+                "It's mutating! Don't stop cranking!",
+                "It's getting stronger! Keep firing!",
+                "God help us, it's glowing!",
+                "Put it down before it heals!"
+            ],           
             // SYSTEM / META TRIGGERS
             base_damage: [
                 "They got past us!", 
@@ -833,7 +869,19 @@ window.ChatterDB = {
                 "Fire in the hole, losers!",
                 "Tripwire is hot. Watch your ankles."
             ],
-            
+            react_stranger: [
+                "WHAT WAS THAT?!",
+                "He stole my kill!",
+                "Did you see that guy's gun?!",
+                "I want his hat!",
+                "Where did he go?!"
+            ],
+            react_mutation: [
+                "IT'S GETTING BACK UP! SHOOT IT!",
+                "Legendary freak! It's mine!",
+                "Hahaha! More meat to grind!",
+                "Why won't it die?!"
+            ],          
             // SYSTEM / META TRIGGERS
             base_damage: [
                 "Hey! They're touching our stuff!", 
