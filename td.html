@@ -12,18 +12,24 @@
 
 /* 
 ==========================================================================
-MASTER AI DEVELOPMENT ROADMAP (UPDATED)
+MASTER AI DEVELOPMENT ROADMAP
 ==========================================================================
 
-⚠️ PARTIALLY COMPLETED (Needs Finishing)
-[ADVANCED AUDIO MANAGEMENT] - Global sounds exist, but volume sliders are missing.
+The Consolidated Master To-Do List:
+Combining the roadmap with our previous findings, here is the true state of the game's missing features:
 
-❌ STILL TO DO (Unfinished / Missing)
-[CUSTOM MAP EDITOR - FILE I/O] - Missing browser download for .wd files and file input to load.
-[WASTELAND ASSAULT MODE] - UI toggle exists, but core engine mechanics to flip roles are missing.
-[PERSISTENT SAVE/LOAD SYSTEM] - Lacks automatic localStorage system to save/load progress.
-[CURATED WAVE CONFIGURATIONS] - Missing custom wave scripter; relying on dynamic budget.
-[ASSET MANAGEMENT] - Missing sprite rendering; using basic Canvas geometry.
+The Missing IntelData Object: (HIGH PRIORITY) The top terminal is still silent because the IntelData object is missing from the codebase.
+
+Endless Mode Spawn Leak: (HIGH PRIORITY) Fixing the math so hitting Wave 100 doesn't spawn 500 monsters instantly and crash the browser.
+
+Custom Map Builder Menu Button: Hooking up the Main Menu dropdown so it launches the Admin Editor automatically.
+
+The "???" Consumable Button: Hiding it or designing a 6th consumable.
+
+Audio Volume Sliders: Replacing the toggle buttons with actual sliders.
+
+Wasteland Assault Mode: A massive undertaking to build a Reverse-TD engine.
+
 ==========================================================================
 */
 
@@ -1376,10 +1382,105 @@ var _TD = {
 				this.start();
 			},
 
+            // --- NEW: MYSTERIOUS STRANGER ENGINE ---
+            rollMysteriousStranger: function(triggerContext, activeMap) {
+                if (window.is_demo_mode || !activeMap) return;
+                
+                // 1. Calculate Probabilities
+                var baseChance = (triggerContext === "vats") ? 0.12 : 0.02;
+                var finalChance = (baseChance / TD.difficulty);
+                if (TD.perks && TD.perks.L) finalChance += 0.05; // Luck Perk adds flat 5%
+                
+                // DEV OVERRIDE
+                var isForced = (triggerContext === "wave" && window.devForceStranger);
+                if (isForced) {
+                    finalChance = 1.0; // 100% chance
+                    window.devForceStranger = false; // Consume the override so it only happens once
+                }
+                
+                if (Math.random() <= finalChance) {
+                    // We wait 4 seconds if it's the start of a wave so enemies can walk onto the screen
+                    var delay = (triggerContext === "wave") ? 4000 : 500;
+                    
+                    setTimeout(function() {
+                        var waveIdx = (activeMap.scene && activeMap.scene.wave) ? activeMap.scene.wave : 1;
+                        var minDmg = waveIdx * 100;
+                        var maxDmg = waveIdx * 300;
+                        var damagePool = Math.floor(Math.random() * (maxDmg - minDmg + 1)) + minDmg;
+                        
+                        // 2. Create the Visual HTML Image Overlay
+                        var img = document.createElement("img");
+                        img.src = "assets/images/mysteriousstranger.png";
+                        img.style.position = "fixed";
+                        img.style.left = "50%";
+                        img.style.top = "50%";
+                        img.style.transform = "translate(-50%, -50%) scale(0.1)";
+                        img.style.opacity = "0";
+                        img.style.pointerEvents = "none";
+                        img.style.zIndex = "999999";
+                        img.style.transition = "all 0.5s ease-out";
+                        document.body.appendChild(img);
+                        
+                        // 3. Zoom In & Announce
+                        setTimeout(function() {
+                            img.style.transform = "translate(-50%, -50%) scale(1.0)";
+                            img.style.opacity = "0.5";
+                            if (window.IntelData && TD.Announcer) TD.Announcer.add("MYSTERIOUS STRANGER APPEARED!", 5);
+                            if (typeof TD.triggerMetaChatter === 'function') TD.triggerMetaChatter("react_stranger");
+                        }, 100);
 
+                        // 4. Execution Sequence
+                        setTimeout(function() {
+                            // Gather and sort all valid monsters by Highest HP
+                            var valid_monsters = [];
+                            TD.lang.each(activeMap.monsters, function(m) {
+                                if (m.is_valid && m.life > 0) valid_monsters.push(m);
+                            });
+                            valid_monsters.sort(function(a, b) { return b.life - a.life; });
+                            
+                            var delayStep = 0;
+                            var dummy_source = { killed: 0, gainXp: function(){} };
+                            
+                            for (var i = 0; i < valid_monsters.length; i++) {
+                                if (damagePool <= 0) break;
+                                
+                                var m = valid_monsters[i];
+                                if (!m.is_valid) continue;
+                                
+                                var dmgToDeal = Math.min(damagePool, m.life);
+                                damagePool -= dmgToDeal;
+                                
+                                // Stagger the shots by 300ms each so it feels like a sequence of executions
+                                (function(target, dmg, stepTime) {
+                                    setTimeout(function() {
+                                        if (target.is_valid) {
+                                            TD.playSound("snd_gun_heavy"); // Classic Magnum sound
+                                            TD.Explode("ms-hit-" + TD.lang.rndStr(), { cx: target.cx, cy: target.cy, r: 25 * _TD.retina, step_level: 1, render_level: 9, color: "#ffcc00", scene: activeMap.scene, time: 0.3 });
+                                            new TD.FloatingText("dmg-" + TD.lang.rndStr(), { cx: target.cx, cy: target.cy - 20, text: "-" + dmg, color: "#ffaa00", map: activeMap, size: 24, life: 30 });
+                                            target.beHit(dummy_source, dmg);
+                                        }
+                                    }, stepTime * 300); 
+                                })(m, dmgToDeal, delayStep);
+                                
+                                delayStep++;
+                            }
+                            
+                            // 5. Fade out and clean up after the last shot fires
+                            setTimeout(function() {
+                                img.style.opacity = "0";
+                                img.style.transform = "translate(-50%, -50%) scale(1.2)";
+                                setTimeout(function() { if (img.parentNode) img.parentNode.removeChild(img); }, 500);
+                            }, (delayStep * 300) + 600);
+                            
+                        }, 1000); // Wait 1 second after popping on screen before shooting begins
+
+                    }, delay);
+                }
+            },
 
             // --- NEW: V.A.T.S. Core Functions ---
             startVats: function() {
+
                 // Must be fully charged and not already running
                 var vatsPercent = Math.min(100, Math.floor((TD.vats_charge / TD.vats_max_charge) * 100));
                 if (vatsPercent < 100 || TD.vats_active) return;
@@ -1402,10 +1503,15 @@ var _TD = {
                 // Visuals
                 document.getElementById("vats-overlay").style.display = "block";
                 this.canvas.style.cursor = "crosshair";
+                
+                // --- NEW: Trigger Mysterious Stranger Roll ---
+                var activeMap = (TD.stage && TD.stage.current_act && TD.stage.current_act.current_scene) ? TD.stage.current_act.current_scene.map : null;
+                TD.rollMysteriousStranger("vats", activeMap);
             },
 
 
 			start: function () {
+
                 if (TD.vats_charge < 100 || TD.vats_active) return;
                 
                 TD.vats_active = true;
@@ -2736,13 +2842,11 @@ _TD.a.push(function (TD) {
                             if (tooltip) {
                                 var tact = TD.getTacticalMatchups(td);
                                 var cannotHtml = tact.cannot ? "<br><span style='color:#ff5555'>Cannot target: " + tact.cannot + "</span>" : "";
-                                tooltip.innerHTML = td.name + "<br>Dmg: " + td.damage + " | Rng: " + td.range + " | Spd: " + td.speed + "<br><br><span style='color:#0f0'>Strong vs: " + tact.strong + "</span><br><span style='color:#f55'>Weak vs: " + tact.weak + "</span>" + cannotHtml;
+                                tooltip.innerHTML = td.name + " <span style='color:#ff5555'>[LOCKED]</span><br>Dmg: " + td.damage + " | Rng: " + td.range + " | Spd: " + td.speed + "<br><br><span style='color:#0f0'>Strong vs: " + tact.strong + "</span><br><span style='color:#f55'>Weak vs: " + tact.weak + "</span>" + cannotHtml + "<br><br><span style='color:#ffaa00;font-weight:bold;'>LOCKED: Must be researched in the G.E.C.K. Tech Tree.</span>";
                                 tooltip.style.display = "block";
                             }
                         };
                     })(tData);
-
-
                 } else {
                     var svgLock = "<svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align:middle;margin-right:3px;'><rect x='3' y='11' width='18' height='11' rx='2' ry='2'></rect><path d='M7 11V7a5 5 0 0 1 10 0v4'></path></svg>";
                     
@@ -3320,8 +3424,9 @@ checkPassable: function (mx, my) { var grid = this.getGrid(mx, my); return (grid
                         
                         if (TD.is_paused && roll < 0.3) {
                             towerA.say(window.ChatterDB.getChatter(TD.current_faction, "wallbreak_pause"), "idle");
-                        } else if (!TD.is_paused) {
+                        } else if (!TD.is_paused && (!TD.stage || TD.stage.wait_new_wave <= 0)) {
                             if (roll < 0.15) { 
+
                                 // --- NEW: NON-SHOOTER CHATTER CHECK ---
                                 // If the tower is a weapon, it uses standard idle. If it's a wall/detector, it uses noncombat idle.
                                 var chatCategory = towerA.is_weapon ? "idle_solo" : "idle_noncombat";
@@ -3565,6 +3670,41 @@ _TD.a.push(function (TD) {
 	};
 	TD.RadarPulse = function (id, cfg) { var pulse = new TD.Element(id, cfg); TD.lang.mix(pulse, radar_pulse_obj); pulse._init(cfg); return pulse; };
 
+	// --- NEW: Spinning Dashed Upgrade Ring Effect ---
+	var upgrade_ring_obj = {
+		_init: function (cfg) {
+			cfg = cfg || {}; var rgb = TD.lang.rgb2Arr(cfg.color || "#00ff00");
+			this.cx = cfg.cx; this.cy = cfg.cy; this.r = cfg.r * _TD.retina;
+			this.step_level = cfg.step_level; this.render_level = cfg.render_level;
+			this.rgb_r = rgb[0]; this.rgb_g = rgb[1]; this.rgb_b = rgb[2];
+			this.wait = this.wait0 = TD.exp_fps * (cfg.time || 1.0); // 1 second lifespan
+			this.angle = 0;
+			cfg.scene.addElement(this);
+		},
+		step: function () { 
+			if (!this.is_valid) return; 
+			this.wait--; 
+			this.angle += 0.05; // Spin speed
+			this.is_valid = this.wait > 0; 
+		},
+		render: function () {
+			if (!this.is_valid) return;
+			var ctx = TD.ctx;
+			var alpha = this.wait / this.wait0;
+			ctx.save();
+			ctx.translate(this.cx, this.cy);
+			ctx.rotate(this.angle);
+			ctx.strokeStyle = "rgba(" + this.rgb_r + "," + this.rgb_g + "," + this.rgb_b + "," + alpha + ")";
+			ctx.lineWidth = 3 * _TD.retina;
+			ctx.setLineDash([10 * _TD.retina, 10 * _TD.retina]); // Creates the dashed pattern
+			ctx.beginPath();
+			ctx.arc(0, 0, this.r, 0, Math.PI * 2);
+			ctx.stroke();
+			ctx.restore();
+		}
+	};
+	TD.UpgradeRing = function (id, cfg) { var ring = new TD.Element(id, cfg); TD.lang.mix(ring, upgrade_ring_obj); ring._init(cfg); return ring; };
+
 });
 
 
@@ -3655,11 +3795,6 @@ _TD.a.push(function (TD) {
                     
                     // Restart engine (rebuilds map to default)
                     TD.start(); 
-                    
-                    // Reset Account Progression on Restart
-                    TD.account_level = 1;
-                    TD.account_xp = 0;
-                    TD.skill_points = 0;
                     
                     // --- RESTORE MAP ENTRY SNAPSHOT ---
 
@@ -4074,14 +4209,11 @@ _TD.a.push(function (TD) {
                                     }
                                 }
                             } else {
-                                // It is locked, try to unlock it using the dynamic cost
-                                var unlockCost = tData.unlock_cost || 0; 
-                                if (TD.money >= unlockCost) {
-                                    TD.money -= unlockCost;
-                                    tData.is_unlocked = true;
-                                    tData.free_first_build = true; // NEW: Set the free build flag
-                                    TD.loadFaction(TD.current_faction); // Refresh buttons
-                                    if (typeof TD.logEvent === 'function') TD.logEvent("NEW TECH AUTHORIZED: " + tData.name + " DEPLOYMENT READY");
+                                // Tower is locked. Do nothing, must be unlocked in Tech Tree.
+                                var tooltip = document.getElementById("tower-tooltip");
+                                if (tooltip) {
+                                    tooltip.innerHTML = "<span style='color:#ff5555;font-weight:bold;'>ACCESS DENIED:</span><br>Must be researched in the G.E.C.K. Tech Tree.";
+                                    tooltip.style.display = "block";
                                 }
                             }
                         };
@@ -5627,21 +5759,29 @@ _TD.a.push(function (TD) {
             // 1. Block if this specific category is on cooldown (unless forced)
             if (!force_override && this.chatter_cooldowns[category] && this.chatter_cooldowns[category] > 0) return false;
             
-            // 2. Spatial Overlap Preventer
-            if (!ignore_overlap && !force_override && this.map && this.map.buildings) {
+            // 2. Spatial Overlap & Category Exclusivity Preventer
+            if (!force_override && this.map && this.map.buildings) {
                 for (var i = 0; i < this.map.buildings.length; i++) {
                     var b = this.map.buildings[i];
                     if (b !== this && b.chatter_timer > 0) {
-                        var dist = Math.sqrt(Math.pow(this.cx - b.cx, 2) + Math.pow(this.cy - b.cy, 2));
-                        if (dist <= TD.grid_size * 3) {
-                            return false; 
+                        // NEW: Global Category Exclusivity Check (no two towers talk about the same thing)
+                        if (b.current_chatter_category === category) return false;
+                        
+                        // Original Spatial Check
+                        if (!ignore_overlap) {
+                            var dist = Math.sqrt(Math.pow(this.cx - b.cx, 2) + Math.pow(this.cy - b.cy, 2));
+                            if (dist <= TD.grid_size * 3) {
+                                return false; 
+                            }
                         }
                     }
                 }
             }
 
             this.chatter_msg = text;
+            this.current_chatter_category = category; // Track what this tower is saying
             this.chatter_timer = Math.floor(window.ChatterDB.getDisplayTime(text) * TD.exp_fps);
+
             this.chatter_max_timer = this.chatter_timer; 
             
             if (category === "combat") this.chatter_cooldowns[category] = 15 * TD.exp_fps;
@@ -5705,11 +5845,11 @@ _TD.a.push(function (TD) {
             var canHitAir = (vType === "laser_gun" || vType === "LMG" || vType === "HMG" || vType === "rifle");
 			
             // --- NEW: TOWER ANTI-AIR LIMITS ---
-            // Prevent early game towers (1, 2, 3) from shooting flyers, regardless of weapon upgrades
+            // Prevent early game towers (1, 2, 3) from shooting flyers UNLESS they have the specific AA upgrade
             if (this.type === "tower_1" || this.type === "tower_2" || this.type === "tower_3") {
-                canHitAir = false;
+                canHitAir = !!this.anti_air_capable;
             }
-			
+	
             var valid_targets = [];
             var saw_hidden = false;
 
@@ -5829,9 +5969,23 @@ _TD.a.push(function (TD) {
                     }
 
         			if (_this.visual_type == "laser_gun") { _this.target.beHit(_this, _this.damage); return; }
-        			var muzzle = _this.muzzle || [_this.cx, _this.cy], cx = muzzle[0], cy = muzzle[1];
-                    var current_damage = _this.eff_damage || _this.damage;
-        			new TD.Bullet(null, { building: _this, damage: current_damage, target: _this.target, speed: _this.bullet_speed, x: cx, y: cy, pierce_count: _this.pierce_count });
+                			var muzzle = _this.muzzle || [_this.cx, _this.cy], cx = muzzle[0], cy = muzzle[1];
+                            var current_damage = _this.eff_damage || _this.damage;
+                            
+                            var b_color = "#000";
+                            var is_tracer = false;
+                            if (_this.has_tracer_rounds) {
+                                _this.tracer_counter = (_this.tracer_counter || 0) + 1;
+                                if (_this.tracer_counter >= 5) {
+                                    _this.tracer_counter = 0;
+                                    is_tracer = true;
+                                    b_color = "#ff3300"; // Reddish color for tracer
+                                    current_damage *= 2; // Double damage
+                                }
+                            }
+                            
+                			var bullet = new TD.Bullet(null, { building: _this, damage: current_damage, target: _this.target, speed: _this.bullet_speed, x: cx, y: cy, pierce_count: _this.pierce_count, color: b_color });
+                            if (is_tracer) bullet.is_tracer = true;
                     
                     // --- PLAY SOUND EFFECT ---
                     if (_this.sound_type) {
@@ -6184,9 +6338,24 @@ _TD.a.push(function (TD) {
                         nameEl.style.color = "#666";
                         descEl.style.color = "#666";
                         btnElement.removeAttribute("data-cost");
+                        
+                        // Add mouseover tooltip for locked items
+                        btnElement.style.pointerEvents = "auto"; // Ensure mouse events fire even if button is disabled
+                        btnElement.onmouseover = function() {
+                            var tooltip = document.getElementById("tower-tooltip");
+                            if (tooltip) {
+                                tooltip.innerHTML = "<span style='color:#ff5555;font-weight:bold;'>LOCKED:</span><br>You must research this upgrade in the G.E.C.K. Tech Tree first.";
+                                tooltip.style.display = "block";
+                            }
+                        };
+                        btnElement.onmouseout = function() {
+                            var tooltip = document.getElementById("tower-tooltip");
+                            if (tooltip) tooltip.style.display = "none";
+                        };
+                        
                         return; // Exit early so we don't attach click handlers or check caps costs
                     }
-                    
+
                     nameEl.innerText = nextUpgrade.name;
                     costEl.innerText = nextUpgrade.cost + "c";
                     descEl.innerText = nextUpgrade.desc;
@@ -6216,35 +6385,67 @@ _TD.a.push(function (TD) {
                         descEl.style.color = "#888";
                     }
                     
-                    // ALWAYS assign the click handler! (It won't fire if disabled by the browser)
-                    btnElement.onclick = function() {
-                        if (TD.money >= actualCost) {
-                            TD.money -= actualCost;
-                            if (pathNum === 1) _building.path1_tier++;
-                            else _building.path2_tier++;
-                            
-                            // --- NEW: CALL THE CENTRALIZED UPGRADE HANDLER ---
-                            if (nextUpgrade.effects && typeof TD.SpecialEffects !== 'undefined') {
-                                TD.SpecialEffects.onApply(_building, nextUpgrade.effects);
-                            }
-                            
-                            // NEW: ANNOUNCE UPGRADE
-                            if (window.IntelData && TD.Announcer) {
-                                // If they just bought Tier 4 (which pushes the tracker to 4)
-                                if (pathNum === 1 && _building.path1_tier >= 4 || pathNum === 2 && _building.path2_tier >= 4) {
-                                    TD.Announcer.add(window.IntelData.getEvent("tower_max", TD.current_faction, _building.name), 4);
-                                } else {
-                                    TD.Announcer.add(window.IntelData.getEvent("tower_upgrade", TD.current_faction, _building.name), 3);
-                                }
-                            }
-                            
-                            // Visual feedback
-                            TD.Explode("upg-" + TD.lang.rndStr(), { cx: _building.cx, cy: _building.cy, r: 20 * _TD.retina, step_level: 1, render_level: 9, color: "#00ff00", scene: _building.map.scene, time: 0.3 });
-                            
-                            // Re-render UI instantly
-                            _building.onClick(); 
-                        }
-                    };
+                                // ALWAYS assign the click handler! (It won't fire if disabled by the browser)
+                                btnElement.onclick = function(e) {
+                                    if (TD.money >= actualCost) {
+                                        var towersToUpgrade = [_building];
+                                        
+                                        // SHIFT-CLICK MASS UPGRADE LOGIC
+                                        if (e && e.shiftKey) {
+                                            var map = _building.map;
+                                            if (map && map.buildings) {
+                                                for (var i = 0; i < map.buildings.length; i++) {
+                                                    var b = map.buildings[i];
+                                                    // Find other valid towers of the EXACT same type that are at the EXACT same tier on this path
+                                                    if (b !== _building && b.is_valid && b.type === _building.type && !b.is_pre_building) {
+                                                        // FIX: Handle unclicked towers having undefined tiers (default to 0)
+                                                        var bTier = (pathNum === 1) ? (b.path1_tier || 0) : (b.path2_tier || 0);
+                                                        if (bTier === currentTier) {
+                                                            // Check if we can afford to add this one to the pile
+                                                            if (TD.money >= actualCost * (towersToUpgrade.length + 1)) {
+                                                                towersToUpgrade.push(b);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        // Apply the upgrade to all gathered towers
+                                        for (var j = 0; j < towersToUpgrade.length; j++) {
+                                            var targetBld = towersToUpgrade[j];
+                                            TD.money -= actualCost;
+                                            
+                                            // FIX: Ensure tier variables are initialized before incrementing
+                                            if (typeof targetBld.path1_tier === 'undefined') targetBld.path1_tier = 0;
+                                            if (typeof targetBld.path2_tier === 'undefined') targetBld.path2_tier = 0;
+                                            
+                                            if (pathNum === 1) targetBld.path1_tier++;
+                                            else targetBld.path2_tier++;
+                                            
+                                            if (nextUpgrade.effects && typeof TD.SpecialEffects !== 'undefined') {
+                                                TD.SpecialEffects.onApply(targetBld, nextUpgrade.effects);
+                                            }
+                                            
+                                            // Visual feedback (New Spinning Dashed Ring + Explosion)
+					new TD.UpgradeRing("upg-ring-" + TD.lang.rndStr(), { cx: targetBld.cx, cy: targetBld.cy, r: 25, step_level: 1, render_level: 9, color: "#0f0", scene: targetBld.map.scene, time: 3.5 });
+                                            TD.Explode("upg-" + TD.lang.rndStr(), { cx: targetBld.cx, cy: targetBld.cy, r: 20 * _TD.retina, step_level: 1, render_level: 9, color: "#00ff00", scene: targetBld.map.scene, time: 0.3 });
+                                        }
+
+                                        // ANNOUNCE UPGRADE (Only once)
+                                        if (window.IntelData && TD.Announcer) {
+                                            var maxReached = (pathNum === 1 && _building.path1_tier >= 4) || (pathNum === 2 && _building.path2_tier >= 4);
+                                            if (maxReached) {
+                                                TD.Announcer.add(window.IntelData.getEvent("tower_max", TD.current_faction, _building.name), 4);
+                                            } else {
+                                                TD.Announcer.add(window.IntelData.getEvent("tower_upgrade", TD.current_faction, _building.name), 3);
+                                            }
+                                        }
+                                        
+                                        // Re-render UI instantly
+                                        _building.onClick(); 
+                                    }
+                                };
                 }
             };
 
@@ -8410,8 +8611,16 @@ TD.getCooldownFrames = function() {
         if (typeof TD.logEvent === 'function') TD.logEvent("OVERSEER OVERRIDE: INITIATING JUMP TO WAVE " + val);
     };
 
+    // NEW: Stranger Override Listener
+    document.getElementById("dev-btn-stranger").onclick = function() {
+        window.devForceStranger = true;
+        var desc = document.getElementById("ui-action-desc");
+        if (desc) desc.innerText = "MYSTERIOUS STRANGER FORCED FOR NEXT WAVE.";
+        if (typeof TD !== 'undefined' && TD.logEvent) TD.logEvent("OVERSEER OVERRIDE: STRANGER FORCED.");
+    };
 
     document.getElementById("dev-btn-spawn").onclick = function() {
+
         if (typeof TD === 'undefined' || !TD.stage || !TD.stage.current_act || !TD.stage.current_act.current_scene) return;
         var val = parseInt(document.getElementById("dev-sel-spawn").value) || 0;
         var map = TD.stage.current_act.current_scene.map;
@@ -8537,25 +8746,51 @@ TD.getCooldownFrames = function() {
         
         var towers = TD.factionData[TD.current_faction];
         
-        // Loop through the 10 core towers (skipping Mr. Handy for now)
-        for (var i = 0; i < Math.min(10, towers.length); i++) {
+        // Loop through all 11 towers
+        for (var i = 0; i < towers.length; i++) {
             (function(idx) {
                 var tData = towers[idx];
+                var isLevelLocked = false;
                 
-                // --- ACCOUNT LEVEL GATING ---
-                // Towers unlock in pairs every 5 levels (e.g., T3/T4 at Lvl 5, T5/T6 at Lvl 10)
-                var reqLevel = 1;
-                if (idx >= 2 && idx <= 3) reqLevel = 5;
-                if (idx >= 4 && idx <= 5) reqLevel = 10;
-                if (idx >= 6 && idx <= 7) reqLevel = 15;
-                if (idx >= 8) reqLevel = 20;
+                if (!window.is_campaign_mode) {
+                    // --- ENDLESS MODE LOGIC (Account Level Gating) ---
+                    var reqLevel = 1;
+                    if (idx >= 2 && idx <= 3) reqLevel = 5;
+                    if (idx >= 4 && idx <= 5) reqLevel = 10;
+                    if (idx >= 6 && idx <= 7) reqLevel = 15;
+                    if (idx >= 8) reqLevel = 20;
+                    
+                    isLevelLocked = (TD.account_level < reqLevel);
+                } else {
+                    // --- CAMPAIGN MODE LOGIC (Admin Map Editor Gating) ---
+                    // Default to showing them if something breaks
+                    var mapStatus = "locked"; 
+                    
+                    // Look at the current wave's configuration data
+                    var stg = TD.stage;
+                    if (stg && stg.cfg && stg.cfg.custom_waves) {
+                        var currentWaveIdx = (stg.current_act && stg.current_act.current_scene) ? stg.current_act.current_scene.wave : 1;
+                        
+                        // If we are waiting for the next wave to start, look ahead to its unlocks!
+                        if (stg.wait_new_wave > 0) {
+                            currentWaveIdx += 1;
+                        }
+                        
+                        if (currentWaveIdx === 0) currentWaveIdx = 1; // Failsafe for pre-game
+                        
+                        var customData = stg.cfg.custom_waves[currentWaveIdx];
+                        if (customData && customData.towers) {
+                            mapStatus = customData.towers["tower_" + (idx + 1)] || "unlocked";
+                        }
+                    }
 
-                var isLevelLocked = (TD.account_level < reqLevel);
-
-                // --- NEW: HIDE FUTURE TIERS ---
-                // If the player is locked out of this tier AND they aren't in Endless mode, skip drawing it entirely.
-                if (isLevelLocked && TD.difficulty !== 'ENDLESS') {
-                    return; // Skip this tower and move to the next iteration of the loop
+                    // If the map editor explicitly hides the tower, skip drawing it in the Tech Tree
+                    if (mapStatus === "hidden") {
+                        return;
+                    }
+                    
+                    // Campaign never uses Account Level gates, so it's always false
+                    isLevelLocked = false; 
                 }
 
                 // --- NEW: SECTION HEADERS ---
@@ -8630,7 +8865,7 @@ TD.getCooldownFrames = function() {
                         baseNode.style.cursor = "not-allowed";
                         baseNode.title = "Not enough Skill Points.";
                     } else {
-                        costLabel.innerText = "Unlock: " + spCost + " SP";
+                        costLabel.innerText = "Research: " + spCost + " SP";
                         costLabel.style.color = "#ffaa00";
                         baseNode.style.cursor = "pointer";
                         
@@ -8638,13 +8873,11 @@ TD.getCooldownFrames = function() {
                         baseNode.onclick = function() {
                             TD.skill_points -= spCost;
                             tData.is_unlocked = true;
-                            tData.free_first_build = true;
                             if (typeof window.updateMenuStats === 'function') window.updateMenuStats();
                             TD.loadFaction(TD.current_faction);
                             TD.populateTechTree();
                         };
                     }
-
                 }
                 
                 baseNode.appendChild(nameLabel);
@@ -8751,7 +8984,7 @@ TD.getCooldownFrames = function() {
                                         upNode.style.cursor = "not-allowed";
                                         upNode.title = "Not enough SP. " + (pathObj.desc || "");
                                     } else {
-                                        uCost.innerText = "Unlock: " + spCost + " SP";
+                                        uCost.innerText = "Research: " + spCost + " SP";
                                         uCost.style.color = "#ffaa00";
                                         upNode.style.cursor = "pointer";
                                         
@@ -8769,18 +9002,49 @@ if (activeMap && activeMap.buildings) {
         }
     }
 }
-                                           
-                                            // If not placed, throw the warning!
+                                            var doPurchase = function() {
+                                                // Show sliding toast once AFTER successful purchase
+                                                if (!TD.has_seen_upgrade_reminder) {
+                                                    TD.has_seen_upgrade_reminder = true;
+                                                    var toast = document.getElementById('techtree-toast');
+                                                    if (toast) {
+                                                        toast.style.display = 'block';
+                                                        TD._toast_timers = [
+                                                            setTimeout(function(){ toast.style.bottom = '30px'; }, 10),
+                                                            setTimeout(function(){ toast.style.bottom = '-120px'; }, 6000), // Wait 6 seconds
+                                                            setTimeout(function(){ toast.style.display = 'none'; }, 6500)  // Hide after sliding down
+                                                        ];
+                                                    }
+                                                }
+
+                                                TD.skill_points -= spCost;
+                                                pathObj.is_unlocked = true;
+                                                if (typeof window.updateMenuStats === 'function') window.updateMenuStats();
+                                                TD.populateTechTree(); 
+                                            };
+
+                                            // If not placed, throw the custom warning modal!
                                             if (!isPlaced) {
-                                                var ans = confirm("You do not currently have a " + tData.name + " placed on the map. Are you sure you want to research this upgrade?");
-                                                if (!ans) return; // Cancel purchase if they click 'Cancel'
+                                                var confirmModal = document.getElementById("research-confirm-modal");
+                                                if (confirmModal) {
+                                                    document.getElementById("research-confirm-desc").innerText = "You do not currently have a " + tData.name + " placed on the map. Are you sure you want to research this upgrade?";
+                                                    
+                                                    document.getElementById("btn-research-confirm").onclick = function() {
+                                                        confirmModal.style.display = "none";
+                                                        doPurchase();
+                                                    };
+                                                    
+                                                    document.getElementById("btn-research-cancel").onclick = function() {
+                                                        confirmModal.style.display = "none";
+                                                    };
+                                                    
+                                                    confirmModal.style.display = "flex";
+                                                }
+                                                return; // Halt execution until modal is clicked
                                             }
                                             // --------------------------------------------------
 
-                                            TD.skill_points -= spCost;
-                                            pathObj.is_unlocked = true;
-                                            if (typeof window.updateMenuStats === 'function') window.updateMenuStats();
-                                            TD.populateTechTree(); 
+                                            doPurchase();
                                         };
 
                                     }
@@ -9122,6 +9386,8 @@ _TD.a.push(function (TD) {
             }
 
             // Combat Flags
+            if (effects.anti_air) building.anti_air_capable = true; // NEW: Grants early towers AA
+            if (effects.tracer_rounds) building.has_tracer_rounds = true;
             if (effects.knockback) building.has_knockback = true;
             if (effects.stun_chance) building.stun_chance = effects.stun_chance;
             if (effects.pierce) building.pierce_count = effects.pierce;
@@ -9422,7 +9688,14 @@ _TD.a.push(function (TD) {
                 if (monster.poison_damage < 1) monster.poison_damage = 1;
                 TD.Explode("fire-" + TD.lang.rndStr(), { cx: monster.cx, cy: monster.cy, r: monster.r * 1.5, step_level: 1, render_level: 9, color: "#ff8800", scene: bld.map.scene, time: 0.2 });
             }
-            
+            if (bullet.is_tracer) {
+                monster.is_poisoned = true;
+                monster.poison_timer = TD.exp_fps * 4; // 4 second burn
+                monster.poison_damage = Math.floor(bullet.damage * 0.15); // 15% of doubled damage per tick
+                if (monster.poison_damage < 1) monster.poison_damage = 1;
+                TD.Explode("tracer-fire-" + TD.lang.rndStr(), { cx: monster.cx, cy: monster.cy, r: monster.r * 1.2, step_level: 1, render_level: 9, color: "#ff3300", scene: bld.map.scene, time: 0.2 });
+            }
+
             // 5. Chain Lightning
             if (bld.special_chain) {
                 var hit_count = 0;
@@ -9977,19 +10250,10 @@ document.addEventListener("mousemove", function(e) {
                 if (window.selectedSPECIALs.indexOf(chosenPerk) === -1) {
                     window.selectedSPECIALs.push(chosenPerk);
                 }
-                
-                // Relock Towers (Keep first 4 base towers unlocked)
-                if (TD.factionData && TD.current_faction) {
-                    var towers = TD.factionData[TD.current_faction];
-                    for (var i = 0; i < towers.length; i++) {
-                        towers[i].is_unlocked = (i < 4);
-                    }
-                    TD.loadFaction(TD.current_faction);
-                }
             }
 
             var m = TD.stage.current_act.current_scene.map;
-            
+
             // 1. Wipe the board
             TD.lang.each(m.buildings, function(b) { b.grid.removeBuilding(); }); m.buildings = [];
             TD.lang.each(m.monsters, function(mob) { mob.is_valid = false; }); m.monsters = [];
@@ -10123,6 +10387,15 @@ document.addEventListener("mousemove", function(e) {
             var wait_secs = (base_diff < 1) ? 10 : (base_diff > 1) ? 4 : 7;
             TD.stage.wait_new_wave = TD.exp_fps * wait_secs; 
             
+            // Reset Caps based on difficulty for the new map
+            if (TD.difficulty < 1) {
+                TD.money = 800;
+            } else if (TD.difficulty > 1) {
+                TD.money = 200;
+            } else {
+                TD.money = 400;
+            }
+            
             // --- NEW: Take Map Entry Snapshot for the new sector ---
             if (typeof TD.saveMapEntry === 'function') TD.saveMapEntry();
 
@@ -10134,9 +10407,6 @@ document.addEventListener("mousemove", function(e) {
     }
 };
 
-
-
-
 </script>
 
     <!-- ========================================== -->
@@ -10144,7 +10414,7 @@ document.addEventListener("mousemove", function(e) {
     <!-- ========================================== -->
 
     <!-- The Hover Tooltip -->
-    <div id="tower-tooltip" style="display: none; position: absolute; z-index: 9999; background: rgba(0,20,0,0.9); color: #0f0; padding: 10px; border: 1px solid #0f0; border-radius: 4px; pointer-events: none; font-family: 'Courier New', monospace; box-shadow: 0 0 10px rgba(0,255,0,0.2); font-size: 12px; white-space: pre-line;">
+    <div id="tower-tooltip" style="display: none; position: absolute; z-index: 999999; background: rgba(0,20,0,0.9); color: #0f0; padding: 10px; border: 1px solid #0f0; border-radius: 4px; pointer-events: none; font-family: 'Courier New', monospace; box-shadow: 0 0 10px rgba(0,255,0,0.2); font-size: 12px; white-space: pre-line;">
         <!-- Data injected via JS -->
     </div>
 
@@ -10237,6 +10507,9 @@ document.addEventListener("mousemove", function(e) {
             <!-- Sell Button (Pushed to bottom) -->
             <button id="modal-btn-sell" class="cmd-btn" style="width: 100%; background: #330000; color: #ff3333; border: 1px solid #ff3333; cursor: pointer; padding: 10px;">SELL TOWER (0c)</button>
             
+            <!-- Shift-Click Helper Text -->
+            <div style="text-align: center; font-size: 0.8em; color: #888; margin-top: 10px;">Hold SHIFT while clicking an upgrade to apply it to all eligible towers of this type.</div>
+           
         </div>
     </div>
 
@@ -10282,6 +10555,25 @@ document.addEventListener("mousemove", function(e) {
 
     </div>
 
+    <!-- NEW: Tech Tree Reminder Toast -->
+    <div id="techtree-toast" style="display: none; position: fixed; bottom: -120px; left: 50%; transform: translateX(-50%); background: rgba(0, 30, 0, 0.95); color: #0f0; border: 2px solid #0f0; padding: 15px 30px; border-radius: 8px; font-family: 'Courier New', monospace; box-shadow: 0 0 20px rgba(0,255,0,0.4); z-index: 1000000; transition: bottom 0.4s ease-out; text-align: center;">
+        <b style="color:#ffaa00; font-size:1.1em;">OVERSEER ADVISORY</b><br><br>
+        Researching this schematic authorizes it for field use.<br>
+        You must still spend Caps in-game to deploy or upgrade it.
+    </div>
+
+    <!-- NEW: Research Confirmation Modal -->
+    <div id="research-confirm-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100001; justify-content: center; align-items: center;">
+        <div style="background: #111; color: #0f0; padding: 30px; border: 2px solid #0f0; border-radius: 8px; width: 450px; text-align: center; font-family: 'Courier New', monospace; box-shadow: 0 0 30px rgba(0,255,0,0.5);">
+            <h2 style="margin-top: 0; color: #ffaa00;">CONFIRM RESEARCH</h2>
+            <p id="research-confirm-desc" style="font-size: 1.1em; line-height: 1.5; margin-bottom: 20px;">You do not currently have a [TOWER] placed on the map. Are you sure you want to research this upgrade?</p>
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button id="btn-research-cancel" style="padding: 10px 20px; background-color: #2a7a2a; color: #fff; border: 2px solid #0f0; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 1.1em; font-weight: bold; cursor: pointer; flex: 1; box-shadow: 2px 2px 5px rgba(0,0,0,0.9); transition: transform 0.1s;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">CANCEL</button>
+                <button id="btn-research-confirm" style="padding: 10px 20px; background-color: #7a2a2a; color: #fff; border: 2px solid #ff5555; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 1.1em; font-weight: bold; cursor: pointer; flex: 1; box-shadow: 2px 2px 5px rgba(0,0,0,0.9); transition: transform 0.1s;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">PROCEED</button>
+            </div>
+        </div>
+    </div>
+
     <!-- NEW: Tech Tree Modal Overlay -->
     <div id="techtree-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,20,0,0.95); z-index: 100000; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
         <div style="background: #111; color: #0f0; padding: 20px; border: 2px solid #0f0; border-radius: 8px; width: 90vw; max-width: 1000px; height: 85vh; display: flex; flex-direction: column; font-family: 'Courier New', monospace; box-shadow: 0 0 30px rgba(0,255,0,0.4);">
@@ -10289,11 +10581,9 @@ document.addEventListener("mousemove", function(e) {
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #0f0; padding-bottom: 10px; margin-bottom: 15px;">
                 <h2 style="margin: 0; font-size: 1.8em;">G.E.C.K. TECH TREE</h2>
                 <div style="font-size: 1.2em; color: #ffaa00;">SP AVAILABLE: <span id="techtree-sp-display">0</span></div>
-                <button onclick="document.getElementById('techtree-modal-overlay').style.display='none'; if (typeof TD !== 'undefined') { TD.is_paused = false; if (typeof TD.step === 'function') TD.step(); document.body.classList.remove('is-paused'); var pBtn = document.getElementById('ui-btn-pause'); if (pBtn) { pBtn.innerText = 'PAUSE'; pBtn.style.backgroundColor = ''; } }" style="background: transparent; border: none; color: #0f0; font-size: 2em; cursor: pointer; line-height: 0.5;">&times;</button>
+                <button onclick="document.getElementById('techtree-modal-overlay').style.display='none'; if(typeof TD !== 'undefined' && TD._toast_timers) { TD._toast_timers.forEach(clearTimeout); TD._toast_timers=[]; } var tToast = document.getElementById('techtree-toast'); if(tToast) { tToast.style.display='none'; tToast.style.bottom='-120px'; } if (typeof TD !== 'undefined') { TD.is_paused = false; if (typeof TD.step === 'function') TD.step(); document.body.classList.remove('is-paused'); var pBtn = document.getElementById('ui-btn-pause'); if (pBtn) { pBtn.innerText = 'PAUSE'; pBtn.style.backgroundColor = ''; } }" style="background: transparent; border: none; color: #0f0; font-size: 2em; cursor: pointer; line-height: 0.5;">&times;</button>
             </div>
 
-
-            
             <div style="display: flex; gap: 15px; margin-bottom: 15px;">
                 <label style="font-weight: bold; align-self: center;">FACTION:</label>
                 <span id="techtree-faction-display" style="color: #fff; font-size: 1.2em; align-self: center; text-transform: uppercase;"></span>
@@ -10416,6 +10706,12 @@ document.addEventListener("mousemove", function(e) {
                 <input type="number" id="dev-input-wave" value="15" min="1" style="width: 90px; flex-shrink: 0; background: #111; color: #0f0; border: 1px solid #0f0; padding: 3px;">
                 <button id="dev-btn-wave" class="cmd-btn" style="flex: 1; background: #050; border-color: #0f0; padding: 3px 10px;">JUMP</button>
             </div>
+
+            <!-- NEW: Force Stranger -->
+            <div style="display: flex; gap: 5px; align-items: center;">
+                <label style="width: 60px; font-size: 0.8em;">STRANGER:</label>
+                <button id="dev-btn-stranger" class="cmd-btn" style="flex: 1; background: #050; border-color: #0f0; padding: 3px 10px;">FORCE ON NEXT WAVE</button>
+            </div>
             
             <div style="display: flex; gap: 5px; align-items: center;">
                 <label style="width: 60px;">SPAWN:</label>
@@ -10432,6 +10728,10 @@ document.addEventListener("mousemove", function(e) {
                     <option value="9">Stingwing (Fly)</option>
                     <option value="10">Scorchbeast (Fly)</option>
                     <option value="11">Nightkin (Stealth)</option>
+                    <option value="12">Leg. Ghoul</option>
+                    <option value="13">Leg. Mutant</option>
+                    <option value="14">Leg. Deathclaw</option>
+                    <option value="15">Leg. Nightkin</option>
                 </select>
                 <button id="dev-btn-spawn" class="cmd-btn" style="flex: 1; background: #050; border-color: #0f0; padding: 3px 10px;">DROP</button>
             </div>
