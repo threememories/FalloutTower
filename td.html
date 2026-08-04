@@ -768,7 +768,11 @@ Wasteland Assault Mode: A massive undertaking to build a Reverse-TD engine.
     <audio id="snd_missile_launch" src="assets/sounds/missile_launch.mp3" preload="auto"></audio>
     <audio id="snd_laser_fire" src="assets/sounds/laser_fire.mp3" preload="auto"></audio>
     <audio id="snd_explosion" src="assets/sounds/explosion.mp3" preload="auto"></audio>
-    
+    <audio id="snd_mysterious_stranger" src="assets/sounds/mystr.mp3" preload="auto"></audio>
+	<audio id="snd_vats" src="assets/sounds/vats.mp3" preload="auto"></audio>
+	<audio id="snd_caps" src="assets/sounds/caps.mp3" preload="auto"></audio>
+    <audio id="snd_stimpak" src="assets/sounds/stimpak.mp3" preload="auto"></audio>
+
     <!-- Background Music (Placeholders) -->
     <audio id="bgm_menu" src="assets/music/menu_theme_placeholder.mp3" loop preload="auto"></audio>
     <audio id="bgm_game" src="assets/music/battle_theme_placeholder.mp3" loop preload="auto"></audio>
@@ -1425,6 +1429,8 @@ var _TD = {
                         setTimeout(function() {
                             img.style.transform = "translate(-50%, -50%) scale(1.0)";
                             img.style.opacity = "0.5";
+							// ADD YOUR NEW SOUND EFFECT HERE
+							TD.playSound("snd_mysterious_stranger");
                             if (window.IntelData && TD.Announcer) TD.Announcer.add("MYSTERIOUS STRANGER APPEARED!", 5);
                             if (typeof TD.triggerMetaChatter === 'function') TD.triggerMetaChatter("react_stranger");
                         }, 100);
@@ -1496,6 +1502,9 @@ var _TD = {
                 TD.vats_shots = 6;
                 TD.vats_timer = 10 * TD.exp_fps; // 10 Seconds
                 
+				// ADD YOUR NEW SOUND EFFECT HERE
+				TD.playSound("snd_vats");				
+								
                 // Slow time drastically (grinding crawl)
                 TD.global_speed_backup = TD.global_speed;
                 TD.global_speed = 0.025; // CHANGED: 75% slower, ensuring a heavy slow-motion feel
@@ -4098,6 +4107,10 @@ _TD.a.push(function (TD) {
             if (bStim) bStim.onclick = function() {
                 // Prevent use if already at 100 HP
                 if (TD.inventory.stimpak > 0 && TD.cooldowns.stimpak <= 0 && TD.life < 100) {
+				
+					// ADD YOUR NEW SOUND EFFECT HERE
+					TD.playSound("snd_stimpak");
+				
                     TD.inventory.stimpak--;
                     // Only trigger cooldown if they have more left
                     TD.cooldowns.stimpak = (TD.inventory.stimpak > 0) ? TD.getCooldownFrames() : 0;
@@ -7347,6 +7360,9 @@ TD.getCooldownFrames = function() {
 		loot.onClick = function () {
 			if (!this.is_valid || this.is_collecting) return;
             
+			// ADD YOUR NEW SOUND EFFECT HERE
+    TD.playSound("snd_caps");
+			
             // Force hide the tooltip immediately, because this object is about to be deleted or moved!
             var tooltip = document.getElementById("tower-tooltip");
             if (tooltip) tooltip.style.display = "none";
