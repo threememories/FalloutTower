@@ -358,9 +358,17 @@ _TD.a.push(function (TD) {
             
 			if (this.life <= 0) { 
 
+                // --- NEW: WAVE MUTATION TOGGLE CHECK ---
+                var mutations_allowed = true; // Default to true
+                if (this.scene && typeof TD !== 'undefined' && TD.stage && TD.stage.cfg && TD.stage.cfg.custom_waves) {
+                    var cData = TD.stage.cfg.custom_waves[this.scene.wave];
+                    if (cData && typeof cData.mutations_enable !== 'undefined') {
+                        mutations_allowed = cData.mutations_enable;
+                    }
+                }
                 // --- NEW: LEGENDARY MUTATION MECHANIC ---
                 // Only allow mutation once, and prevent weak swarms (idx 0,8,9 = Roaches/Wasps) from mutating
-                if (!this.is_mutated && this.idx !== 0 && this.idx !== 8 && this.idx !== 9) {
+                if (mutations_allowed && !this.is_mutated && this.idx !== 0 && this.idx !== 8 && this.idx !== 9) {
                     var mutChance = (window.customDifficulty > 1) ? 0.05 : 0.03; // 3% Normal, 5% Hard
                     if (Math.random() <= mutChance) {
                         this.is_mutated = true;
@@ -414,7 +422,11 @@ _TD.a.push(function (TD) {
                 // GUARANTEED WAVE DROPS (First kill of the specific wave)
 
                 var forceLoot = null;
-                if (this.scene && this.scene.wave === 3 && !this.scene._dropW3) {
+                
+                // NEW: Tutorial forced drop
+                if (typeof TD !== 'undefined' && TD.is_tutorial_active && this.scene && this.scene.wave === 2 && !this.scene._tutDropW2) {
+                    forceLoot = "lunchbox"; this.scene._tutDropW2 = true;
+                } else if (this.scene && this.scene.wave === 3 && !this.scene._dropW3) {
                     forceLoot = "money"; this.scene._dropW3 = true;
                 } else if (this.scene && this.scene.wave === 7 && !this.scene._dropW7) {
                     forceLoot = "stimpak"; this.scene._dropW7 = true;
@@ -549,28 +561,29 @@ _TD.a.push(function (TD) {
                     return;
                 }
 
-                // Trigger Screen Shake visually on the board container
-                var board = document.getElementById("td-board");
-                if (board) {
-                    board.classList.remove("shake-active");
-                    void board.offsetWidth; // Reflow to allow rapid sequential shakes
-                    board.classList.add("shake-active");
-                }
-
                 // --- NEW: ENDURANCE OVERDRIVE DAMAGE MITIGATION ---
                 var final_damage = this.damage;
                 if (typeof TD !== 'undefined' && TD.overdrive && TD.overdrive.E > 0) {
-                    // "Large" monsters defined as base life >= 500 (Mutants, Bosses, etc.)
-                    if (this.life0 >= 500) {
-                        final_damage = 1; // Take only 1 damage
+                    // "Large" monsters defined as base life >= 1000 (Bosses)
+                    if (this.life0 >= 1000) {
+                        final_damage = 1; // Take only 1 damage from absolute bosses
                     } else {
-                        final_damage = 0; // Take no damage
+                        final_damage = 0; // Take no damage from anything else
+                    }
+                }
+
+                // Trigger Screen Shake visually on the board container (ONLY if taking damage)
+                if (final_damage > 0) {
+                    var board = document.getElementById("td-board");
+                    if (board) {
+                        board.classList.remove("shake-active");
+                        void board.offsetWidth; // Reflow to allow rapid sequential shakes
+                        board.classList.add("shake-active");
                     }
                 }
 
                 var is_critical = false;
                 var took_damage = false;
-
                 if (this.map.map_type === "siege") {
                     TD.base_health -= (final_damage * 10);
                     if (TD.base_health <= 0) { TD.base_health = 0; TD.stage.gameover(); } else { this.pause(); this.del(); took_damage = true; is_critical = (TD.base_health <= 300); }
