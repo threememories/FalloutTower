@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>HTML Tower Defense</title>
+    <title>Wasteland Defense - A Fallout inspired tower defense game</title>
 
     <script src="assets/towers.js?v=2"></script>
 <script src="assets/chatter.js"></script>
@@ -753,6 +753,24 @@ Wasteland Assault Mode: A massive undertaking to build a Reverse-TD engine.
             box-shadow: inset 0 0 12px rgba(0,0,0,0.6), inset 0 0 4px rgba(0,0,0,0.4), 0 0 10px rgba(242, 213, 126, 0.6), 5px 5px 5px rgba(0,0,0,0.9) !important;
         }
 
+        /* --- NEW: TUTORIAL SYSTEM STYLES --- */
+        #tutorial-dim-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.55); z-index: 999990; pointer-events: none;
+        }
+        #tutorial-focus-box {
+            display: none; position: fixed; z-index: 999995; pointer-events: none;
+            border: 3px solid #0f0; box-shadow: 0 0 15px #0f0, inset 0 0 10px #0f0, 0 0 0 9999px rgba(0,0,0,0.55);
+            border-radius: 4px; transition: top 0.3s, left 0.3s, width 0.3s, height 0.3s;
+        }
+        #tutorial-guide-dialog {
+
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 500px; background: #111; color: #0f0; border: 2px solid #0f0; padding: 20px;
+            font-family: 'Courier New', monospace; box-shadow: 0 0 30px rgba(0,255,0,0.8);
+            z-index: 999999; text-align: center; border-radius: 8px;
+        }
+
     </style>
 
 
@@ -784,12 +802,12 @@ Wasteland Assault Mode: A massive undertaking to build a Reverse-TD engine.
         <h1>Wasteland Defense</h1>
 
         <!-- Game Type Selector -->
-        <div class="menu-header" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerText='Game Mode\n\nChoose your game mode.\n- Campaign: 4 chapters, 15 waves each, permanent perks.\n- Endless: Infinite waves.\n- Custom Map: Build, save (.wd), and play your own sectors.\n- Assault: Reverse TD. Spawn units to destroy enemy bases.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">Select Game Mode</div>
-        <select id="gametype-select" class="menu-select" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerText='Game Mode\n\nChoose your game mode.\n- Campaign: 4 chapters, 15 waves each, permanent perks.\n- Endless: Infinite waves.\n- Custom Map: Build, save (.wd), and play your own sectors.\n- Assault: Reverse TD. Spawn units to destroy enemy bases.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
-            <option value="campaign" selected>Campaign</option>
-            <option value="endless">Endless Survival</option>
-            <option value="custom">Custom Map Builder</option>
-            <option value="assault">Wasteland Assault</option>
+        <div class="menu-header">Select Game Mode</div>
+        <select id="gametype-select" class="menu-select">
+            <option value="campaign" data-desc="Campaign: 4 chapters, 15 waves each, permanent perks." selected>Campaign</option>
+            <option value="endless" data-desc="Endless: Infinite waves.">Endless Survival</option>
+            <option value="custom" data-desc="Custom Map (WIP): Currently unavailable." disabled>Custom Map Builder (WIP)</option>
+            <option value="assault" data-desc="Assault (WIP): Reverse TD. Currently unavailable." disabled>Wasteland Assault (WIP)</option>
         </select>
 
         <!-- Dynamic Map Selector (Hidden in Campaign by default) -->
@@ -817,26 +835,25 @@ Wasteland Assault Mode: A massive undertaking to build a Reverse-TD engine.
             <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>STRENGTH</b><br>Passive: Towers deal +15% Damage.<br>Active: 15s of 200% total damage.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
                 <input type="checkbox" class="special-chk" value="S"><div class="special-label">S</div>
             </label>
-            <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>PERCEPTION</b><br>Passive: +2 Range & Global Tactical Intel (Reveals HP).<br>Active: 15s of infinite map-wide range and stealth detection.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
+            <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>PERCEPTION</b><br>Passive: +2 Range & Tactical Intel (Reveals HP).<br>Active: 15s of map-wide range and stealth detection.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
                 <input type="checkbox" class="special-chk" value="P"><div class="special-label">P</div>
             </label>
-            <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>ENDURANCE</b><br>Passive: +50% Base Health/Lives.<br>Active: 15s of Invulnerability (Large enemies deal 1 dmg).';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
+            <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>ENDURANCE</b><br>Passive: Base Health Regeneration.<br>Active: 15s of Invulnerability & +10 Instant HP.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
                 <input type="checkbox" class="special-chk" value="E"><div class="special-label">E</div>
             </label>
-            <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>CHARISMA</b><br>Passive: Towers & Upgrades cost 15% less.<br>Active: Drops 3-5 Cap stashes (25-50 caps each).';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
+            <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>CHARISMA</b><br>Passive: Adjacent towers gain +5% Fire Rate.<br>Active: Drops Caps scaling with the current wave.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
                 <input type="checkbox" class="special-chk" value="C"><div class="special-label">C</div>
             </label>
-            <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>INTELLIGENCE</b><br>Passive: -15% XP needed to level & Global Tactical Intel.<br>Active: +3 Levels to all towers. Double XP and -50% Upgrade Cost for 15s.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
+            <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>INTELLIGENCE</b><br>Passive: Enemy counters revealed & 1.5x XP Gain.<br>Active: Tech Tree costs -50% & 3x XP for 15s.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
                 <input type="checkbox" class="special-chk" value="I"><div class="special-label">I</div>
             </label>
-            <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>AGILITY</b><br>Passive: +15% Fire Rate & Cooldown Speed.<br>Active: Resets consumable cooldowns, +30% Fire Rate for 15s.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
+            <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>AGILITY</b><br>Passive: +15% Fire Rate. New towers spawn at Lvl 4.<br>Active: Resets cooldowns & +30% Fire Rate for 15s.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
                 <input type="checkbox" class="special-chk" value="A"><div class="special-label">A</div>
             </label>
-            <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>LUCK</b><br>Passive: Flat +10% chance for enemies to drop loot.<br>Active: Massively increases loot drop rate from enemies for 15s.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
+            <label style="position: relative; display: inline-block;" onmouseover="document.getElementById('tower-tooltip').style.display='block'; document.getElementById('tower-tooltip').innerHTML='<b style=\'color:#f2d57e\'>LUCK</b><br>Passive: +10% Loot Drops & +5% Critical Hit Chance.<br>Active: Massively increases loot drop rate for 15s.';" onmouseout="document.getElementById('tower-tooltip').style.display='none';">
                 <input type="checkbox" class="special-chk" value="L"><div class="special-label">L</div>
             </label>
         </div>
-
 
 
         <!-- Difficulty Selector -->
@@ -931,10 +948,8 @@ Wasteland Assault Mode: A massive undertaking to build a Reverse-TD engine.
 
     <div id="control-panel" style="display: flex; flex-direction: column;">
         
-        <!-- NEW: OVER-BEZEL HUD ELEMENT -->
-        <div id="ui-speed-readout" style="display: none; position: absolute; top: -2.5vh; right: 2vw; color: #ffcc00; font-family: 'Courier New', monospace; font-weight: bold; font-size: 2vh; text-shadow: 0 0 5px #ffaa00, 2px 2px 2px #000; z-index: 100;">
-            TIME DILATION: <span id="ui-speed-val" class="blink-text">>> 1X</span>
-        </div>
+        <!-- OVER-BEZEL HUD REMOVED FOR UNIFIED SPEED BUTTON -->
+
 
         <!-- Bottom 5 Columns -->
         <div style="display: flex; width: 100%; height: 100%; gap: 1vw; padding-top: 0.5vh;">
@@ -1000,7 +1015,7 @@ Wasteland Assault Mode: A massive undertaking to build a Reverse-TD engine.
                     <button id="btn-item-psycho" class="cmd-btn" style="flex: 1 1 30%;" title="+25% Damage & Fire Rate for 10s." disabled>PSYCHO</button>
                     <button id="btn-item-cryomine" class="cmd-btn" style="flex: 1 1 30%;" title="Freezes and slows enemies in a radius." disabled>CRYO MINE</button>
                     <button id="btn-item-capmine" class="cmd-btn" style="flex: 1 1 30%;" title="Explodes into scattered Bottlecaps!" disabled>CAP MINE</button>
-                    <button id="btn-item-blank" class="cmd-btn" style="flex: 1 1 30%; color: #888;" disabled>???</button>
+                    <button id="btn-item-blank" class="cmd-btn" style="flex: 1 1 30%; color: #888;" disabled>FACTION ULT</button>
                 </div>
                 <div class="build-grid" style="flex-wrap: nowrap; gap: 0.2vw; margin-top: 0.5vh;">
                     <button id="btn-special-s" class="cmd-btn sys-btn" style="flex: 1; background: #333; color: #888;" disabled>S</button>
@@ -1038,9 +1053,8 @@ Wasteland Assault Mode: A massive undertaking to build a Reverse-TD engine.
                     <button id="ui-btn-exit" class="cmd-btn sys-btn" style="flex: 1 1 30%; background: #555; padding: 0.5vh 0;">MAIN MENU</button>
                     
                     <!-- Middle Row -->
-                    <button id="ui-btn-slow" class="cmd-btn sys-btn" style="flex: 1 1 30%; padding: 0.5vh 0;">SLOW DOWN</button>
-                    <button id="ui-btn-pause" class="cmd-btn sys-btn" style="flex: 1 1 30%; padding: 0.5vh 0;">PAUSE</button>
-                    <button id="ui-btn-speed" class="cmd-btn sys-btn" style="flex: 1 1 30%; padding: 0.5vh 0;">SPEED UP</button>
+                    <button id="ui-btn-pause" class="cmd-btn sys-btn" style="flex: 1 1 45%; padding: 0.5vh 0;">PAUSE</button>
+                    <button id="ui-btn-speed" class="cmd-btn sys-btn" style="flex: 1 1 45%; padding: 0.5vh 0;">SPEED: 1X</button>
                     
                     <!-- Bottom Row: Audio Toggles & Save -->
                     <button id="ui-btn-sound" class="cmd-btn sys-btn" style="flex: 1 1 22%; padding: 0.5vh 0;">SOUND</button>
@@ -1191,9 +1205,14 @@ Wasteland Assault Mode: A massive undertaking to build a Reverse-TD engine.
                     <!-- Story Event Config -->
                     <div style="background: #111; padding: 10px; border: 1px solid #333;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <label style="font-weight: bold; color: #ffaa00; cursor: pointer;">
-                                <input type="checkbox" id="we-story-enable" style="margin-right: 5px;"> SHOW STORY INTRO BEFORE WAVE
-                            </label>
+                            <div style="display: flex; gap: 15px;">
+                                <label style="font-weight: bold; color: #ffaa00; cursor: pointer;">
+                                    <input type="checkbox" id="we-story-enable" style="margin-right: 5px;"> SHOW STORY INTRO
+                                </label>
+                                <label style="font-weight: bold; color: #00ff00; cursor: pointer;">
+                                    <input type="checkbox" id="we-mutations-enable" style="margin-right: 5px;" checked> ALLOW MUTATIONS
+                                </label>
+                            </div>
                             <div style="display: flex; align-items: center; gap: 5px;">
                                 <span style="font-size: 0.9em; color: #aaa;">TARGET FACTION:</span>
                                 <select id="we-story-faction" style="background: #222; color: #0f0; border: 1px solid #0f0; padding: 2px; font-family: 'Courier New', monospace;">
@@ -1209,6 +1228,19 @@ Wasteland Assault Mode: A massive undertaking to build a Reverse-TD engine.
                         <textarea id="we-story-desc" placeholder="Story text goes here..." style="width: 100%; height: 60px; background: #222; color: #0f0; border: 1px solid #0f0; padding: 5px; font-family: 'Courier New', monospace; resize: vertical; box-sizing: border-box;"></textarea>
                     </div>
 
+                    <!-- NEW: Wave Caps Config -->
+                    <div style="background: #111; padding: 10px; border: 1px solid #333;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-weight: bold; color: #ffaa00;">WAVE CAPS:</span>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <select id="we-caps-mode" style="background: #222; color: #0f0; border: 1px solid #0f0; padding: 2px; font-family: 'Courier New', monospace;">
+                                    <option value="carryover">Carryover (Default)</option>
+                                    <option value="fixed">Set Fixed Amount</option>
+                                </select>
+                                <input type="number" id="we-caps-fixed-amount" value="500" min="0" style="width: 80px; background: #222; color: #0f0; border: 1px solid #0f0; padding: 2px; font-family: 'Courier New', monospace; display: none;">
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Tower Status Config -->
                     <div style="background: #111; padding: 10px; border: 1px solid #333;">
@@ -1268,52 +1300,13 @@ var _TD = {
             typewriter_current: "",
             typewriter_pause: 0, // NEW: Reading delay timer
             
-            logEvent: function(msg) {
-                var tickerEl = document.getElementById("intel-ticker-text");
-                if (!tickerEl || !msg) return; // CRITICAL FIX: Abort if msg is undefined
-                
-                msg = msg.toString().toUpperCase(); // CRITICAL FIX: Ensure it's a string
-                
-                this.typewriter_target = msg;
-                this.typewriter_current = "";
-                tickerEl.innerText = "";
-                this.typewriter_timer = 0;
-            },
+            logEvent: function(msg) { return; },
 
-            // --- NEW: SMART ANNOUNCER BRAIN ---
+            // --- DEPRECATED ANNOUNCER BRAIN ---
             Announcer: {
                 queue: [],
-                add: function(msg, priority) {
-                    if (!msg) return; // CRITICAL FIX: Abort if intel.js returns undefined
-                    priority = priority || 1; // 1 = Flavor, 3 = Action, 5 = Critical
-                    for (var i=0; i<this.queue.length; i++) {
-                        if (this.queue[i].msg === msg) return; 
-                    }
-                    this.queue.push({ msg: msg, priority: priority });
-                    this.queue.sort(function(a, b) { return a.priority - b.priority; });
-                },
-                update: function() {
-                    // PREVENT overwriting if it's currently typing OR the player is still reading it!
-                    if (TD.typewriter_current.length < TD.typewriter_target.length) return;
-                    if (TD.typewriter_pause > 0) return;
-
-                    if (this.queue.length > 0) {
-                        var item = this.queue.pop();
-                        TD.logEvent(item.msg);
-                        
-                        // Calculate reading time: ~0.5 seconds per word
-                        var wordCount = item.msg.split(" ").length;
-                        TD.typewriter_pause = Math.floor(wordCount * (TD.exp_fps * 0.5));
-                    } else {
-                        // 1% chance per frame to drop flavor text when completely idle
-                        if (window.IntelData && Math.random() > 0.99) {
-                            var flavor = window.IntelData.generateChatter(TD.current_faction);
-                            TD.logEvent(flavor);
-                            var wordCount = flavor.split(" ").length;
-                            TD.typewriter_pause = Math.floor(wordCount * (TD.exp_fps * 0.5));
-                        }
-                    }
-                }
+                add: function(msg, priority) { return; },
+                update: function() { return; }
             },
 
 
@@ -1403,16 +1396,15 @@ var _TD = {
                 }
                 
                 if (Math.random() <= finalChance) {
-                    // We wait 4 seconds if it's the start of a wave so enemies can walk onto the screen
                     var delay = (triggerContext === "wave") ? 4000 : 500;
                     
                     setTimeout(function() {
                         var waveIdx = (activeMap.scene && activeMap.scene.wave) ? activeMap.scene.wave : 1;
-                        var minDmg = waveIdx * 100;
-                        var maxDmg = waveIdx * 300;
+                        var minDmg = waveIdx * 500;
+                        var maxDmg = waveIdx * 750;
                         var damagePool = Math.floor(Math.random() * (maxDmg - minDmg + 1)) + minDmg;
                         
-                        // 2. Create the Visual HTML Image Overlay
+                        // Visual HTML Image Overlay
                         var img = document.createElement("img");
                         img.src = "assets/images/mysteriousstranger.png";
                         img.style.position = "fixed";
@@ -1422,63 +1414,72 @@ var _TD = {
                         img.style.opacity = "0";
                         img.style.pointerEvents = "none";
                         img.style.zIndex = "999999";
-                        img.style.transition = "all 0.5s ease-out";
+                        img.style.transition = "all 0.5s ease-out"; // Fade in takes 0.5s
                         document.body.appendChild(img);
                         
-                        // 3. Zoom In & Announce
+                        // 0.0s: Zoom In & Announce
                         setTimeout(function() {
                             img.style.transform = "translate(-50%, -50%) scale(1.0)";
                             img.style.opacity = "0.5";
-							// ADD YOUR NEW SOUND EFFECT HERE
-							TD.playSound("snd_mysterious_stranger");
-                            if (window.IntelData && TD.Announcer) TD.Announcer.add("MYSTERIOUS STRANGER APPEARED!", 5);
+                            TD.playSound("snd_mysterious_stranger");
                             if (typeof TD.triggerMetaChatter === 'function') TD.triggerMetaChatter("react_stranger");
-                        }, 100);
+                        }, 50);
 
-                        // 4. Execution Sequence
+                        // 0.5s: Begin the 2-second Execution Sequence
                         setTimeout(function() {
-                            // Gather and sort all valid monsters by Highest HP
                             var valid_monsters = [];
                             TD.lang.each(activeMap.monsters, function(m) {
                                 if (m.is_valid && m.life > 0) valid_monsters.push(m);
                             });
                             valid_monsters.sort(function(a, b) { return b.life - a.life; });
                             
-                            var delayStep = 0;
                             var dummy_source = { killed: 0, gainXp: function(){} };
                             
+                            // Determine how many targets he will hit before running out of damage
+                            var tempPool = damagePool;
+                            var targetsToHit = 0;
+                            for (var t = 0; t < valid_monsters.length; t++) {
+                                if (tempPool <= 0) break;
+                                targetsToHit++;
+                                tempPool -= Math.min(tempPool, valid_monsters[t].life);
+                            }
+                            
+                            if (targetsToHit === 0) targetsToHit = 1; // Failsafe
+                            
+                            // Distribute the shots evenly across exactly 2000 milliseconds (2 seconds)
+                            var delayPerShot = 2000 / targetsToHit; 
+                            var delayStep = 0;
+
                             for (var i = 0; i < valid_monsters.length; i++) {
                                 if (damagePool <= 0) break;
-                                
                                 var m = valid_monsters[i];
                                 if (!m.is_valid) continue;
                                 
                                 var dmgToDeal = Math.min(damagePool, m.life);
                                 damagePool -= dmgToDeal;
                                 
-                                // Stagger the shots by 300ms each so it feels like a sequence of executions
                                 (function(target, dmg, stepTime) {
                                     setTimeout(function() {
                                         if (target.is_valid) {
-                                            TD.playSound("snd_gun_heavy"); // Classic Magnum sound
+                                            TD.playSound("snd_gun_heavy");
                                             TD.Explode("ms-hit-" + TD.lang.rndStr(), { cx: target.cx, cy: target.cy, r: 25 * _TD.retina, step_level: 1, render_level: 9, color: "#ffcc00", scene: activeMap.scene, time: 0.3 });
                                             new TD.FloatingText("dmg-" + TD.lang.rndStr(), { cx: target.cx, cy: target.cy - 20, text: "-" + dmg, color: "#ffaa00", map: activeMap, size: 24, life: 30 });
                                             target.beHit(dummy_source, dmg);
                                         }
-                                    }, stepTime * 300); 
+                                    }, stepTime * delayPerShot); 
                                 })(m, dmgToDeal, delayStep);
                                 
                                 delayStep++;
                             }
                             
-                            // 5. Fade out and clean up after the last shot fires
-                            setTimeout(function() {
-                                img.style.opacity = "0";
-                                img.style.transform = "translate(-50%, -50%) scale(1.2)";
-                                setTimeout(function() { if (img.parentNode) img.parentNode.removeChild(img); }, 500);
-                            }, (delayStep * 300) + 600);
-                            
-                        }, 1000); // Wait 1 second after popping on screen before shooting begins
+                        }, 500); 
+
+                        // 2.5s: Fade out and clean up 
+                        setTimeout(function() {
+                            img.style.opacity = "0";
+                            img.style.transform = "translate(-50%, -50%) scale(1.2)";
+                            setTimeout(function() { if (img.parentNode) img.parentNode.removeChild(img); }, 500);
+                        }, 2500);
 
                     }, delay);
                 }
@@ -1512,6 +1513,8 @@ var _TD = {
                 // Visuals
                 document.getElementById("vats-overlay").style.display = "block";
                 this.canvas.style.cursor = "crosshair";
+                
+                if (TD.is_tutorial_active && TD.Tutorial) TD.Tutorial.next("vats_activate");
                 
                 // --- NEW: Trigger Mysterious Stranger Roll ---
                 var activeMap = (TD.stage && TD.stage.current_act && TD.stage.current_act.current_scene) ? TD.stage.current_act.current_scene.map : null;
@@ -1893,6 +1896,10 @@ var _TD = {
                                         
                                         TD.Explode("ncr-art-" + index, { cx: tcx, cy: tcy, r: blast_radius / _TD.retina, step_level: 1, render_level: 9, color: "#ff7700", scene: map.scene, time: 0.8 });
                                         
+                                        // Shake on each blast
+                                        var board = document.getElementById("td-board");
+                                        if (board) { board.classList.remove("shake-active"); void board.offsetWidth; board.classList.add("shake-active"); }
+
                                         TD.lang.each(map.monsters, function (m) {
                                             if (m.is_valid && (Math.pow(m.cx - tcx, 2) + Math.pow(m.cy - tcy, 2) <= Math.pow(blast_radius, 2))) {
                                                 m.beHit(dummy_source, 200); 
@@ -1900,6 +1907,7 @@ var _TD = {
                                         });
                                     }, index * 400);
                                 });
+
 
                                 TD.mode = "normal"; TD.mouseHand(false);
                             } else {
@@ -2563,6 +2571,19 @@ _TD.a.push(function (TD) {
 		step: function () {
 			if (this.state != 1) return;
 			if (TD.life <= 0) { TD.life = 0; this.gameover(); }
+            
+            // NEW: Tutorial Wave 2 Watcher
+            if (typeof TD !== 'undefined' && TD.is_tutorial_active && TD.Tutorial && TD.Tutorial.active) {
+                var s = TD.Tutorial.steps[TD.Tutorial.step];
+                if (s && s.trigger === "wave_2_delay" && this.wave >= 2) {
+                    if (typeof this._tut_wave2_timer === 'undefined') this._tut_wave2_timer = 0;
+                    this._tut_wave2_timer++;
+                    if (this._tut_wave2_timer >= TD.exp_fps * 2) { // 2 seconds
+                        TD.Tutorial.next("wave_2_delay");
+                    }
+                }
+            }
+
 			var i, a;
 			for (i = 0; i < 3; i++) {
 				a = [];
@@ -3047,12 +3068,32 @@ _TD.a.push(function (TD) {
 		addBuilding: function (building_type) {
 			if (this.building) { this.removeBuilding(); }
 			if (typeof TD !== 'undefined' && TD.log) TD.log("Tower built: " + building_type + " at [" + this.mx + "," + this.my + "]");
+            
+            if (typeof TD !== 'undefined' && TD.is_tutorial_active && TD.Tutorial) {
+                if (TD.Tutorial.steps[TD.Tutorial.step].trigger === "build") {
+                    TD.Tutorial.build_count++;
+                    if (TD.Tutorial.build_count >= 2) {
+                        TD.Tutorial.next("build");
+                    }
+                }
+            }
+
 			var building = new TD.Building("building-" + building_type + "-" + TD.lang.rndStr(), { type: building_type, step_level: this.step_level, render_level: this.render_level });
 			building.locate(this); this.scene.addElement(building, this.step_level, this.render_level + 1);
 			this.map.buildings.push(building); this.building = building; this.build_flag = 2;
 			this.map.checkHasWeapon();
 			if (this.map.pre_building) this.map.pre_building.hide();
             
+            // --- AGILITY PERK: INSTANT LEVEL 4 DEPLOYMENT ---
+            if (typeof TD !== 'undefined' && TD.perks && TD.perks.A && building.is_weapon) {
+                // Grant enough XP to instantly hit Level 4 (Level 1->2 is 50, 2->3 is 75, 3->4 is 100)
+                // 50 + 75 + 100 = 225 XP
+                building.gainXp(225);
+                
+                // Visual burst to show they hit the ground running
+                TD.Explode("blitz-" + TD.lang.rndStr(), { cx: building.cx, cy: building.cy, r: 25 * _TD.retina, step_level: 1, render_level: 9, color: "#55ff55", scene: this.map.scene, time: 0.5 });
+            }
+
             // --- NEW: React to New Build Chatter ---
             if (window.ChatterDB && TD.current_faction) {
                 var newX = this.cx; var newY = this.cy;
@@ -3067,6 +3108,7 @@ _TD.a.push(function (TD) {
                 });
             }
 		},
+
 
 		removeBuilding: function () { if (this.build_flag == 2) this.build_flag = 1; if (this.building) this.building.remove(); this.building = null; },
 		addMonster: function (monster) { monster.beAddToGrid(this); this.map.monsters.push(monster); monster.start(); },
@@ -3337,10 +3379,37 @@ checkPassable: function (mx, my) { var grid = this.getGrid(mx, my); return (grid
                 }
             }
 
-			if (this._wait_add_monsters > 0) { this.addMonster(this._wait_add_monsters_objidx); this._wait_add_monsters--; } 
-            else if (this._wait_add_monsters_arr.length > 0) { var a = this._wait_add_monsters_arr.shift(); this.addMonsters(a[0], a[1]); }
+			// --- NEW: Parallel Staggered Spawning ---
+			if (typeof this._spawn_delay === 'undefined') this._spawn_delay = 0;
+            
+			if (this._wait_add_monsters_arr.length > 0) {
+				if (this._spawn_delay <= 0) {
+					for (var i = this._wait_add_monsters_arr.length - 1; i >= 0; i--) {
+						var group = this._wait_add_monsters_arr[i];
+						if (group[0] > 0) {
+							this.addMonster(group[1]);
+							group[0]--;
+						}
+						if (group[0] <= 0) {
+							this._wait_add_monsters_arr.splice(i, 1);
+						}
+					}
+					this._spawn_delay = Math.floor(TD.exp_fps * 0.5); // 0.5 seconds between spawns
+				} else {
+					this._spawn_delay--;
+				}
+			} else if (this._wait_add_monsters > 0) {
+				if (this._spawn_delay <= 0) {
+					this.addMonster(this._wait_add_monsters_objidx);
+					this._wait_add_monsters--;
+					this._spawn_delay = Math.floor(TD.exp_fps * 0.5); // 0.5 seconds between spawns
+				} else {
+					this._spawn_delay--;
+				}
+			}
             
             // --- DEMO MODE TRICKLE SPAWN ---
+
 
             if (window.is_demo_mode && this.entrance) {
                 // ~3.0% chance per frame to spawn 1-3 random enemies (Increased by 2x)
@@ -3768,19 +3837,21 @@ _TD.a.push(function (TD) {
                 }
             };
 
-
-            
             // --- NEW: MAP ENTRY SNAPSHOT & RESTART LOGIC ---
             TD.saveMapEntry = function() {
                 if (!TD.inventory || !TD.factionData || !TD.current_faction) return;
                 TD._map_entry = {
                     money: TD.money, score: TD.score,
+                    account_level: TD.account_level || 1,
+                    account_xp: TD.account_xp || 0,
+                    skill_points: TD.skill_points || 0,
                     vats_charge: TD.vats_charge || 0,
                     inventory: JSON.parse(JSON.stringify(TD.inventory)),
                     cooldowns: JSON.parse(JSON.stringify(TD.cooldowns)),
                     overdrive_cd: JSON.parse(JSON.stringify(TD.overdrive_cd)),
                     towers_unlocked: [], free_builds: []
                 };
+
                 var towers = TD.factionData[TD.current_faction];
                 for (var i = 0; i < towers.length; i++) {
                     TD._map_entry.towers_unlocked.push(towers[i].is_unlocked);
@@ -3810,8 +3881,12 @@ _TD.a.push(function (TD) {
                     if (TD._map_entry) {
                         TD.money = TD._map_entry.money;
                         TD.score = TD._map_entry.score;
+                        TD.account_level = TD._map_entry.account_level;
+                        TD.account_xp = TD._map_entry.account_xp;
+                        TD.skill_points = TD._map_entry.skill_points;
                         TD.vats_charge = TD._map_entry.vats_charge;
                         TD.inventory = JSON.parse(JSON.stringify(TD._map_entry.inventory));
+
                         TD.cooldowns = JSON.parse(JSON.stringify(TD._map_entry.cooldowns));
                         TD.overdrive_cd = JSON.parse(JSON.stringify(TD._map_entry.overdrive_cd));
                         
@@ -3822,10 +3897,8 @@ _TD.a.push(function (TD) {
                         }
                     }
                     
-                    // Re-apply Endurance base stats
-                    if (TD.perks && TD.perks.E) { TD.life = Math.floor(TD.life * 1.5); TD.base_health = Math.floor(TD.base_health * 1.5); }
-                    
                     TD.loadFaction(TD.current_faction);
+
                     for (var k in TD.inventory) {
                         var btn = document.getElementById("btn-item-" + k);
                         if (btn) btn.style.backgroundImage = "none";
@@ -3891,24 +3964,24 @@ _TD.a.push(function (TD) {
                     
                     if (secondsSkipped > 0 && typeof TD.triggerMetaChatter === 'function') TD.triggerMetaChatter("wave_early");
                     
-                    // --- NEW: Guaranteed Minimum Wave Income ---
-
-                    // Base 25 caps, plus 15 extra caps for every wave you have survived
                     var currentWaveIdx = (_this.scene && _this.scene.wave) ? _this.scene.wave : 0;
                     
                     // Hard reset VATS to 0 at the exact moment Wave 1 starts
                     if (currentWaveIdx === 0) TD.vats_charge = 0;
 
-                    var guaranteedCaps = 25 + (currentWaveIdx * 15);
-                    
-                    var bonusCaps = (secondsSkipped * 5) + guaranteedCaps; // Combine them
+                    // --- CRITICAL FIX: No bonus caps for Wave 1! ---
+                    var bonusCaps = 0;
+                    if (currentWaveIdx > 0) {
+                        var guaranteedCaps = 25 + (currentWaveIdx * 15);
+                        bonusCaps = (secondsSkipped * 5) + guaranteedCaps; 
+                    }
 
                     TD.stage.wait_new_wave = 0; 
-                    
+                    if (TD.is_tutorial_active && TD.Tutorial) TD.Tutorial.next("wave_start");
+                     
                     if (bonusCaps > 0 && _this.map) {
                         setDesc("WAVE DEPLOYED: +" + bonusCaps + " CAPS SECURED");
 
-                        
                         var btnRect = btnStartWave.getBoundingClientRect();
                         var targetEl = document.getElementById("ui-money-container");
                         var targetRect = targetEl ? targetEl.getBoundingClientRect() : btnRect;
@@ -3967,60 +4040,38 @@ _TD.a.push(function (TD) {
                     });
                 }
 
-
-                
                 var multiplier = Math.round(TD.global_speed / 0.2);
-                
-                // Inject the blinking animation globally if it doesn't exist
-                if (!document.getElementById("blink-style")) {
-                    var style = document.createElement("style");
-                    style.id = "blink-style";
-                    style.innerHTML = "@keyframes blinker { 50% { opacity: 0.2; } } .blink-text { animation: blinker 1.5s linear infinite; color: #ffcc00; }";
-                    document.head.appendChild(style);
-                }
-
-                var speedReadout = document.getElementById("ui-speed-readout");
-                var speedVal = document.getElementById("ui-speed-val");
                 var btnSpeed = document.getElementById("ui-btn-speed");
                 
-                if (btnSpeed) btnSpeed.innerHTML = "SPEED UP"; // Keep button static
-
-                if (speedReadout && speedVal) {
+                if (btnSpeed) {
+                    btnSpeed.innerHTML = "SPEED: " + multiplier + "X";
                     if (multiplier > 1) {
-                        speedVal.innerHTML = ">> " + multiplier + "X";
-                        speedReadout.style.display = "block";
+                        btnSpeed.style.backgroundColor = "#ffaa00"; // Yellow warning color for fast forward
                     } else {
-                        speedReadout.style.display = "none";
+                        btnSpeed.style.backgroundColor = ""; // Reset
                     }
                 }
             };
-
-
-
-            var btnSlow = document.getElementById("ui-btn-slow");
-
-            if (btnSlow) btnSlow.onclick = function() { 
-                var newSpeed = Math.round((TD.global_speed - 0.2) * 10) / 10;
-                if (newSpeed >= 0.2) {
-                    changeGameSpeed(newSpeed);
-                }
-            };
-
 
             var btnSpeed = document.getElementById("ui-btn-speed");
             if (btnSpeed) btnSpeed.onclick = function() { 
-                var newSpeed = Math.round((TD.global_speed + 0.2) * 10) / 10;
-                if (newSpeed <= 1.0) { // Caps the maximum speed at 5x
-                    changeGameSpeed(newSpeed);
-                    
-                    // --- NEW: Wallbreak Speed Chatter ---
-                    if (newSpeed >= 0.6 && _this.map && _this.map.buildings && window.ChatterDB && TD.current_faction) {
-                        var b = _this.map.buildings[Math.floor(Math.random() * _this.map.buildings.length)];
-                        if (b && b.is_valid && Math.random() < 0.5) b.say(window.ChatterDB.getChatter(TD.current_faction, "wallbreak_fastforward"), "idle");
-                    }
+                var currentMult = Math.round(TD.global_speed * 10);
+                var newSpeed = 0.2; // Default 1x
+                
+                if (currentMult === 2) newSpeed = 0.4; // 1x -> 2x
+                else if (currentMult === 4) newSpeed = 0.8; // 2x -> 4x
+                else newSpeed = 0.2; // 4x -> 1x
+                
+                changeGameSpeed(newSpeed);
+                
+                // --- NEW: Wallbreak Speed Chatter ---
+                if (newSpeed >= 0.4 && _this.map && _this.map.buildings && window.ChatterDB && TD.current_faction) {
+                    var b = _this.map.buildings[Math.floor(Math.random() * _this.map.buildings.length)];
+                    if (b && b.is_valid && Math.random() < 0.5) b.say(window.ChatterDB.getChatter(TD.current_faction, "wallbreak_fastforward"), "idle");
                 }
+                
+                if (TD.is_tutorial_active && TD.Tutorial) TD.Tutorial.next("speed_up");
             };
-
 
             
             // Wire up Audio Toggles
@@ -4097,16 +4148,18 @@ _TD.a.push(function (TD) {
                 };
             }
 
-            // Wire up Consumables
-
-
 
             // Wire up Consumables
             var bStim = document.getElementById("btn-item-stimpak");
 
             if (bStim) bStim.onclick = function() {
-                // Prevent use if already at 100 HP
-                if (TD.inventory.stimpak > 0 && TD.cooldowns.stimpak <= 0 && TD.life < 100) {
+                var isSiege = (TD.stage && TD.stage.current_act && TD.stage.current_act.current_scene && TD.stage.current_act.current_scene.map.map_type === "siege");
+                var lvlBonus = (TD.account_level > 1) ? (TD.account_level - 1) * 2 : 0;
+                var maxHP = isSiege ? 1000 + (lvlBonus * 10) : 100 + lvlBonus;
+                var currentHP = isSiege ? TD.base_health : TD.life;
+
+                // Prevent use if already at max HP
+                if (TD.inventory.stimpak > 0 && TD.cooldowns.stimpak <= 0 && currentHP < maxHP) {
 				
 					// ADD YOUR NEW SOUND EFFECT HERE
 					TD.playSound("snd_stimpak");
@@ -4115,17 +4168,22 @@ _TD.a.push(function (TD) {
                     // Only trigger cooldown if they have more left
                     TD.cooldowns.stimpak = (TD.inventory.stimpak > 0) ? TD.getCooldownFrames() : 0;
                     
-                    var healAmount = 15;
-                    if (TD.life + healAmount > 100) healAmount = 100 - TD.life;
-                    TD.life += healAmount;
+                    var healAmount = isSiege ? 150 : 15;
+                    if (currentHP + healAmount > maxHP) healAmount = maxHP - currentHP;
+                    
+                    if (isSiege) TD.base_health += healAmount;
+                    else TD.life += healAmount;
                     
                     setDesc("STIMPAK ADMINISTERED: +" + healAmount + " HP");
                     if (window.IntelData && TD.Announcer) TD.Announcer.add(window.IntelData.getEvent("consumable_used", TD.current_faction), 4);
                     TD.updateItemButton("stimpak");
+                    
+                    if (TD.is_tutorial_active && TD.Tutorial) TD.Tutorial.next("consumable_use");
 
-                } else if (TD.life >= 100) {
+                } else if (currentHP >= maxHP) {
                     setDesc("HP FULL. STIMPAK NOT NEEDED.");
                 }
+
             };
             
             var bPsycho = document.getElementById("btn-item-psycho");
@@ -4696,52 +4754,109 @@ _TD.a.push(function (TD) {
 
 		},
 
-
 		step: function () {
-			if (TD.life_recover) { this._life_recover = this._life_recover2 = TD.life_recover; this._life_recover_wait = this._life_recover_wait2 = TD.exp_fps * 3; TD.life_recover = 0; }
-			if (this._life_recover && (TD.iframe % TD.exp_fps_eighth == 0)) { TD.life ++; this._life_recover --; }
+			// --- ENDURANCE PERK (PASSIVE REGENERATION) ---
+            var waveInMotion = this.map && (this.map.monsters.length > 0 || this.map._wait_add_monsters > 0 || this.map._wait_add_monsters_arr.length > 0);
+			if (TD.perks && TD.perks.E && waveInMotion) {
+                var isSiege = (this.map && this.map.map_type === "siege");
+                var needsHeal = isSiege ? (TD.base_health > 0 && TD.base_health < 1000) : (TD.life > 0 && TD.life < 100);
+                
+                if (needsHeal) {
+                    // Initialize or reset the stopwatch
+                    if (typeof this._endurance_regen_timer === 'undefined' || this._endurance_regen_timer <= 0) {
+                        var base_diff = window.customDifficulty || 1.0;
+                        var heal_seconds = (base_diff < 1) ? 5 : (base_diff > 1) ? 20 : 10;
+                        this._endurance_regen_timer = TD.exp_fps * heal_seconds;
+                    }
+                    
+                    this._endurance_regen_timer--; // Tick down the stopwatch
+                    
+                    if (this._endurance_regen_timer <= 0) {
+                        if (isSiege) {
+                            TD.base_health = Math.min(1000, TD.base_health + 10);
+                        } else {
+                            TD.life = Math.min(100, TD.life + 1);
+                        }
+                    }
+                } else {
+                    // Force reset to 0 when full health, ensuring the next damage taken forces a full wait cycle
+                    this._endurance_regen_timer = 0;
+                }
+			}
             
-            // --- NEW: TYPEWRITER RENDER LOOP ---
+            // --- NEW: INSTANT TEXT + PING-PONG SCROLLER ---
             var tickerEl = document.getElementById("intel-ticker-text");
             var tickerContainer = document.getElementById("intel-ticker-container");
-            
-            // Assign hover pause listeners if they don't exist yet
+
             if (tickerContainer && typeof TD.ticker_hover === 'undefined') {
                 TD.ticker_hover = false;
                 tickerContainer.onmouseover = function() { TD.ticker_hover = true; };
                 tickerContainer.onmouseout = function() { TD.ticker_hover = false; };
+                TD.scroll_state = "start_pause";
+                TD.intel_last_core = "";
+                TD.scroll_pos = 0;
+                TD.scroll_max = 0;
+                TD.scroll_timer = TD.exp_fps * 2;
             }
 
             if (tickerEl && tickerContainer && this.scene && this.scene.state === 1) {
-                
-                // Call the announcer brain every frame, it manages its own reading/typing delays now!
                 if (TD.Announcer) TD.Announcer.update();
-
-                // Only type if we haven't finished the string, AND the mouse isn't hovering
-                if (TD.typewriter_current.length < TD.typewriter_target.length && !TD.ticker_hover) {
-                    // Slower, classic typing speed (1 character per frame at normal speed)
-                    var charsToAdd = Math.max(1, Math.floor(1.5 * TD.global_speed * (60 / TD.exp_fps)));
+                
+                if (typeof TD.intel_full_text === 'string') {
+                    // Update HTML instantly every frame (handles timer countdown smoothly)
+                    tickerEl.innerHTML = TD.intel_full_text;
                     
-                    TD.typewriter_current = TD.typewriter_target.substring(0, TD.typewriter_current.length + charsToAdd);
-                    
-                    // FIX: Standard pipe cursor
-                    tickerEl.innerHTML = TD.typewriter_current + "<span class='blink-text' style='color:#0f0; font-weight:bold;'>|</span>";
-                } 
-                // Once finished, remove the cursor and tick down the reading pause
-                else if (TD.typewriter_current.length >= TD.typewriter_target.length && TD.typewriter_target.length > 0) {
-                    tickerEl.innerHTML = TD.typewriter_current;
-                    
-                    // Count down the reading pause
-                    if (!TD.ticker_hover && TD.typewriter_pause > 0) {
-                        TD.typewriter_pause--;
+                    // ONLY reset the scroll position if the CORE data (threats/advisories) actually changed!
+                    // This prevents the ticking timer from breaking the scroll animation.
+                    if (TD.intel_last_core !== TD.intel_core_data) {
+                        TD.intel_last_core = TD.intel_core_data;
+                        
+                        tickerEl.style.transform = "translateX(0px)";
+                        TD.scroll_state = "start_pause";
+                        TD.scroll_timer = TD.exp_fps * 2;
+                        TD.scroll_pos = 0;
+                        
+                        // Measure width after a tiny delay for DOM to render the new text size
+                        setTimeout(function() {
+                            if (tickerEl && tickerContainer) {
+                                var textWidth = tickerEl.scrollWidth;
+                                var containerWidth = tickerContainer.clientWidth;
+                                TD.scroll_max = (textWidth > containerWidth) ? (textWidth - containerWidth + 20) : 0;
+                            }
+                        }, 50);
                     }
                 }
 
+                // SCROLLING PHASE (Only if it's too long, and mouse isn't hovering)
+                if (TD.scroll_max > 0 && !TD.ticker_hover) {
+                    if (TD.scroll_state === "start_pause") {
+                        TD.scroll_timer--;
+                        if (TD.scroll_timer <= 0) TD.scroll_state = "scrolling_left";
+                    } else if (TD.scroll_state === "scrolling_left") {
+                        TD.scroll_pos += 1.5;
+                        if (TD.scroll_pos >= TD.scroll_max) {
+                            TD.scroll_pos = TD.scroll_max;
+                            TD.scroll_state = "end_pause";
+                            TD.scroll_timer = TD.exp_fps * 2;
+                        }
+                        tickerEl.style.transform = "translateX(-" + TD.scroll_pos + "px)";
+                    } else if (TD.scroll_state === "end_pause") {
+                        TD.scroll_timer--;
+                        if (TD.scroll_timer <= 0) TD.scroll_state = "scrolling_right";
+                    } else if (TD.scroll_state === "scrolling_right") {
+                        TD.scroll_pos -= 1.5;
+                        if (TD.scroll_pos <= 0) {
+                            TD.scroll_pos = 0;
+                            TD.scroll_state = "start_pause";
+                            TD.scroll_timer = TD.exp_fps * 2;
+                        }
+                        tickerEl.style.transform = "translateX(-" + TD.scroll_pos + "px)";
+                    }
+                }
             }
 
+
             // --- NEW: V.A.T.S. UI & Timer Logic ---
-
-
 
             var vatsBtn = document.getElementById("btn-vats-activate");
             if (vatsBtn && typeof TD.vats_charge !== 'undefined') {
@@ -5172,9 +5287,121 @@ xpBtn.style.setProperty('background-image', 'linear-gradient(to top, ' + fillCol
                 var nextWaveIdx = this.scene.wave + 1;
                 var currentWaveIdx = this.scene.wave;
 
+                // --- UNIFIED INTEL DATA HELPERS ---
+                var _map = this.map;
+                var getWaveData = function(idx) {
+                    // 1. Read directly from Custom Map Editor spawns if they exist
+                    if (stg.cfg && stg.cfg.custom_waves && stg.cfg.custom_waves[idx] && stg.cfg.custom_waves[idx].spawns && stg.cfg.custom_waves[idx].spawns.length > 0) {
+                        var arr = [];
+                        var sp = stg.cfg.custom_waves[idx].spawns;
+                        for(var i=0; i<sp.length; i++) arr.push([sp[i].qty, sp[i].monster_idx]);
+                        return arr;
+                    }
+                    // 2. Read from legacy config array
+                    var wCfg = stg.config ? stg.config.waves : [];
+                    if (wCfg[idx] && wCfg[idx].length > 0) return wCfg[idx];
+                    
+                    // 3. Absolute Fallback: Force generator to run for this specific index
+                    var oldWave = _map.scene.wave;
+                    _map.scene.wave = idx - 1; 
+                    var generated = TD.makeMonsters();
+                    _map.scene.wave = oldWave;
+                    if (wCfg) wCfg[idx] = generated;
+                    return generated;
+                };
+
+                var formatWaveData = function(waveData, isFuture) {
+                    if (!waveData || waveData.length === 0) return "NO SIGNAL";
+                    
+                    // 1. Calculate actual DPS (Start at 0)
+                    var total_dps = 0; 
+                    if (_map && _map.buildings) {
+                        TD.lang.each(_map.buildings, function(b) {
+                            if (b.is_weapon && b.is_valid && !b.is_pre_building) {
+                                var aps = b.speed > 0 ? (1 / b.speed) : 1; 
+                                var pierce_mult = b.pierce_count ? b.pierce_count : 1;
+                                var aoe_mult = (b.visual_type === "cannon" || b.fire_pattern === "cluster") ? 3 : 1;
+                                total_dps += (b.damage * aps * pierce_mult * aoe_mult);
+                            }
+                        });
+                    }
+                    if (total_dps <= 0) total_dps = 1; // Prevent division by zero errors
+
+                    var total_hp = 0;
+                    var total_units = 0;
+                    
+                    var hasAir = false, hasStealth = false, hasFast = false, hasHeavy = false;
+
+                    for (var i = 0; i < waveData.length; i++) {
+                        var mQty = waveData[i][0];
+                        var mIdx = waveData[i][1];
+                        var mAttrs = TD.getDefaultMonsterAttributes(mIdx);
+                        
+                        total_units += mQty;
+                        total_hp += (mQty * mAttrs.life);
+                        
+                        if (mAttrs.is_flying || mIdx === 8 || mIdx === 9 || mIdx === 10) hasAir = true;
+                        if (mAttrs.is_stealthed || mIdx === 11 || mAttrs.name === "Mole Rat") hasStealth = true;
+                        if (mAttrs.speed >= 12) hasFast = true;
+                        if (mAttrs.life >= 500) hasHeavy = true;
+                    }
+                    
+                    var threatTag = "";
+                    var totalRatio = total_hp / total_dps; // The true threat calculation
+                    
+                    if (isFuture && total_dps === 1 && total_hp > 0) {
+                        threatTag = " <span style='color:#ff0000'>[NO DEFENSES: FATAL THREAT]</span>";
+                    } else {
+                        if (totalRatio < 15) threatTag = " <span style='color:#0f0'>[MINOR THREAT]</span>";
+                        else if (totalRatio < 40) threatTag = " <span style='color:#ffaa00'>[MODERATE THREAT]</span>";
+                        else if (totalRatio < 80) threatTag = " <span style='color:#ff5500'>[MAJOR THREAT]</span>";
+                        else threatTag = " <span style='color:#ff0000'>[EXTREME THREAT]</span>";
+                    }
+                    
+                    // NEW: If it's the current wave, ONLY return the threat tag to save space
+                    if (!isFuture) {
+                        return threatTag.trim();
+                    }
+                    
+                    if (TD.perks && TD.perks.I) {
+
+                        // NARRATIVE DISPATCH (Intelligence Perk)
+                        var sizeDesc = "";
+                        if (total_units <= 4) sizeDesc = "A small scouting party";
+                        else if (total_units <= 14) sizeDesc = "A moderate force";
+                        else if (total_units <= 29) sizeDesc = "A large assault pack";
+                        else sizeDesc = "A massive overwhelming horde";
+                        
+                        var traits = [];
+                        var recs = [];
+                        if (hasAir) { traits.push("aerial"); recs.push("Anti-Air"); }
+                        if (hasStealth) { traits.push("cloaked"); recs.push("Detectors"); }
+                        if (hasHeavy) { traits.push("heavy"); recs.push("Armor Piercing"); }
+                        if (hasFast) { traits.push("fast"); recs.push("Cryo/Slows"); }
+                        
+                        var advisory = "";
+                        if (traits.length > 0) {
+                            advisory = " Signatures indicate " + traits.join(" and ") + " units. Recommend " + recs.join(" and ") + ".";
+                        } else {
+                            advisory = " Standard infantry signatures detected. Prepare defenses.";
+                        }
+                        
+                        return "" + sizeDesc + " inbound." + advisory + threatTag;
+                    } else {
+                        // NON-INTEL: Vague warning but using the ACCURATE ratio
+                        if (isFuture && total_dps === 1 && total_hp > 0) return "<span style='color:#ff0000'>FATAL THREAT DETECTED. BUILD DEFENSES.</span>";
+                        if (totalRatio < 15) return "Minor threat detected.";
+                        if (totalRatio < 40) return "Moderate threat detected.";
+                        if (totalRatio < 80) return "<span style='color:#ff5500'>Major threat detected!</span>";
+                        return "<span style='color:#ff0000'>EXTREME THREAT APPROACHING!</span>";
+                    }
+                };
+
                 if (isWaiting) {
-                    // --- STATE 1: WAITING FOR WAVE ---
-                    document.getElementById("intel-wave-label").innerText = "WAVE " + nextWaveIdx + ":";
+
+                    // --- STATE 1 & 2: WAITING FOR WAVE ---
+                    var waveLabel = document.getElementById("intel-wave-label");
+                    if (waveLabel) waveLabel.style.display = "none"; // Hide the old static label
 
                     // --- NEW: Wave End Hook (Story Popup & Tower Limits) ---
                     if (stg.cfg && stg.cfg.custom_waves) {
@@ -5182,7 +5409,13 @@ xpBtn.style.setProperty('background-image', 'linear-gradient(to top, ' + fillCol
                         if (customData && (!this.scene._prep_done_for_wave || this.scene._prep_done_for_wave !== nextWaveIdx)) {
                             this.scene._prep_done_for_wave = nextWaveIdx;
                             
+                            // --- NEW: Apply Fixed Caps ---
+                            if (customData.caps_mode === "fixed") {
+                                TD.money = customData.caps_fixed_amount || 0;
+                            }
+                            
                             // 1. Tower Availability Override
+
                             if (TD.factionData && TD.current_faction) {
                                 var towers = TD.factionData[TD.current_faction];
                                 for (var t = 1; t <= 11; t++) {
@@ -5234,90 +5467,56 @@ xpBtn.style.setProperty('background-image', 'linear-gradient(to top, ' + fillCol
                     }
                     // ---------------------------------------------------------
                     
-                    var wavesCfg = stg.config ? stg.config.waves : [];
-
-                    // Dynamically update the configuration array in real-time before the wave starts
-                    if (wavesCfg && (!this.scene._wave_generated_for || this.scene._wave_generated_for !== nextWaveIdx)) {
-                        wavesCfg[nextWaveIdx] = TD.makeMonsters();
+                    if (!this.scene._wave_generated_for || this.scene._wave_generated_for !== nextWaveIdx) {
                         this.scene._wave_generated_for = nextWaveIdx; 
-                        this.scene._intel_chatter_generated = false; // Reset chatter flag for the next wave
+                        this.scene._intel_chatter_generated = false; 
                     }
                     
-                    var nextWaveData = wavesCfg[nextWaveIdx];
-                    var monsterNames = [];
-                    
-                    if (nextWaveData && nextWaveData.length > 0) {
-                        for (var i = 0; i < nextWaveData.length; i++) {
-                            var mQty = nextWaveData[i][0];
-                            var mIdx = nextWaveData[i][1];
-                            var mName = TD.getDefaultMonsterAttributes(mIdx).name;
-                            monsterNames.push(mQty + "X " + mName.toUpperCase());
-                        }
-                    }
-                    var monsterString = monsterNames.length > 0 ? monsterNames.join(", ") : "UNKNOWN THREATS";
-
-                    // LOOK AHEAD to the wave after this one for the "NEXT WAVE" preview
-                    var futureWaveIdx = nextWaveIdx + 1;
-                    var futureWaveData = wavesCfg[futureWaveIdx];
-                    var futureNames = [];
-                    if (futureWaveData && futureWaveData.length > 0) {
-                        for (var f = 0; f < futureWaveData.length; f++) {
-                            var fQty = futureWaveData[f][0];
-                            var fIdx = futureWaveData[f][1];
-                            var fName = TD.getDefaultMonsterAttributes(fIdx).name;
-                            futureNames.push(fQty + "X " + fName.toUpperCase());
-                        }
-                    }
-                    var futureString = futureNames.length > 0 ? futureNames.join(", ") : "UNKNOWN";
+                    var monsterString = formatWaveData(getWaveData(nextWaveIdx), true);
+                    var futureString = formatWaveData(getWaveData(nextWaveIdx + 1), true);
 
                     var tickerEl = document.getElementById("intel-ticker-text");
                     if (tickerEl) {
+                        var newTarget = "";
+                        var coreData = ""; // Used to track major changes for the scroller
                         if (currentWaveIdx === 0) {
-                            TD.typewriter_target = "<span style='color:#fff;'>HOLDING (PRESS START WAVE)</span> <span style='color:#6a7354;'>|</span> <span style='color:#fff;'>NEXT THREAT:</span> " + monsterString;
+                            // STATE A: First Wave (Holding)
+                            newTarget = "<span style='color:#ffcc00;'>WAVE " + nextWaveIdx + ": (HOLDING)</span> <span style='color:#6a7354;'>|</span> <span style='color:#fff;'>INCOMING WAVE:</span> " + monsterString;
+                            coreData = monsterString;
                         } else {
-                            TD.typewriter_target = "<span style='color:#fff;'>T-MINUS:</span> " + sec + "s <span style='color:#6a7354;'>|</span> <span style='color:#fff;'>NEXT THREAT:</span> " + monsterString;
+                            // STATE B: Counting down mid-game
+                            newTarget = "<span style='color:#ffcc00;'>WAVE " + nextWaveIdx + ": (" + sec + "s)</span> <span style='color:#6a7354;'>|</span> <span style='color:#fff;'>NEXT WAVE:</span> " + monsterString;
+                            coreData = monsterString;
                         }
-                        TD.typewriter_current = TD.typewriter_target; 
-                        tickerEl.innerHTML = TD.typewriter_target;
+                        
+                        TD.intel_core_data = coreData; // Track major changes
+                        TD.intel_full_text = newTarget; // The text to display
                     }
+                    
+                    var btnStartWave = document.getElementById("ui-btn-start-wave");
+                    if (btnStartWave) btnStartWave.innerText = "START WAVE";
 
                 } else {
 
-                    // --- STATE 2: WAVE IN MOTION ---
-                    document.getElementById("intel-wave-label").innerText = "WAVE " + currentWaveIdx + ":";
+                    // --- STATE 3: WAVE IN MOTION ---
+                    // Reset the button text when the wave is running
+                    var btnStartWave = document.getElementById("ui-btn-start-wave");
+                    if (btnStartWave) btnStartWave.innerText = "START WAVE";
+
+                    var waveLabel = document.getElementById("intel-wave-label");
+                    if (waveLabel) waveLabel.style.display = "none"; // Hide the old static label
                     
-                    var wavesCfg = stg.config ? stg.config.waves : [];
-                    var activeWaveData = wavesCfg[currentWaveIdx];
-                    var monsterNames = [];
-                    if (activeWaveData && activeWaveData.length > 0) {
-                        for (var i = 0; i < activeWaveData.length; i++) {
-                            var mQty = activeWaveData[i][0];
-                            var mIdx = activeWaveData[i][1];
-                            var mName = TD.getDefaultMonsterAttributes(mIdx).name;
-                            monsterNames.push(mQty + "X " + mName.toUpperCase());
-                        }
-                    }
-                    var monsterString = monsterNames.length > 0 ? monsterNames.join(", ") : "UNKNOWN THREATS";
-
-                    var futureWaveIdx = currentWaveIdx + 1;
-                    var futureWaveData = wavesCfg[futureWaveIdx];
-                    var futureNames = [];
-                    if (futureWaveData && futureWaveData.length > 0) {
-                        for (var f = 0; f < futureWaveData.length; f++) {
-                            var fQty = futureWaveData[f][0];
-                            var fIdx = futureWaveData[f][1];
-                            var fName = TD.getDefaultMonsterAttributes(fIdx).name;
-                            futureNames.push(fQty + "X " + fName.toUpperCase());
-                        }
-                    }
-                    var futureString = futureNames.length > 0 ? futureNames.join(", ") : "UNKNOWN";
-
+                    var monsterString = formatWaveData(getWaveData(currentWaveIdx), false);
+                    var futureString = formatWaveData(getWaveData(currentWaveIdx + 1), true);
+                    
                     var tickerEl = document.getElementById("intel-ticker-text");
                     if (tickerEl) {
-                        TD.typewriter_target = "<span style='color:#fff;'>CURRENT THREAT:</span> " + monsterString + " <span style='color:#6a7354;'>|</span> <span style='color:#fff;'>NEXT WAVE:</span> " + futureString;
-                        TD.typewriter_current = TD.typewriter_target; 
-                        tickerEl.innerHTML = TD.typewriter_target;
+                        var newTarget = "<span style='color:#ffcc00;'>WAVE " + currentWaveIdx + ":</span> <span style='color:#fff;'>CURRENT THREAT:</span> " + monsterString + " <span style='color:#6a7354;'>|</span> <span style='color:#fff;'>NEXT WAVE:</span> " + futureString;
+                        
+                        TD.intel_core_data = monsterString + futureString; // Track major changes
+                        TD.intel_full_text = newTarget; // The text to display
                     }
+
                 }
 
 
@@ -5330,25 +5529,17 @@ xpBtn.style.setProperty('background-image', 'linear-gradient(to top, ' + fillCol
                     btnStartWave.style.cursor = waveInMotion ? "not-allowed" : "pointer";
                 }
 
-                var btnSlow = document.getElementById("ui-btn-slow");
                 var btnSpeed = document.getElementById("ui-btn-speed");
                 
                 // Speed controls are DISABLED during "The Calm" (waiting phase)
                 var timeControlsActive = waveInMotion; 
                 
-                if (btnSlow) {
-                    var canSlow = timeControlsActive && (Math.round(TD.global_speed * 10) > 2);
-                    btnSlow.disabled = !canSlow;
-                    btnSlow.style.opacity = !canSlow ? "0.3" : "1";
-                    btnSlow.style.cursor = !canSlow ? "not-allowed" : "pointer";
+                if (btnSpeed) {
+                    btnSpeed.disabled = !timeControlsActive;
+                    btnSpeed.style.opacity = !timeControlsActive ? "0.3" : "1";
+                    btnSpeed.style.cursor = !timeControlsActive ? "not-allowed" : "pointer";
                 }
 
-                if (btnSpeed) {
-                    var canSpeed = timeControlsActive && (Math.round(TD.global_speed * 10) < 10);
-                    btnSpeed.disabled = !canSpeed;
-                    btnSpeed.style.opacity = !canSpeed ? "0.3" : "1";
-                    btnSpeed.style.cursor = !canSpeed ? "not-allowed" : "pointer";
-                }
             }
 		}
 	};
@@ -5546,6 +5737,57 @@ _TD.a.push(function (TD) {
 	TD.renderBuilding = function (building) {
 		var ctx = TD.ctx, map = building.map, gs = TD.grid_size, gs2 = TD.grid_size / 2;
         
+        // --- CHARISMA PERK: INSPIRATIONAL GLOW ---
+        if (TD.perks && TD.perks.C && !building.is_pre_building) {
+            var max_network = 1; 
+            var queue = [building.grid];
+            var visited = {};
+            visited[building.grid.mx + "," + building.grid.my] = true;
+            
+            while (queue.length > 0 && max_network < 5) {
+                var curr = queue.shift();
+                var n_adj = [
+                    map.getGrid(curr.mx + 1, curr.my),
+                    map.getGrid(curr.mx - 1, curr.my),
+                    map.getGrid(curr.mx, curr.my + 1),
+                    map.getGrid(curr.mx, curr.my - 1)
+                ];
+                for (var i = 0; i < n_adj.length; i++) {
+                    var ng = n_adj[i];
+                    if (ng && ng.building && !ng.building.is_pre_building) {
+                        var gid = ng.mx + "," + ng.my;
+                        if (!visited[gid]) {
+                            visited[gid] = true;
+                            max_network++;
+                            queue.push(ng);
+                            if (max_network >= 5) break;
+                        }
+                    }
+                }
+            }
+            
+            var neighborCount = max_network - 1; // 0 to 4
+            
+            if (neighborCount > 0) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(building.cx, building.cy, gs2 * 1.05, 0, Math.PI * 2);
+                
+                // Deep breathing: Goes from 0.0 (completely invisible) to 1.0 (bright)
+                var insp_pulse = (Math.sin(TD.iframe / 24) + 1) / 2; 
+                
+                // Glow intensity scales with how many connected towers it has (up to 4)
+                var maxAlpha = 0.15 + (neighborCount * 0.05); // 0.20 to 0.35 max opacity
+                
+                ctx.shadowBlur = (insp_pulse * 15);
+                ctx.shadowColor = "#ffdd33"; 
+                ctx.fillStyle = "rgba(255, 221, 51, " + (insp_pulse * maxAlpha) + ")"; 
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+
         // --- NEW: PSYCHO RAGE GLOW (Smooth Breathing) ---
         if (TD.psycho_active > 0 && building.is_weapon && !building.is_pre_building) {
             ctx.save();
@@ -5855,9 +6097,11 @@ _TD.a.push(function (TD) {
 			var cx = this.cx, cy = this.cy, range2 = Math.pow(current_range * TD.grid_size, 2);
 			
             var vType = this.visual_type || this.type;
-            var canHitAir = (vType === "laser_gun" || vType === "LMG" || vType === "HMG" || vType === "rifle");
+            // --- NEW: Aerial towers (is_flying) can ALWAYS hit air targets ---
+            var canHitAir = (vType === "laser_gun" || vType === "LMG" || vType === "HMG" || vType === "rifle" || this.is_flying);
 			
             // --- NEW: TOWER ANTI-AIR LIMITS ---
+
             // Prevent early game towers (1, 2, 3) from shooting flyers UNLESS they have the specific AA upgrade
             if (this.type === "tower_1" || this.type === "tower_2" || this.type === "tower_3") {
                 canHitAir = !!this.anti_air_capable;
@@ -5897,19 +6141,23 @@ _TD.a.push(function (TD) {
                 return;
             }
 
-            // 2. Sort by player-selected targeting mode (default: closest)
-            var mode = this.target_mode || "closest";
+            // 2. Sort by player-selected targeting mode (default: first)
+            var mode = this.target_mode || "first";
             valid_targets.sort(function(a, b) {
-                var distA = Math.pow(a.cx - cx, 2) + Math.pow(a.cy - cy, 2);
-                var distB = Math.pow(b.cx - cx, 2) + Math.pow(b.cy - cy, 2);
-
-                // Target by HP ONLY if we have tactical intel on BOTH enemies, otherwise default to closest!
+                // Target by HP ONLY if we have tactical intel on BOTH enemies
                 if (mode === "strongest" && a.is_hp_visible && b.is_hp_visible) return b.life - a.life;
                 if (mode === "weakest" && a.is_hp_visible && b.is_hp_visible) return a.life - b.life;
                 
-                if (mode === "leader") return a.way.length - b.way.length; 
+                // First: Shortest remaining path length
+                if (mode === "first" || mode === "leader") return a.way.length - b.way.length; 
                 
-                return distA - distB; // Fallback / "closest"
+                // Last: Longest remaining path length
+                if (mode === "last") return b.way.length - a.way.length; 
+                
+                // Closest (Fallback): Smallest pixel distance to the tower
+                var distA = Math.pow(a.cx - cx, 2) + Math.pow(a.cy - cy, 2);
+                var distB = Math.pow(b.cx - cx, 2) + Math.pow(b.cy - cy, 2);
+                return distA - distB; 
             });
 
             var new_target = valid_targets[0];
@@ -6044,9 +6292,14 @@ _TD.a.push(function (TD) {
 		tryToUpgrade: function (btn) {
 			var cost = this.getUpgradeCost(), msg = "";
 			if (cost > TD.money) { msg = TD._t("not_enough_money", [cost]); } 
-            else { TD.money -= cost; this.money += cost; this.upgrade(); msg = TD._t("upgrade_success", [TD._t("building_name_" + this.type), this.level, this.getUpgradeCost()]); }
+            else { 
+                TD.money -= cost; this.money += cost; this.upgrade(); 
+                msg = TD._t("upgrade_success", [TD._t("building_name_" + this.type), this.level, this.getUpgradeCost()]); 
+                if (typeof TD !== 'undefined' && TD.is_tutorial_active && TD.Tutorial) TD.Tutorial.next("tower_upgrade");
+            }
 			this.updateBtnDesc(); this.scene.panel.balloontip.msg(msg, btn);
 		},
+
 		tryToSell: function () {
 			if (!this.is_valid) return;
 			if (typeof TD !== 'undefined' && TD.log) TD.log("Tower sold at [" + this.grid.mx + "," + this.grid.my + "]");
@@ -6060,13 +6313,22 @@ _TD.a.push(function (TD) {
             // --- NEW: Level 100 Cap ---
             if (this.level >= 100) return; 
             
-            // --- NEW: INTELLIGENCE OVERDRIVE DOUBLE XP ---
-            if (typeof TD !== 'undefined' && TD.overdrive && TD.overdrive.I > 0) {
-                amount *= 2;
+            // --- INTELLIGENCE PERK (PASSIVE & ACTIVE XP) ---
+            if (typeof TD !== 'undefined') {
+                // Passive: 1.5x XP permanently
+                if (TD.perks && TD.perks.I) {
+                    amount = Math.floor(amount * 1.5);
+                }
+                // Active: 3x XP multiplier on top of everything!
+                if (TD.overdrive && TD.overdrive.I > 0) {
+                    amount *= 3;
+                }
             }
             
 			this.xp += amount;
-			if (this.xp >= this.xp_needed) {
+
+            // CRITICAL FIX: Use a while loop to process massive XP dumps (like Agility's 225 XP)
+			while (this.xp >= this.xp_needed && this.level < 100) {
 				this.xp -= this.xp_needed;
 				this.level++;
 				// Scales by exactly +25 XP per level (Level 1->2 is 50, 2->3 is 75, etc.)
@@ -6078,17 +6340,14 @@ _TD.a.push(function (TD) {
                 }
 
 				// Auto-level base stats slightly
-
-
 				this.damage = Math.floor(this.damage * 1.1) + 1;
 				this.range = this.range + 0.1;
 				this.range_px = this.range * TD.grid_size;
 				this.speed = this.speed * 1.05; 
 				this._fire_wait2 = Math.floor(Math.max(TD.exp_fps / (this.speed * (TD.global_speed / 0.2)), 1)); // Recalculate fire rate
 			}
-
-
 		},
+
 
 		step: function () {
 			if (this.blink) { this.wait_blink--; if (this.wait_blink < -this._default_wait_blink) this.wait_blink = this._default_wait_blink; }
@@ -6116,6 +6375,7 @@ _TD.a.push(function (TD) {
                     this.map.getGrid(this.grid.mx, this.grid.my - 1)
                 ];
 
+                // Immediate auras still only apply to adjacent tiles
                 for (var i = 0; i < adj.length; i++) {
                     if (adj[i] && adj[i].building && adj[i].building.aura_type) {
                         if (adj[i].building.aura_type === "range") this.eff_range += 1;
@@ -6123,14 +6383,59 @@ _TD.a.push(function (TD) {
                         if (adj[i].building.aura_type === "damage") this.eff_damage = Math.floor(this.eff_damage * 1.30);
                     }
                 }
+                
+                // --- CHARISMA PERK: INSPIRATIONAL CONTIGUOUS BUFF ---
+                if (typeof TD !== 'undefined' && TD.perks && TD.perks.C) {
+                    var max_network = 1; // Counts itself
+                    var queue = [this.grid];
+                    var visited = {};
+                    visited[this.grid.mx + "," + this.grid.my] = true;
+                    
+                    // Flood fill outward through connected towers (Capped at 5 to save processing power)
+                    while (queue.length > 0 && max_network < 5) {
+                        var curr = queue.shift();
+                        var n_adj = [
+                            this.map.getGrid(curr.mx + 1, curr.my),
+                            this.map.getGrid(curr.mx - 1, curr.my),
+                            this.map.getGrid(curr.mx, curr.my + 1),
+                            this.map.getGrid(curr.mx, curr.my - 1)
+                        ];
+                        for (var j = 0; j < n_adj.length; j++) {
+                            var ng = n_adj[j];
+                            if (ng && ng.building && !ng.building.is_pre_building) {
+                                var gid = ng.mx + "," + ng.my;
+                                if (!visited[gid]) {
+                                    visited[gid] = true;
+                                    max_network++;
+                                    queue.push(ng);
+                                    if (max_network >= 5) break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    var neighborCount = max_network - 1; // Subtract itself
+                    if (neighborCount > 0) {
+                        // +5% Fire Rate per connected tower, capping at +20% (4 towers)
+                        var buffMultiplier = 1.0 + (neighborCount * 0.05);
+                        this.eff_speed *= buffMultiplier; 
+                    }
+                }
             }
 
-            // --- NEW: AGILITY OVERDRIVE FIRE RATE BOOST ---
-            if (typeof TD !== 'undefined' && TD.overdrive && TD.overdrive.A > 0) {
-                this.eff_speed *= 1.30; // +30% fire rate
-            }
+                // --- ACCOUNT LEVEL BONUSES (1% Dmg/Speed per Level past 1) ---
+                if (typeof TD !== 'undefined' && TD.account_level > 1) {
+                    var accBonus = 1.0 + ((TD.account_level - 1) * 0.01);
+                    this.eff_damage = Math.floor(this.eff_damage * accBonus);
+                    this.eff_speed *= accBonus;
+                }
 
-            // Sync visual range if hovered
+                // --- NEW: AGILITY OVERDRIVE FIRE RATE BOOST ---
+                if (typeof TD !== 'undefined' && TD.overdrive && TD.overdrive.A > 0) {
+                    this.eff_speed *= 1.30; // +30% fire rate
+                }
+
+                // Sync visual range if hovered
 
             this.range_px = this.eff_range * TD.grid_size;
             // Update fire rate math dynamically
@@ -6176,11 +6481,6 @@ _TD.a.push(function (TD) {
 			if (this.is_pre_building || !this.map.is_main_map) return;
             var tooltip = document.getElementById("tower-tooltip");
             if (tooltip) {
-                // Determine Current Upgrades
-                var p1Name = "None"; var p2Name = "None";
-                if (this.upgrades && this.path1_tier > 0) p1Name = this.upgrades.path1[this.path1_tier - 1].name;
-                if (this.upgrades && this.path2_tier > 0) p2Name = this.upgrades.path2[this.path2_tier - 1].name;
-
                 var tact = TD.getTacticalMatchups(this);
                 var cannotStr = tact.cannot ? "\nCANNOT: " + tact.cannot : "";
                 
@@ -6189,19 +6489,48 @@ _TD.a.push(function (TD) {
                     targetModeDisplay += " (REQ. INTEL)";
                 }
                 
+                // Calculate effective real-time stats
+                var curr_dmg = this.damage;
+                var activeBuffs = [];
+                if (typeof TD !== 'undefined') {
+                    if (TD.perks && TD.perks.S) activeBuffs.push("STR-Pass");
+                    if (TD.perks && TD.perks.P) activeBuffs.push("PER-Pass");
+                    if (TD.perks && TD.perks.A) activeBuffs.push("AGI-Pass");
+                    
+                    if (TD.psycho_active > 0) { curr_dmg = Math.floor(curr_dmg * 1.5); activeBuffs.push("PSYCHO"); }
+                    if (TD.overdrive && TD.overdrive.S > 0) { curr_dmg = Math.floor(curr_dmg * 2.0); activeBuffs.push("STR-Active"); }
+                    if (TD.overdrive && TD.overdrive.A > 0) activeBuffs.push("AGI-Active");
+                    if (TD.overdrive && TD.overdrive.I > 0) activeBuffs.push("INT-Active");
+                    if (this.eff_speed > this.speed) activeBuffs.push("Fire-Rate-Buff");
+                }
+                
+                var dmgStr = (curr_dmg > this.damage) ? curr_dmg + " (+)" : curr_dmg;
+                var rngStr = (this.eff_range > this.range) ? this.eff_range.toFixed(1) + " (+)" : this.range.toFixed(1);
+                // Calculate Speed (lower internal delay means higher "Speed" rating visually)
+                var spdStr = (this.eff_speed > this.speed) ? this.eff_speed.toFixed(1) + " (+)" : this.speed.toFixed(1);
+                
+                if (typeof TD !== 'undefined' && TD.overdrive && TD.overdrive.P > 0) { 
+                    rngStr = "MAP-WIDE"; activeBuffs.push("PER-Active"); 
+                }
+                
+                var buffStr = activeBuffs.length > 0 ? "BUFFS : " + activeBuffs.join(", ") + "\n" : "";
+
                 var stats = "UNIT  : " + this.name.toUpperCase() + "\n" +
                             "LEVEL : " + this.level + "\n" +
                             "XP    : " + Math.floor(this.xp) + " / " + this.xp_needed + "\n" +
-                            "DMG   : " + this.damage + "\n" +
-                            "RANGE : " + this.range.toFixed(1) + "\n" +
+                            "DMG   : " + dmgStr + "\n" +
+                            "RANGE : " + rngStr + "\n" +
+                            "SPEED : " + spdStr + "\n" +
                             "KILLS : " + this.killed + "\n" +
-                            "TARGET: " + targetModeDisplay + "\n" +
-                            "PATH 1: " + p1Name + "\n" +
-                            "PATH 2: " + p2Name + "\n" +
-                            "STRONG: " + tact.strong + "\n" +
-                            "WEAK  : " + tact.weak + cannotStr;
+                            buffStr +
+                            "TARGET: " + targetModeDisplay + "\n";
+                if (this.upgrades && this.path1_tier > 0) stats += "PATH 1: " + this.upgrades.path1[this.path1_tier - 1].name + "\n";
+                if (this.upgrades && this.path2_tier > 0) stats += "PATH 2: " + this.upgrades.path2[this.path2_tier - 1].name + "\n";
+                
+                stats += "STRONG: " + tact.strong + "\n" +
+                         "WEAK  : " + tact.weak + cannotStr;
+                
                 tooltip.innerText = stats;
-
 
                 tooltip.style.display = "block";
             }
@@ -6234,34 +6563,59 @@ _TD.a.push(function (TD) {
             // NEW: Reset the Targeting Dropdown back to standard Tower modes
             var selTarget = document.getElementById("modal-target-mode");
             if (selTarget) {
-                selTarget.innerHTML = '<option value="closest">Closest</option><option value="leader">Leader</option><option value="strongest">Strongest (Req. Intel)</option><option value="weakest">Weakest (Req. Intel)</option>';
-                selTarget.value = this.target_mode || "closest";
+                selTarget.innerHTML = '<option value="first">First</option><option value="last">Last</option><option value="closest">Closest</option><option value="strongest">Strongest (Req. Intel)</option><option value="weakest">Weakest (Req. Intel)</option>';
+                // If they previously had 'leader' (legacy), map it to 'first' or default to 'first' instead of 'closest'
+                selTarget.value = (this.target_mode === "leader") ? "first" : (this.target_mode || "first");
                 var _building = this;
                 selTarget.onchange = function() { _building.target_mode = this.value; };
             }
 
-            
-            // Determine Current Upgrades
-            var p1Name = "None"; var p2Name = "None";
-            if (this.upgrades && this.path1_tier > 0) p1Name = this.upgrades.path1[this.path1_tier - 1].name;
-            if (this.upgrades && this.path2_tier > 0) p2Name = this.upgrades.path2[this.path2_tier - 1].name;
-
             var tact = TD.getTacticalMatchups(this);
             var cannotHtml = tact.cannot ? "<b style='color:#ff5555'>Cannot target:</b> " + tact.cannot + "<br>" : "";
             
+            var curr_dmg = this.damage;
+            var activeBuffs = [];
+            if (typeof TD !== 'undefined') {
+                // Passives (Gray)
+                if (TD.perks && TD.perks.S) activeBuffs.push("<span style='color:#999'>STR(Pass)</span>");
+                if (TD.perks && TD.perks.P) activeBuffs.push("<span style='color:#999'>PER(Pass)</span>");
+                if (TD.perks && TD.perks.A) activeBuffs.push("<span style='color:#999'>AGI(Pass)</span>");
+                
+                // Actives (Bright Colors)
+                if (TD.psycho_active > 0) { curr_dmg = Math.floor(curr_dmg * 1.5); activeBuffs.push("<span style='color:#55ff55'>PSYCHO</span>"); }
+                if (TD.overdrive && TD.overdrive.S > 0) { curr_dmg = Math.floor(curr_dmg * 2.0); activeBuffs.push("<span style='color:#ffaa00'>STR-Active</span>"); }
+                if (TD.overdrive && TD.overdrive.A > 0) activeBuffs.push("<span style='color:#0f0'>AGI-Active</span>");
+                if (TD.overdrive && TD.overdrive.I > 0) activeBuffs.push("<span style='color:#00ffff'>INT-Active</span>");
+                if (this.eff_speed > this.speed) activeBuffs.push("<span style='color:#ffdd33'>Fire-Rate-Buff</span>");
+            }
+            
+            // Highlight numbers if they are currently buffed above base stats
+            var dmgStr = (curr_dmg > this.damage) ? "<span style='color:#ffaa00; font-weight:bold;'>" + curr_dmg + "</span> <span style='font-size:0.8em; color:#888'>(Base " + this.damage + ")</span>" : this.damage;
+            var rngStr = (this.eff_range > this.range) ? "<span style='color:#0f0; font-weight:bold;'>" + this.eff_range.toFixed(1) + "</span> <span style='font-size:0.8em; color:#888'>(Base " + this.range.toFixed(1) + ")</span>" : this.range.toFixed(1);
+            var spdStr = (this.eff_speed > this.speed) ? "<span style='color:#ffdd33; font-weight:bold;'>" + this.eff_speed.toFixed(1) + "</span> <span style='font-size:0.8em; color:#888'>(Base " + this.speed.toFixed(1) + ")</span>" : this.speed.toFixed(1);
+            
+            if (typeof TD !== 'undefined' && TD.overdrive && TD.overdrive.P > 0) { 
+                rngStr = "<span style='color:#00ffff; font-weight:bold;'>MAP-WIDE</span>"; 
+                activeBuffs.push("<span style='color:#00ffff'>PER-Active</span>"); 
+            }
+            
+            var buffStr = activeBuffs.length > 0 ? "<b>Perks/Buffs:</b> " + activeBuffs.join(", ") + "<br><br>" : "<br>";
+
             var statsHtml = "<b>Level:</b> " + this.level + "<br>" +
                             "<b>XP:</b> " + Math.floor(this.xp) + " / " + this.xp_needed + "<br><br>" +
-                            "<b>Damage:</b> " + this.damage + "<br>" +
-                            "<b>Range:</b> " + this.range.toFixed(1) + "<br>" +
+                            "<b>Damage:</b> " + dmgStr + "<br>" +
+                            "<b>Range:</b> " + rngStr + "<br>" +
+                            "<b>Speed:</b> " + spdStr + "<br>" +
                             "<b>Kills:</b> " + this.killed + "<br><br>" +
+                            buffStr +
                             "<b style='color:#0f0'>Strong vs:</b> " + tact.strong + "<br>" +
                             "<b style='color:#f55'>Weak vs:</b> " + tact.weak + "<br>" +
-                            cannotHtml + "<br>" +
-                            "<b style='color:#ffcc00;'>Path 1:</b> " + p1Name + "<br>" +
-                            "<b style='color:#ffcc00;'>Path 2:</b> " + p2Name;
+                            cannotHtml;
+            if (this.upgrades && this.path1_tier > 0) statsHtml += "<br><b style='color:#ffcc00;'>Path 1:</b> " + this.upgrades.path1[this.path1_tier - 1].name;
+            if (this.upgrades && this.path2_tier > 0) statsHtml += "<br><b style='color:#ffcc00;'>Path 2:</b> " + this.upgrades.path2[this.path2_tier - 1].name;
+            
             document.getElementById("modal-tower-stats").innerHTML = statsHtml;
 
-            
             var _building = this; 
             var btnClose = document.getElementById("modal-close-btn");
             var btnSell = document.getElementById("modal-btn-sell");
@@ -6733,7 +7087,12 @@ _TD.a.push(function (TD) {
             TD.account_level++;
             TD.skill_points++;
             
+            // Instantly grant the 2% health bonus
+            if (TD.life) TD.life += 2;
+            if (TD.base_health) TD.base_health += 20;
+            
             // Floating Text Animation (Fixed to Viewport)
+
             var floater = document.createElement("div");
             // Add the total SP available to the text
             floater.innerText = "LEVEL UP! +1 SP\n(" + TD.skill_points + " SP AVAILABLE)";
@@ -6833,9 +7192,11 @@ TD.getCooldownFrames = function() {
             if (stimBtn) {
                 // If Siege mode, check base_health, otherwise check life
                 var isSiege = TD.stage && TD.stage.current_act && TD.stage.current_act.current_scene && TD.stage.current_act.current_scene.map && TD.stage.current_act.current_scene.map.map_type === "siege";
-                var isFullHealth = isSiege ? (TD.base_health >= 1000) : (TD.life >= 100);
+                var lvlBonus = (TD.account_level > 1) ? (TD.account_level - 1) * 2 : 0;
+                var isFullHealth = isSiege ? (TD.base_health >= 1000 + (lvlBonus * 10)) : (TD.life >= 100 + lvlBonus);
                 
                 if (isFullHealth && !stimBtn.disabled) {
+
                     stimBtn.disabled = true; // Cut power
                     stimBtn.removeAttribute("data-warmed-up"); // Erase memory so it sparks when damaged
                 } else if (!isFullHealth && stimBtn.disabled) {
@@ -6999,26 +7360,41 @@ TD.getCooldownFrames = function() {
         if (btn) {
             btn.onclick = function() {
                 if (TD.perks && TD.perks[letter] && TD.overdrive_cd[letter] <= 0 && TD.overdrive[letter] <= 0) {
-                    TD.overdrive[letter] = TD.exp_fps * 15; // 15 Seconds of Overdrive
-                    TD.overdrive_cd[letter] = (!window.is_campaign_mode) ? 9999999 : TD.exp_fps * 135; // Infinite cooldown in Endless
                     
-                    var desc = document.getElementById("ui-action-desc");
-                    if (desc) desc.innerText = letter + " OVERDRIVE ENGAGED!";
-                    
-                    // Safely get the active map context
-                    var activeMap = (TD.stage && TD.stage.current_act && TD.stage.current_act.current_scene) ? TD.stage.current_act.current_scene.map : null;
-                    if (!activeMap) return;
+                    var executeOverdrive = function() {
+                        TD.overdrive[letter] = TD.exp_fps * 15; // 15 Seconds of Overdrive
+                        TD.overdrive_cd[letter] = (!window.is_campaign_mode) ? 9999999 : TD.exp_fps * 135; // Infinite cooldown in Endless
+                        
+                        var desc = document.getElementById("ui-action-desc");
+                        if (desc) desc.innerText = letter + " OVERDRIVE ENGAGED!";
+                        
+                        // Safely get the active map context
+                        var activeMap = (TD.stage && TD.stage.current_act && TD.stage.current_act.current_scene) ? TD.stage.current_act.current_scene.map : null;
+                        if (!activeMap) return;
 
-                    // Instant Trigger Effects (Charisma Drops, Luck Explosions, Intel XP)
+                        // Instant Trigger Effects (Charisma Drops, Luck Explosions, Intel XP)
                     if (letter === 'E') {
-                        // VISUAL GREEN SHIELD
+                        // VISUAL GREEN SHIELD & INSTANT HEAL
                         var board = document.getElementById("td-board");
                         if (board) board.style.boxShadow = "inset 0 0 50px rgba(0, 255, 0, 0.6), inset 0 0 20px rgba(0, 255, 0, 0.8)";
+
+                        var isSiege = (activeMap.map_type === "siege");
+                        if (isSiege && TD.base_health > 0) {
+                            TD.base_health = Math.min(1000, TD.base_health + 100);
+                        } else if (!isSiege && TD.life > 0) {
+                            TD.life = Math.min(100, TD.life + 10);
+                        }
                     } else if (letter === 'C') {
-                        // CARAVAN DROP (Coins from sky)
-                        var dropCount = Math.floor(Math.random() * 3) + 3; // Random 3 to 5 drops
+                        // CARAVAN DROP (Coins scale with the wave!)
+                        var currentWave = (TD.stage && TD.stage.current_act && TD.stage.current_act.current_scene) ? TD.stage.current_act.current_scene.wave : 1;
+                        if (currentWave < 1) currentWave = 1;
+                        
+                        var dropCount = Math.floor(Math.random() * 3) + 3; // Random 3 to 5 physical drops
+                        var totalBounty = 50 + (currentWave * 20); // Base 50c + 20c per wave
+                        var bountyPerDrop = Math.floor(totalBounty / dropCount);
+
                         for (var i = 0; i < dropCount; i++) {
-                            (function(delay) {
+                            (function(delay, isLast) {
                                 setTimeout(function() {
                                     var loot = new TD.Loot("loot-" + TD.lang.rndStr(), { 
                                         cx: activeMap.x + (activeMap.width/2) + (Math.random()*400-200), 
@@ -7026,11 +7402,11 @@ TD.getCooldownFrames = function() {
                                         map: activeMap 
                                     });
                                     loot.loot_type = "money"; 
-                                    loot.value = Math.floor(Math.random() * 26) + 25; // Random 25 to 50 caps
-                                    loot.altitude = 400; // Drops from 400px high
-                                    loot.vx = (Math.random()*4)-2; loot.vy = 2; // Falls downward
+                                    loot.value = isLast ? (bountyPerDrop + (totalBounty % dropCount)) : bountyPerDrop; 
+                                    loot.altitude = 400; 
+                                    loot.vx = (Math.random()*4)-2; loot.vy = 2; 
                                 }, delay * 150);
-                            })(i);
+                            })(i, i === dropCount - 1);
                         }
                     } else if (letter === 'I') {
                         // +3 LEVELS INSTANTLY
@@ -7050,10 +7426,62 @@ TD.getCooldownFrames = function() {
                         // LUCK OVERDRIVE
                         // Passive logic is handled in beKilled
                     }
+                }; // End executeOverdrive function
+                    
+                // --- ENDLESS MODE WARNING INTERCEPTOR ---
+                if (!window.is_campaign_mode) {
+                    // Pause the engine while deciding
+                    var wasPaused = TD.is_paused;
+                    TD.is_paused = true;
+                    
+                    var modal = document.getElementById("bobblehead-confirm-modal");
+                    if (modal) {
+                        // Look up the full perk name
+                        var perkName = "";
+                        if (letter === 'S') perkName = "STRENGTH";
+                        if (letter === 'P') perkName = "PERCEPTION";
+                        if (letter === 'E') perkName = "ENDURANCE";
+                        if (letter === 'C') perkName = "CHARISMA";
+                        if (letter === 'I') perkName = "INTELLIGENCE";
+                        if (letter === 'A') perkName = "AGILITY";
+                        if (letter === 'L') perkName = "LUCK";
+                        
+                        // Inject the Name
+                        document.getElementById("bobblehead-confirm-letter").innerText = perkName;
+                        
+                        // Look up and inject the Passive
+                        var passiveDesc = "";
+                        if (letter === 'S') passiveDesc = "Towers deal +15% Damage.";
+                        if (letter === 'P') passiveDesc = "+2 Range & Tactical Intel.";
+                        if (letter === 'E') passiveDesc = "Base Health Regeneration.";
+                        if (letter === 'C') passiveDesc = "Adjacent towers gain +5% Fire Rate.";
+                        if (letter === 'I') passiveDesc = "Enemy counters revealed & 1.5x XP Gain.";
+                        if (letter === 'A') passiveDesc = "+15% Fire Rate & Instant Lvl 4 spawns.";
+                        if (letter === 'L') passiveDesc = "+10% Loot Drops & +5% Critical Hit Chance.";
+                        document.getElementById("bobblehead-confirm-passive").innerText = passiveDesc;
+                        
+                        // Wire up buttons
+                        document.getElementById("btn-bobblehead-confirm").onclick = function() {
+                            modal.style.display = "none";
+                            TD.is_paused = wasPaused; 
+                            if (!wasPaused && typeof TD.step === 'function') TD.step(); // Restart engine loop
+                            executeOverdrive();
+                        };
+                        document.getElementById("btn-bobblehead-cancel").onclick = function() {
+                            modal.style.display = "none";
+                            TD.is_paused = wasPaused; 
+                            if (!wasPaused && typeof TD.step === 'function') TD.step(); // Restart engine loop
+                        };
+                        modal.style.display = "flex";
+                    }
+                } else {
 
+                    // Campaign Mode: Execute instantly
+                    executeOverdrive();
                 }
 
-            };
+            } // End of conditional
+        }; // End of onclick
             // --- NEW: Hover Tooltips for S.P.E.C.I.A.L. Buttons ---
             btn.onmouseover = function() {
                 if (TD.perks && TD.perks[letter]) {
@@ -7062,12 +7490,12 @@ TD.getCooldownFrames = function() {
                         var title = "<strong style='color:#f2d57e; font-size:14px;'>" + letter + " ATTRIBUTE</strong><br><br>";
                         var desc = "";
                         if (letter === 'S') desc = "<span style='color:#0f0'>Passive:</span> Towers deal +15% Damage.<br><br><span style='color:#ffaa00'>Active:</span> 15s of 200% total damage.";
-                        if (letter === 'P') desc = "<span style='color:#0f0'>Passive:</span> +2 Range & Global Tactical Intel (Reveals HP).<br><br><span style='color:#ffaa00'>Active:</span> 15s of infinite map-wide range and stealth detection.";
-                        if (letter === 'E') desc = "<span style='color:#0f0'>Passive:</span> +50% Base Health/Lives.<br><br><span style='color:#ffaa00'>Active:</span> 15s of Invulnerability (Large enemies deal 1 dmg).";
-                        if (letter === 'C') desc = "<span style='color:#0f0'>Passive:</span> Towers & Upgrades cost 15% less.<br><br><span style='color:#ffaa00'>Active:</span> Drops 3-5 Cap stashes (25-50 caps each).";
-                        if (letter === 'I') desc = "<span style='color:#0f0'>Passive:</span> -15% XP needed to level & Global Tactical Intel.<br><br><span style='color:#ffaa00'>Active:</span> +3 Levels to all towers. Double XP and -50% Upgrade Cost for 15s.";
-                        if (letter === 'A') desc = "<span style='color:#0f0'>Passive:</span> +15% Fire Rate & Cooldown Speed.<br><br><span style='color:#ffaa00'>Active:</span> Resets consumable cooldowns, +30% Fire Rate for 15s.";
-                        if (letter === 'L') desc = "<span style='color:#0f0'>Passive:</span> Flat +10% chance for enemies to drop loot.<br><br><span style='color:#ffaa00'>Active:</span> Massively increases loot drop rate from enemies for 15s.";
+                        if (letter === 'P') desc = "<span style='color:#0f0'>Passive:</span> +2 Range & Tactical Intel (Reveals HP).<br><br><span style='color:#ffaa00'>Active:</span> 15s of map-wide range and stealth detection.";
+                        if (letter === 'E') desc = "<span style='color:#0f0'>Passive:</span> Base Health Regeneration.<br><br><span style='color:#ffaa00'>Active:</span> 15s of Invulnerability & +10 Instant HP.";
+                        if (letter === 'C') desc = "<span style='color:#0f0'>Passive:</span> Adjacent towers gain +5% Fire Rate.<br><br><span style='color:#ffaa00'>Active:</span> Drops Caps scaling with the current wave.";
+                        if (letter === 'I') desc = "<span style='color:#0f0'>Passive:</span> Enemy counters revealed & 1.5x XP Gain.<br><br><span style='color:#ffaa00'>Active:</span> Tech Tree costs -50% & 3x XP for 15s.";
+                        if (letter === 'A') desc = "<span style='color:#0f0'>Passive:</span> +15% Fire Rate. New towers spawn at Lvl 4.<br><br><span style='color:#ffaa00'>Active:</span> Resets cooldowns & +30% Fire Rate for 15s.";
+                        if (letter === 'L') desc = "<span style='color:#0f0'>Passive:</span> +10% Loot Drops & +5% Critical Hit Chance.<br><br><span style='color:#ffaa00'>Active:</span> Massively increases loot drop rate for 15s.";
                         
                         tooltip.innerHTML = title + "<span style='color:#ccc; font-size:12px;'>" + desc + "</span>";
                         tooltip.style.display = "block";
@@ -7157,6 +7585,13 @@ TD.getCooldownFrames = function() {
             // Announce that Loot has dropped!
             if (window.IntelData && TD.Announcer) TD.Announcer.add(window.IntelData.getEvent("loot_drop", TD.current_faction), 3);
             if (typeof TD.triggerMetaChatter === 'function') TD.triggerMetaChatter("loot_drop");
+            
+            // NEW: Tutorial Trigger
+            if (typeof TD !== 'undefined' && TD.is_tutorial_active && TD.Tutorial) {
+                if (TD.Tutorial.steps[TD.Tutorial.step] && TD.Tutorial.steps[TD.Tutorial.step].trigger === "loot_wait") {
+                    TD.Tutorial.next("loot_wait");
+                }
+            }
 
 			var duration = 20; 
 
@@ -7367,6 +7802,11 @@ TD.getCooldownFrames = function() {
             var tooltip = document.getElementById("tower-tooltip");
             if (tooltip) tooltip.style.display = "none";
             
+            // NEW: Advance tutorial
+            if (typeof TD !== 'undefined' && TD.is_tutorial_active && TD.Tutorial) {
+                TD.Tutorial.next("loot_click");
+            }
+            
             // --- NEW: Lunchbox Physical Spitting Logic ---
             if (this.loot_type === "lunchbox") {
 
@@ -7505,14 +7945,10 @@ TD.getCooldownFrames = function() {
                     TD.perks[letter] = true; // --- NEW: Grant the passive ability! ---
                     
                     // --- NEW: APPLY INSTANT PASSIVES ---
-                    if (letter === 'E') { 
-                        TD.life = Math.floor(TD.life * 1.5); 
-                        TD.base_health = Math.floor(TD.base_health * 1.5); 
-                    }
                     if (letter === 'A') {
                         TD.getCooldownFrames = function() { var base = (TD.difficulty < 1) ? 24 : (TD.difficulty > 1) ? 288 : 120; return Math.floor(base * 0.85); };
                     }
-                    
+
                     TD.overdrive_cd[letter] = 0; // Instantly ready!
                     if (TD.updateSpecialButtons) TD.updateSpecialButtons();
                 }, 500);
@@ -7533,14 +7969,10 @@ TD.getCooldownFrames = function() {
                     if (_type === "capmine") name = "CAP MINE";
                     msg = "+1 " + name;
                     
-                    if (_type === "stimpak") color = "#ff5555";
-                    else if (_type === "psycho") color = "#55ff55";
-                    else if (_type === "cryomine") color = "#aaffff";
-                    else if (_type === "capmine") color = "#ffaa00"; 
-                    else if (_type === "artillery") color = "#cccccc";
-                    else color = "#ffffff"; 
+                    color = "#00ff00"; // Force standard green for all items
 
                 } else {
+
                     // Inventory full, refund caps (delayed)
                     setTimeout(function() {
                         TD.money += _val;
@@ -8285,7 +8717,7 @@ TD.getCooldownFrames = function() {
 		ft._init = function(cfg) {
 			this.cx = cfg.cx; this.cy = cfg.cy; this.text = cfg.text;
 			this.color = cfg.color || "#fff"; this.map = cfg.map;
-			this.size = cfg.size || 16;
+			this.size = 14; // Force uniform size across all floating text
 			this.is_valid = true; this.life = cfg.life || 36; this.max_life = this.life;
 			this.addToScene(this.map.scene, 1, 9);
 		};
@@ -8335,8 +8767,13 @@ TD.getCooldownFrames = function() {
             TD.lang.each(this.map.monsters, function(m) {
                 if (m.is_valid && Math.pow(m.cx - _this.cx, 2) + Math.pow(m.cy - _this.cy, 2) <= Math.pow(_this.r, 2)) m.beHit(dummy, 15); // 15 dmg per frame
             });
-            if (Math.random() < 0.4) TD.Explode("orb-p-"+TD.lang.rndStr(), {cx: this.cx + (Math.random()*this.r - this.r/2), cy: this.cy + (Math.random()*this.r - this.r/2), r: 8, step_level:1, render_level:9, color: "#00aaff", scene: this.map.scene, time: 0.2});
+            if (Math.random() < 0.4) {
+                TD.Explode("orb-p-"+TD.lang.rndStr(), {cx: this.cx + (Math.random()*this.r - this.r/2), cy: this.cy + (Math.random()*this.r - this.r/2), r: 8, step_level:1, render_level:9, color: "#00aaff", scene: this.map.scene, time: 0.2});
+                var board = document.getElementById("td-board");
+                if (board) { board.classList.remove("shake-active"); void board.offsetWidth; board.classList.add("shake-active"); }
+            }
         };
+
         el.render = function() {
             if (!this.is_valid) return;
             var ctx = TD.ctx; ctx.shadowBlur = 30; ctx.shadowColor = "#00aaff";
@@ -8346,40 +8783,218 @@ TD.getCooldownFrames = function() {
         el._init(cfg); return el;
     };
 
-    // 2. Minutemen Militia Blockade
+    // 2. Minutemen Militia Blockade (Directional & Active Firing)
     TD.MilitiaBlockade = function(id, cfg) {
+        cfg.on_events = ["enter", "out", "hover"]; // Allow continuous hover events
+
         var el = new TD.Element(id, cfg);
         el._init = function(cfg) {
             this.map = cfg.map; this.cx = cfg.cx; this.cy = cfg.cy;
-            this.max_life = 1000; this.life = this.max_life;
-            this.r = TD.grid_size * 1.0; this.is_valid = true;
+            this.max_life = 3000; this.life = this.max_life; // Tripled HP
+            this.r = TD.grid_size * 1.0; 
+            this.width = this.r * 2; this.height = this.r * 2; // Needed for hover hitbox
+            this.x = this.cx - this.r; this.y = this.cy - this.r; 
+            this.x2 = this.x + this.width; this.y2 = this.y + this.height;
+            
+            this.is_valid = true;
+            this.name = "MILITIA BARRICADE"; 
+            this.killed = 0; 
+            this.gainXp = function(){}; 
+            this.range = 5; 
+            this.barks = []; // Holds the active custom chatter
+            
+            this.angle = 0;
+            if (this.map.entrances && this.map.entrances.length > 0) {
+                var ent = this.map.entrances[0];
+                var closest = 999999;
+                for (var i = 0; i < this.map.entrances.length; i++) {
+                    var d = Math.pow(this.map.entrances[i].cx - this.cx, 2) + Math.pow(this.map.entrances[i].cy - this.cy, 2);
+                    if (d < closest) { closest = d; ent = this.map.entrances[i]; }
+                }
+                this.angle = Math.atan2(ent.cy - this.cy, ent.cx - this.cx) - (Math.PI / 2);
+            }
             this.addToScene(this.map.scene, 1, 4);
         };
+        
+        el.onEnter = function() {
+            var tooltip = document.getElementById("tower-tooltip");
+            if (tooltip) {
+                tooltip.innerHTML = "<b>" + this.name + "</b><br>HP: " + Math.floor(this.life) + " / " + this.max_life;
+                tooltip.style.display = "block";
+            }
+        };
+        el.onHover = function() {
+            var tooltip = document.getElementById("tower-tooltip");
+            if (tooltip && tooltip.style.display === "block") {
+                tooltip.innerHTML = "<b>" + this.name + "</b><br>HP: " + Math.floor(this.life) + " / " + this.max_life;
+            }
+        };
+        el.onOut = function() {
+            var tooltip = document.getElementById("tower-tooltip");
+            if (tooltip) tooltip.style.display = "none";
+        };
+
         el.step = function() {
             if (!this.is_valid) return;
-            var _this = this; var dummy = { killed: 0, gainXp: function(){} }; var isAttacked = false;
+            var _this = this; var isAttacked = false;
+            
+            // Decay Timer (100 HP every second = lasts exactly 30 seconds max)
+            if (TD.iframe % TD.exp_fps === 0) this.life -= 100;
+
+            // 1. Wild Firing & Grenade Logic
+
+            var range2 = Math.pow(this.range * TD.grid_size, 2);
+            var targets = [];
             TD.lang.each(this.map.monsters, function(m) {
-                if (m.is_valid && Math.pow(m.cx - _this.cx, 2) + Math.pow(m.cy - _this.cy, 2) <= Math.pow(_this.r * 1.5, 2)) {
-                    m.speed = 0.1; m.is_frozen = true; m.freeze_timer = 5; // Halt monster
-                    _this.life -= m.damage; isAttacked = true;
-                    if (TD.iframe % 12 === 0) m.beHit(dummy, 30); // Shoot back
+                if (m.is_valid && Math.pow(m.cx - _this.cx, 2) + Math.pow(m.cy - _this.cy, 2) <= range2) {
+                    // Spot and reveal hidden enemies!
+                    if (m.is_stealthed || m.is_burrowing) {
+                        m.is_revealed = true;
+                        m.reveal_timer = Math.floor(TD.exp_fps * 2);
+                    }
+                    targets.push(m);
                 }
             });
+            
+            if (targets.length > 0) {
+                // Random Grenade Lobs (Every 3 to 5 seconds)
+                if (typeof this.grenade_timer === 'undefined') this.grenade_timer = TD.exp_fps * 2;
+                this.grenade_timer--;
+                if (this.grenade_timer <= 0) {
+                    this.grenade_timer = TD.exp_fps * (Math.floor(Math.random() * 3) + 3);
+                    var gTarget = targets[Math.floor(Math.random() * targets.length)];
+                    var blast = TD.grid_size * 1.5;
+                    
+                    TD.Explode("grenade-" + TD.lang.rndStr(), { cx: gTarget.cx, cy: gTarget.cy, r: blast / _TD.retina, step_level: 1, render_level: 9, color: "#ff8800", scene: _this.map.scene, time: 0.4 });
+                    TD.playSound("snd_explosion");
+                    
+                    TD.lang.each(this.map.monsters, function(m) {
+                        if (m.is_valid && Math.pow(m.cx - gTarget.cx, 2) + Math.pow(m.cy - gTarget.cy, 2) <= Math.pow(blast, 2)) {
+                            m.beHit({ killed: 0, gainXp: function(){} }, 150); // 150 AoE Damage
+                        }
+                    });
+                }
+
+                // Gunfire
+                if (TD.iframe % 3 === 0) { 
+                    // Fire 1 to 3 bullets randomly, distributed evenly among targets
+                    var bulletsToFire = Math.floor(Math.random() * 3) + 1;
+                    for (var b = 0; b < bulletsToFire; b++) {
+                        var randTarget = targets[b % targets.length];
+                        var bColor = Math.random() > 0.3 ? "#ffff00" : "#ffaa00"; 
+                        
+                        var spread = 40; 
+                        var offsetX = (Math.random() * spread) - (spread / 2);
+                        
+                        var rotX = Math.cos(this.angle) * offsetX - Math.sin(this.angle) * (-15);
+                        var rotY = Math.sin(this.angle) * offsetX + Math.cos(this.angle) * (-15);
+                        
+                        var fireX = this.cx + rotX;
+                        var fireY = this.cy + rotY;
+                        var randDmg = Math.floor(Math.random() * 21) + 40; // 40 to 60 damage
+                        
+                        new TD.Bullet(null, { building: _this, damage: randDmg, target: randTarget, speed: 15, x: fireX, y: fireY, color: bColor });
+                        
+                        if (Math.random() < 0.2) {
+                            TD.Explode("mzf-" + TD.lang.rndStr(), { cx: fireX, cy: fireY, r: 5, step_level: 1, render_level: 9, color: "#ff8800", scene: _this.map.scene, time: 0.2 });
+                        }
+                    }
+                    // Desynced, frantic gunfire sounds
+                    if (Math.random() < 0.5) TD.playSound("snd_gun_heavy");
+                    
+                    // AUDIO ASSAULT: Direct array pull for custom chatter pool!
+                    if (this.barks.length === 0 && window.ChatterDB && window.ChatterDB.factions["MINUTEMEN"].militia_blockade && Math.random() < 0.5) {
+                        var bList = window.ChatterDB.factions["MINUTEMEN"].militia_blockade;
+                        var bLine = bList[Math.floor(Math.random() * bList.length)];
+                        
+                        var fastTimer = Math.floor(2.2 * TD.exp_fps); // Lifespan increased by 1 second
+                        
+                        // Toggle left and right sides
+                        this._bark_side = (this._bark_side === "left") ? "right" : "left";
+                        var baseOffsetX = (this._bark_side === "left") ? -40 : 40;
+                        
+                        this.barks.push({
+                            text: bLine,
+                            timer: fastTimer,
+                            maxTimer: fastTimer,
+                            offsetY: Math.random() * 10 - 5, // Tighter to the barricade vertically
+                            offsetX: baseOffsetX + (Math.random() * 10 - 5) // Alternating sides with slight jitter
+                        });
+                    }
+                }
+            }
+            
+            for (var i = this.barks.length - 1; i >= 0; i--) {
+                this.barks[i].timer--;
+                if (this.barks[i].timer <= 0) this.barks.splice(i, 1);
+            }
+
+            // 2. Physical "Bounce Wall" Logic
+            var trapDist = TD.grid_size * 0.8; // Wide box covers entire path
+            TD.lang.each(this.map.monsters, function(m) {
+                if (m.is_valid && Math.abs(m.cx - _this.cx) < trapDist && Math.abs(m.cy - _this.cy) < trapDist) {
+                    // Force them to bounce backwards slightly using their own velocity vector!
+                    var pushX = (m.cx - _this.cx);
+                    var pushY = (m.cy - _this.cy);
+                    var dist = Math.sqrt(pushX * pushX + pushY * pushY) || 1;
+                    
+                    // Shove them exactly 4 pixels away from the center of the barricade
+                    m.cx += (pushX / dist) * 4;
+                    m.cy += (pushY / dist) * 4;
+                    m.caculatePos(); // Update collision box instantly
+                    
+                    _this.life -= m.damage; 
+                    isAttacked = true;
+                }
+            });
+
             if (isAttacked) TD.Explode("m-hit-"+TD.lang.rndStr(), {cx: this.cx, cy: this.cy, r: 10, step_level:1, render_level:9, color:"#ff0000", scene:this.map.scene, time:0.1});
-            if (this.life <= 0) this.is_valid = false;
+            
+            if (this.life <= 0) {
+                this.is_valid = false;
+                this.onOut(); 
+            }
         };
         el.render = function() {
             if (!this.is_valid) return;
-            var ctx = TD.ctx; ctx.fillStyle = "#4a6887";
-            ctx.beginPath(); ctx.arc(this.cx - 10, this.cy + 5, 8, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(this.cx + 10, this.cy + 5, 8, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(this.cx, this.cy - 12, 8, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = "#000"; ctx.fillRect(this.cx - 15, this.cy - 25, 30, 4);
-            ctx.fillStyle = "#0f0"; ctx.fillRect(this.cx - 15, this.cy - 25, 30 * (this.life/this.max_life), 4);
+            var ctx = TD.ctx; 
+            ctx.save();
+            ctx.translate(this.cx, this.cy);
+            ctx.rotate(this.angle);
+            ctx.fillStyle = "#4a6887";
+            ctx.beginPath(); ctx.arc(-15, 5, 8, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(0, 5, 8, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(15, 5, 8, 0, Math.PI*2); ctx.fill();
+            
+            ctx.beginPath(); ctx.arc(-8, -8, 8, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(8, -8, 8, 0, Math.PI*2); ctx.fill();
+            
+            ctx.fillStyle = "#000"; ctx.fillRect(-25, -25, 50, 6);
+            ctx.fillStyle = "#0f0"; ctx.fillRect(-25, -25, 50 * (this.life/this.max_life), 6);
+            ctx.restore();
+            
+            // Draw Chat Bubbles outside the rotation so they stay upright
+            for (var i = 0; i < this.barks.length; i++) {
+                var bark = this.barks[i];
+                ctx.save();
+                ctx.font = "bold " + Math.floor(14 * _TD.retina) + "px 'Courier New', monospace";
+                ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                
+                var progress = 1 - (bark.timer / bark.maxTimer); 
+                var fadeTime = TD.exp_fps * 0.5;
+                if (bark.timer < fadeTime) ctx.globalAlpha = bark.timer / fadeTime;
+                else if (bark.maxTimer - bark.timer < fadeTime) ctx.globalAlpha = (bark.maxTimer - bark.timer) / fadeTime;
+                else ctx.globalAlpha = 1.0;
+
+                var textY = this.cy - 30 - (progress * 20) + bark.offsetY;
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.6)"; ctx.lineWidth = 3; ctx.fillStyle = "#000000"; 
+                ctx.strokeText(bark.text, this.cx + bark.offsetX, textY);
+                ctx.fillText(bark.text, this.cx + bark.offsetX, textY);
+                ctx.restore();
+            }
         };
         el._init(cfg); return el;
     };
-
     // 3. Raider Nuka-Grenade (Radiation Zone)
     TD.RadZone = function(id, cfg) {
         var el = new TD.Element(id, cfg);
@@ -8388,11 +9003,17 @@ TD.getCooldownFrames = function() {
             this.life = 10 * 24; this.r = TD.grid_size * 3.5; this.is_valid = true;
             this.addToScene(this.map.scene, 1, 3);
             TD.Explode("nuka-blast", {cx: this.cx, cy: this.cy, r: this.r, step_level:1, render_level:9, color:"#ffcc00", scene:this.map.scene, time:1.0});
+            
+            // Initial blast screen shake
+            var board = document.getElementById("td-board");
+            if (board) { board.classList.remove("shake-active"); void board.offsetWidth; board.classList.add("shake-active"); }
+
             var dummy = { killed: 0, gainXp: function(){} }; var _this = this;
             TD.lang.each(this.map.monsters, function(m) {
                 if (m.is_valid && Math.pow(m.cx - _this.cx, 2) + Math.pow(m.cy - _this.cy, 2) <= Math.pow(_this.r, 2)) m.beHit(dummy, 600);
             });
         };
+
         el.step = function() {
             if (!this.is_valid) return;
             this.life--; if (this.life <= 0) { this.is_valid = false; return; }
@@ -8500,7 +9121,10 @@ TD.getCooldownFrames = function() {
                 overlay.style.display = "flex";
                 if (typeof TD !== 'undefined' && TD.populateTechTree) TD.populateTechTree();
                 
+                if (typeof TD !== 'undefined' && TD.is_tutorial_active && TD.Tutorial) TD.Tutorial.next("techtree_open");
+                
                 // NEW: Pause the engine when the modal opens
+
                 if (typeof TD !== 'undefined' && !TD.is_paused) {
                     TD.is_paused = true;
                     var pauseBtn = document.getElementById("ui-btn-pause");
@@ -8837,8 +9461,10 @@ TD.getCooldownFrames = function() {
                 
                 // --- BASE TOWER NODE (Left) ---
                 var baseNode = document.createElement("div");
-                baseNode.style.width = "200px";
-                baseNode.style.height = "60px";
+                // Allow width to stretch and align perfectly with flexbox
+                baseNode.style.flex = "0 0 160px"; 
+                baseNode.style.minHeight = "60px";
+                baseNode.style.padding = "10px 5px";
                 baseNode.style.display = "flex";
                 baseNode.style.flexDirection = "column";
                 baseNode.style.justifyContent = "center";
@@ -8847,12 +9473,18 @@ TD.getCooldownFrames = function() {
                 baseNode.style.background = "#222";
                 baseNode.style.cursor = "pointer";
                 baseNode.style.position = "relative";
+                baseNode.style.textAlign = "center";
                 
                 var nameLabel = document.createElement("div");
                 nameLabel.style.fontWeight = "bold";
+                nameLabel.style.whiteSpace = "normal"; // Allow wrapping
+                nameLabel.style.lineHeight = "1.2";
+                nameLabel.style.marginBottom = "5px";
                 
                 var costLabel = document.createElement("div");
-                costLabel.style.fontSize = "0.8em";
+                costLabel.style.fontSize = "0.85em";
+                costLabel.style.whiteSpace = "normal"; // Allow wrapping
+
                 
                 if (isLevelLocked) {
                     nameLabel.innerText = tData.name;
@@ -8874,8 +9506,10 @@ TD.getCooldownFrames = function() {
                     nameLabel.style.color = "#0f0";
                     
                     var spCost = (idx < 3) ? 1 : (idx < 6) ? 2 : (idx < 8) ? 3 : 4;
+                    if (TD.overdrive && TD.overdrive.I > 0) spCost = Math.max(1, Math.floor(spCost * 0.5)); // Active SP Discount
                     
                     if (TD.skill_points < spCost) {
+
                         costLabel.innerText = "Need " + spCost + " SP";
                         costLabel.style.color = "#800"; // Dark red
                         baseNode.style.cursor = "not-allowed";
@@ -8927,7 +9561,6 @@ TD.getCooldownFrames = function() {
                 row.appendChild(forkContainer);
                 // ---------------------------
 
-
                 // --- NEW: UPGRADE BRANCHES (Right Side) ---
                 var branchesContainer = document.createElement("div");
                 branchesContainer.style.display = "flex";
@@ -8935,9 +9568,11 @@ TD.getCooldownFrames = function() {
                 branchesContainer.style.gap = "5px";
                 branchesContainer.style.flex = "1";
 
-                if (!isLevelLocked && tData.upgrades) {
+                // FIX: Allow branches to render even if the base tower is level-locked so players can read the tooltips
+                if (tData.upgrades) {
                     var paths = ["path1", "path2"];
                     paths.forEach(function(pName) {
+
                         var pathRow = document.createElement("div");
                         pathRow.style.display = "flex";
                         pathRow.style.alignItems = "center"; // <--- THIS IS CRITICAL
@@ -8947,43 +9582,52 @@ TD.getCooldownFrames = function() {
                         for (var u = 0; u < uList.length; u++) {
                             (function(uIdx, pathObj) {
                                 var upNode = document.createElement("div");
-                                upNode.style.width = "130px";
-                                upNode.style.height = "40px";
+                                upNode.style.width = "180px"; // Wider to fit description
+                                upNode.style.minHeight = "60px"; // Taller
+                                upNode.style.padding = "5px";
                                 upNode.style.display = "flex";
                                 upNode.style.flexDirection = "column";
                                 upNode.style.justifyContent = "center";
                                 upNode.style.alignItems = "center";
                                 upNode.style.border = "1px solid #555";
                                 upNode.style.background = "#222";
-                                upNode.style.fontSize = "0.75em";
+                                upNode.style.fontSize = "1em"; // Matches base tower font size
                                 upNode.style.textAlign = "center";
                                 
                                 var uName = document.createElement("div");
                                 uName.innerText = pathObj.name;
                                 uName.style.fontWeight = "bold";
+                                uName.style.marginBottom = "2px";
                                 
-                                // NEW: Mouseover tooltip
+                                var uDesc = document.createElement("div");
+                                uDesc.innerText = pathObj.desc || "";
+                                uDesc.style.fontSize = "0.85em";
+                                uDesc.style.marginBottom = "4px";
+                                uDesc.style.lineHeight = "1.1";
+                                
                                 upNode.title = pathObj.desc || "Upgrade: " + pathObj.name;
                                 
                                 var uCost = document.createElement("div");
+                                uCost.style.fontWeight = "bold";
                                 
-                                // NEW: Check if the previous upgrade in this path is unlocked
                                 var prevUnlocked = (uIdx === 0) ? true : uList[uIdx - 1].is_unlocked;
                                 
                                 if (!tData.is_unlocked) {
                                     uName.style.color = "#555";
+                                    uDesc.style.color = "#444";
                                     uCost.innerText = "Unlock Tower First";
                                     uCost.style.color = "#555";
                                     upNode.style.cursor = "not-allowed";
                                 } else if (!prevUnlocked) {
-                                    // NEW: Force sequential unlocking
                                     uName.style.color = "#555";
+                                    uDesc.style.color = "#444";
                                     uCost.innerText = "Requires Tier " + uIdx;
                                     uCost.style.color = "#555";
                                     upNode.style.cursor = "not-allowed";
                                     upNode.title = "You must unlock the previous upgrade in this path first.";
                                 } else if (pathObj.is_unlocked) {
                                     uName.style.color = "#000";
+                                    uDesc.style.color = "#111";
                                     uCost.innerText = "UNLOCKED";
                                     uCost.style.color = "#000";
                                     upNode.style.background = "#2a7a2a";
@@ -8991,18 +9635,20 @@ TD.getCooldownFrames = function() {
                                     upNode.style.cursor = "default";
                                 } else {
                                     uName.style.color = "#0f0";
-                                    // Cost Scaling: T1=1, T2=1, T3=2, T4=3
+                                    uDesc.style.color = "#ccc";
                                     var spCost = (uIdx < 2) ? 1 : (uIdx === 2) ? 2 : 3; 
+                                    if (TD.overdrive && TD.overdrive.I > 0) spCost = Math.max(1, Math.floor(spCost * 0.5));
                                     
                                     if (TD.skill_points < spCost) {
                                         uCost.innerText = "Need " + spCost + " SP";
-                                        uCost.style.color = "#800";
+                                        uCost.style.color = "#ff5555"; // Bright Red
                                         upNode.style.cursor = "not-allowed";
                                         upNode.title = "Not enough SP. " + (pathObj.desc || "");
                                     } else {
                                         uCost.innerText = "Research: " + spCost + " SP";
                                         uCost.style.color = "#ffaa00";
                                         upNode.style.cursor = "pointer";
+
                                         
                                         upNode.onclick = function() {
 // --- NEW: Check if tower is actually on the map ---
@@ -9037,7 +9683,9 @@ if (activeMap && activeMap.buildings) {
                                                 pathObj.is_unlocked = true;
                                                 if (typeof window.updateMenuStats === 'function') window.updateMenuStats();
                                                 TD.populateTechTree(); 
+                                                if (TD.is_tutorial_active && TD.Tutorial) TD.Tutorial.next("techtree_research");
                                             };
+
 
                                             // If not placed, throw the custom warning modal!
                                             if (!isPlaced) {
@@ -9068,9 +9716,11 @@ if (activeMap && activeMap.buildings) {
                                 }
                                 
                                 upNode.appendChild(uName);
+                                upNode.appendChild(uDesc);
                                 upNode.appendChild(uCost);
                                 
                                 // --- CLEAN FLEXBOX LINES ---
+
                                 if (uIdx > 0) {
                                     var lineContainer = document.createElement("div");
                                     lineContainer.style.display = "flex";
@@ -9174,6 +9824,19 @@ _TD.a.push(function (TD) {
                     TD.we_current_faction_tab = this.value;
                     TD.we_loadCurrentWave();
                 };
+            }
+
+            // --- NEW: Wave Caps Listeners ---
+            var capsModeSel = document.getElementById("we-caps-mode");
+            if (capsModeSel) {
+                capsModeSel.onchange = function() {
+                    document.getElementById("we-caps-fixed-amount").style.display = (this.value === "fixed") ? "inline-block" : "none";
+                    TD.we_saveCurrentWave();
+                };
+            }
+            var capsFixedInp = document.getElementById("we-caps-fixed-amount");
+            if (capsFixedInp) {
+                capsFixedInp.onchange = function() { TD.we_saveCurrentWave(); };
             }
             
             // --- NEW: Add / Delete Wave Buttons ---
@@ -9293,15 +9956,31 @@ _TD.a.push(function (TD) {
 
         document.getElementById("we-story-enable").checked = data.story_enable;
 
+        // --- NEW: Load Mutations Toggle (Default to true if undefined) ---
+        var mutCheckbox = document.getElementById("we-mutations-enable");
+        if (mutCheckbox) mutCheckbox.checked = (typeof data.mutations_enable !== 'undefined') ? data.mutations_enable : true;
         
         var fData = data.story_data[TD.we_current_faction_tab] || { title: "", desc: "" };
+
         document.getElementById("we-story-title").value = fData.title;
         document.getElementById("we-story-desc").value = fData.desc;
+        
+        // --- NEW: Load Caps Data ---
+        var cMode = data.caps_mode || "carryover";
+        var cAmt = data.caps_fixed_amount !== undefined ? data.caps_fixed_amount : 500;
+        var capsSel = document.getElementById("we-caps-mode");
+        var capsInp = document.getElementById("we-caps-fixed-amount");
+        if (capsSel) capsSel.value = cMode;
+        if (capsInp) {
+            capsInp.value = cAmt;
+            capsInp.style.display = (cMode === "fixed") ? "inline-block" : "none";
+        }
         
         for (var t = 1; t <= 11; t++) {
             var sel = document.getElementById("we-tower-sel-" + t);
             if (sel) sel.value = data.towers["tower_" + t] || "unlocked";
         }
+
         
         TD.we_renderSpawns();
     };
@@ -9311,12 +9990,24 @@ _TD.a.push(function (TD) {
         
         data.story_enable = document.getElementById("we-story-enable").checked;
         
+        // --- NEW: Save Mutations Toggle ---
+        var mutCheckbox = document.getElementById("we-mutations-enable");
+        if (mutCheckbox) data.mutations_enable = mutCheckbox.checked;
+        
         // Save current faction tab text
+
         if (!data.story_data) data.story_data = { "ALL": {title:"", desc:""}, "NCR": {title:"", desc:""}, "BOS": {title:"", desc:""}, "MINUTEMEN": {title:"", desc:""}, "RAIDERS": {title:"", desc:""} };
         data.story_data[TD.we_current_faction_tab].title = document.getElementById("we-story-title").value;
         data.story_data[TD.we_current_faction_tab].desc = document.getElementById("we-story-desc").value;
         
+        // --- NEW: Save Caps Data ---
+        var capsSel = document.getElementById("we-caps-mode");
+        if (capsSel) data.caps_mode = capsSel.value;
+        var capsInp = document.getElementById("we-caps-fixed-amount");
+        if (capsInp) data.caps_fixed_amount = parseInt(capsInp.value) || 0;
+        
         for (var t = 1; t <= 11; t++) {
+
             var sel = document.getElementById("we-tower-sel-" + t);
             if (sel) data.towers["tower_" + t] = sel.value;
         }
@@ -9639,14 +10330,21 @@ _TD.a.push(function (TD) {
             var bld = bullet.building;
             if (!bld || !bld.is_valid) return true;
             
-            // --- NEW: RNG Crits ---
-            if (bld.crit_chance && Math.random() <= bld.crit_chance) {
-                var mult = bld.crit_mult || 2.0;
+            // --- NEW: RNG Crits & LUCK PERK ---
+            // Base crit chance is 0, unless they have upgrades, OR they own the Luck perk (baseline 5%)
+            var base_crit = bld.crit_chance || 0;
+            if (typeof TD !== 'undefined' && TD.perks && TD.perks.L) {
+                base_crit += 0.05; // +5% flat boost
+            }
+            
+            if (base_crit > 0 && Math.random() <= base_crit) {
+                var mult = bld.crit_mult || 2.0; // Default to double damage
                 bullet.damage = Math.floor(bullet.damage * mult);
                 new TD.FloatingText("crit-" + TD.lang.rndStr(), { cx: monster.cx, cy: monster.cy - 15, text: "CRIT!", color: "#ffaa00", map: bld.map, size: 12, life: 24 });
             }
 
             // --- NEW: Boss Damage Multiplier ---
+
             if (bld.boss_damage_mult && monster.life0 >= 2000) {
                 bullet.damage = Math.floor(bullet.damage * bld.boss_damage_mult);
             }
@@ -9659,12 +10357,19 @@ _TD.a.push(function (TD) {
                         monster.is_frozen = true;
                         monster.original_speed = monster.speed;
                         monster.speed = 0.1;
+                        monster.freeze_timer = 0; // Initialize
                     }
-                    monster.freeze_timer = TD.exp_fps * 1.5; 
+                    
+                    // CRITICAL FIX: Only apply the stun timer if it's longer than their current freeze time
+                    var newTimer = TD.exp_fps * 1.5;
+                    if (monster.freeze_timer < newTimer) {
+                        monster.freeze_timer = newTimer;
+                    }
+                    
                     TD.Explode("stun-" + TD.lang.rndStr(), { cx: monster.cx, cy: monster.cy, r: 15 * _TD.retina, step_level: 1, render_level: 9, color: "#ffff00", scene: bld.map.scene, time: 0.2 });
                 }
             }
-            
+
             // 2. Knockback (MULTIPLIER INCREASED TO 5.0)
             if (bld.has_knockback && monster.life0 < 2000) {
                 monster.cx -= (bullet.vx * 5.0); 
@@ -9759,8 +10464,165 @@ document.addEventListener("mousemove", function(e) {
     }
 });
 
+    // --- NEW: TUTORIAL STATE MACHINE ---
+    _TD.a.push(function (TD) {
+        TD.Tutorial = {
+            step: 0, active: false,
+            steps: [
+                { text: "Welcome to the Wasteland. This simulation will teach you how to defend your base.", highlight: null, trigger: "next" },
+                { text: "This is the Intel Feed. It provides basic threat information. With the Intelligence bobblehead, it provides advanced threat levels, approximate sizes, types, and recommended defenses.", highlight: "top-bar", trigger: "next" },
+                { text: "System Status: This is your money, in Caps. You spend caps on fighters and upgrades, and receive caps by picking up dropped loot or starting a wave before the timer runs down to 0.", highlight: "caps", trigger: "next" },
+                { text: "System Status: This is your Player Level (not the level you are playing on). As you kill hostiles, you gain XP.", highlight: "level", trigger: "next" },
+                { text: "System Status: This is your XP gauge. When it fills up, you gain a level and a Skill Point (SP) to apply towards research. If the bar flashes yellow and green, you have unspent SP.", highlight: "btn-open-techtree", trigger: "next" },
+                { text: "System Status: This is your Health. You take damage from hostiles making it through the path. If it goes to 0, you lose. You can heal with Stimpaks or through the Endurance perk.", highlight: "hp", trigger: "next" },
+                { text: "The Arsenal: These are your fighters. You purchase from here and place on the map. If they are glowing, you can afford them. Their price is next to the name. Some must be unlocked in the Tech Tree.", highlight: "arsenal", trigger: "next" },
+                { text: "Consumables: These are rare items found in the wasteland, usually dropped from killed hostiles. They have a cooldown timer so they cannot be used immediately back to back.", highlight: "consumables", trigger: "next" },
+                { text: "S.P.E.C.I.A.L.: These are the bobbleheads you own. Each provides unique passive and active perks. In campaign, you can pick up to three. In endless mode, you will find them as loot.", highlight: "special", trigger: "next" },
+                { text: "V.A.T.S.: This fills up as enemies are killed. When full, it will flash. When used, it will slow time and allow you to take targeted shots at the enemies.", highlight: "btn-vats-activate", trigger: "next" },
+                { text: "System Controls: Start the wave, restart the current level with whatever stats/caps you started it on, or leave the game. You can also pause, change speed, toggle audio, save, and open the guide.", highlight: "controls", trigger: "next" },
+                { text: "Now, let's begin. Select a fighter from the Arsenal and place AT LEAST TWO of them close to the path.", highlight: "btn-buy-tower-1", trigger: "build" },
+                { text: "Good. Fighters engage automatically. Click 'START WAVE' to begin the assault.", highlight: "ui-btn-start-wave", trigger: "wave_start" },
+                { text: "HIDDEN", hidden: true, trigger: "wave_2_delay" },
+                { text: "Wave 2 is underway. You can fast-forward combat. Click the SPEED button.", highlight: "ui-btn-speed", trigger: "speed_up" },
+                { text: "HIDDEN", hidden: true, trigger: "loot_wait" },
+                { text: "Hostiles occasionally drop loot, like Caps or Consumables. Click the dropped item to collect it before it disappears!", highlight: null, trigger: "loot_click" },
+                { text: "You have enough XP to level up! Click the XP Gauge to open the Tech Tree.", highlight: "btn-open-techtree", trigger: "techtree_open" },
+                { text: "Research the first upgrade here to authorize it for field use.", highlight: "modal-btn-path1", trigger: "techtree_research" },
+                { text: "Now that it's researched, click your fighter on the map and purchase the upgrade!", highlight: null, trigger: "tower_upgrade" },
+                { text: "The base has taken damage. Use a Stimpak to repair it.", highlight: "btn-item-stimpak", trigger: "consumable_use" },
+                { text: "V.A.T.S. is fully charged! Click it to freeze time and manually blast targets.", highlight: "btn-vats-activate", trigger: "vats_activate" },
+                { text: "Simulation complete. Transferring command to the real wasteland. Good luck.", highlight: null, trigger: "finish" }
+            ],
+            start: function() {
+                this.active = true; this.step = 0;
+                document.getElementById("tutorial-dim-overlay").style.display = "block";
+                var _this = this;
+                document.getElementById("btn-tutorial-next").onclick = function() {
+                    var s = _this.steps[_this.step];
+                    if (s.trigger === "next" || s.trigger === "finish") {
+                        _this.next(s.trigger);
+                    } else {
+                        // User clicked close on an action step so they can interact with the game
+                        document.getElementById("tutorial-guide-dialog").style.display = "none";
+                    }
+                };
+                this.showStep();
+            },
+            getEl: function(s) {
+                if (!s) return null;
+                if (s === 'caps') return document.getElementById('ui-money-container').parentElement;
+                if (s === 'level') return document.getElementById('ui-level-container').parentElement;
+                if (s === 'hp') return document.getElementById('ui-life-container').parentElement;
+                if (s === 'arsenal') return document.getElementById('btn-buy-tower-1').parentElement.parentElement; // Traverses up to the full .build-grid!
+                if (s === 'consumables') return document.getElementById('btn-item-stimpak').parentElement;
+                if (s === 'special') return document.getElementById('btn-special-s').parentElement;
+                if (s === 'controls') return document.getElementById('ui-btn-start-wave').parentElement;
+                return document.getElementById(s);
+            },
+            showStep: function() {
+                if (this.step >= this.steps.length) { this.end(); return; }
+                var s = this.steps[this.step];
+                
+                var dialog = document.getElementById("tutorial-guide-dialog");
+                var dimOverlay = document.getElementById("tutorial-dim-overlay");
+                var focusBox = document.getElementById("tutorial-focus-box");
+
+                if (s.hidden) {
+                    dialog.style.display = "none";
+                    dimOverlay.style.display = "none";
+                    focusBox.style.display = "none";
+                    TD.is_paused = false;
+                    if (typeof TD.step === 'function') TD.step();
+                    if (TD.stage && TD.stage.current_act && TD.stage.current_act.current_scene) TD.stage.current_act.current_scene.start();
+                    return;
+                }
+
+                dialog.style.display = "block";
+                document.getElementById("tutorial-guide-text").innerHTML = s.text;
+                
+                // Force the massive shadow ON during reading mode
+                focusBox.style.boxShadow = "0 0 15px #0f0, inset 0 0 10px #0f0, 0 0 0 9999px rgba(0,0,0,0.55)";
+                
+                var btn = document.getElementById("btn-tutorial-next");
+                if (s.trigger === "next" || s.trigger === "finish") {
+                    btn.innerText = "NEXT";
+                    TD.is_paused = true;
+                    if (TD.stage && TD.stage.current_act && TD.stage.current_act.current_scene) TD.stage.current_act.current_scene.pause();
+                    
+                    var _this = this;
+                    btn.onclick = function() { _this.next(s.trigger); };
+                    
+                } else {
+                    btn.innerText = "CLOSE";
+                    TD.is_paused = false; 
+                    if (typeof TD.step === 'function') TD.step();
+                    if (TD.stage && TD.stage.current_act && TD.stage.current_act.current_scene) TD.stage.current_act.current_scene.start();
+                    
+                    // Kill the background dimming, but keep the glowing box!
+                    btn.onclick = function() {
+                        dialog.style.display = "none";
+                        dimOverlay.style.display = "none";
+                        focusBox.style.boxShadow = "0 0 15px #0f0, inset 0 0 10px #0f0"; // Drops the massive outer shadow!
+                    };
+                }
+                
+                if (s.trigger === "build") { 
+                    TD.money = 200; 
+                    this.build_count = 0; // Initialize counter
+                }
+                if (s.trigger === "consumable_use") { TD.inventory.stimpak = 1; TD.life = 50; TD.updateItemButton("stimpak"); }
+                if (s.trigger === "techtree_open") { TD.skill_points = 1; TD.account_level = 2; }
+                if (s.trigger === "tower_upgrade") { TD.money = 200; }
+                if (s.trigger === "vats_activate") { TD.vats_charge = TD.vats_max_charge; }
+                
+                var hlEl = this.getEl(s.highlight);
+                if (hlEl) {
+                    var rect = hlEl.getBoundingClientRect();
+                    focusBox.style.top = (rect.top - 4) + "px";
+                    focusBox.style.left = (rect.left - 4) + "px";
+                    focusBox.style.width = (rect.width + 8) + "px";
+                    focusBox.style.height = (rect.height + 8) + "px";
+                    
+                    focusBox.style.display = "block";
+                    dimOverlay.style.display = "none";
+                } else {
+                    focusBox.style.display = "none";
+                    dimOverlay.style.display = "block";
+                }
+            },
+            next: function(triggerType) {
+
+                if (!this.active) return;
+                if (triggerType && this.steps[this.step].trigger !== triggerType) return;
+                
+                this.step++;
+                if (this.step < this.steps.length) {
+                    this.showStep();
+                } else {
+                    this.end();
+                }
+            },
+            end: function() {
+                this.active = false;
+                document.getElementById("tutorial-dim-overlay").style.display = "none";
+                document.getElementById("tutorial-guide-dialog").style.display = "none";
+                var oldHl = document.querySelectorAll(".tutorial-highlight");
+                for(var i=0; i<oldHl.length; i++) oldHl[i].classList.remove("tutorial-highlight");
+                TD.is_paused = false;
+                if (typeof TD.step === 'function') TD.step();
+                if (TD.stage && TD.stage.current_act && TD.stage.current_act.current_scene) TD.stage.current_act.current_scene.start();
+                
+                if (window.selectedLevelName === "tutorial_map_1") {
+                    var btnProceed = document.getElementById("campaign-btn-proceed");
+                    if (btnProceed) btnProceed.click();
+                }
+            }
+        };
+    });
+
     // NEW: Reusable Panel Ignition Function
     window.triggerPanelIgnition = function() {
+
         document.getElementById("ui-money-container").innerHTML = "";
         document.getElementById("ui-score-container").innerHTML = "";
         document.getElementById("ui-life-container").innerHTML = "";
@@ -10089,44 +10951,25 @@ document.addEventListener("mousemove", function(e) {
     window.bypass_clicks = 0;
     window.bypass_perks = false;
 
-    document.getElementById("btn-start").addEventListener("click", function() {
-        // --- NEW: 5-CLICK BYPASS LOGIC ---
-        if (this.getAttribute("data-locked") === "true") {
-            window.bypass_clicks++;
-            if (window.bypass_clicks >= 5) {
-                window.bypass_perks = true;
-                updatePlayButtonLighting(); // Force it on!
-            }
-            return; // Don't start the game yet
-        }
-
-        // Capture Game Type
-        var gameType = document.getElementById("gametype-select");
-        window.is_campaign_mode = (gameType && gameType.value === "campaign");
-        window.is_custom_mode = (gameType && gameType.value === "custom");
-        window.is_assault_mode = (gameType && gameType.value === "assault");
-
-
+    var launchGame = function(isTutorial) {
+        document.getElementById("tutorial-prompt-modal").style.display = "none";
         
-        // Capture S.P.E.C.I.A.L. choices
-
-        window.selectedSPECIALs = [];
-        var checkedSpecials = document.querySelectorAll(".special-chk:checked");
-        for (var i = 0; i < checkedSpecials.length; i++) {
-            window.selectedSPECIALs.push(checkedSpecials[i].value);
-        }
-        
-        // Map Selection Logic
         if (window.is_campaign_mode) {
-            window.selectedLevelName = "campaign_map_1"; // Default start for campaign
-            window.campaign_map_index = 1; // Explicitly set the index!
-
+            if (isTutorial) {
+                window.selectedLevelName = "tutorial_map_1";
+                window.campaign_map_index = 0; // Pre-campaign
+                TD.is_tutorial_active = true;
+            } else {
+                window.selectedLevelName = "campaign_map_1"; 
+                window.campaign_map_index = 1; 
+                TD.is_tutorial_active = false;
+            }
         } else {
             window.selectedLevelName = document.getElementById("level-select").value;
+            TD.is_tutorial_active = false;
         }
 
         window.selectedFaction = document.getElementById("faction-select").value;
-
         window.customDifficulty = parseFloat(document.getElementById("difficulty-select").value);
         
         document.getElementById("start-screen").style.display = "none";
@@ -10134,37 +10977,68 @@ document.addEventListener("mousemove", function(e) {
         
         var board = document.getElementById("td-board");
         board.style.display = "block";
-        board.style.transition = "filter 0.5s ease"; // Add fade transition only for un-blurring
+        board.style.transition = "filter 0.5s ease";
         board.classList.remove("demo-blur");
         
         document.getElementById("control-panel").style.display = "flex";
         
-        // Stop demo and start real game
         window.is_demo_mode = false;
         TD.stage.clear();
         window.triggerPanelIgnition();
-        TD.total_shots = 0; // Reset shots for new game
+        TD.total_shots = 0;
         TD.start();
         
-        // Start the battle music!
-
         if (typeof TD.playMusic === 'function') {
             TD.playMusic("bgm_game");
         }
         
-        // --- NEW: Global Starting Caps Doubler ---
         if (typeof TD.money !== "undefined") {
             TD.money = Math.floor(TD.money * 2.0);
         }
 
-        // --- NEW: Take baseline map entry snapshot ---
         if (typeof TD.saveMapEntry === 'function') TD.saveMapEntry();
         
-        // Apply Global Passives (Endurance, Agility Items)
-
         if (TD.perks) {
-            if (TD.perks.E) { TD.life = Math.floor(TD.life * 1.5); TD.base_health = Math.floor(TD.base_health * 1.5); }
             if (TD.perks.A) TD.getCooldownFrames = function() { var base = (TD.difficulty < 1) ? 24 : (TD.difficulty > 1) ? 288 : 120; return Math.floor(base * 0.85); };
+        }
+
+        // Trigger tutorial engine if active
+        if (TD.is_tutorial_active && typeof TD.Tutorial !== 'undefined') {
+            setTimeout(function() {
+                TD.Tutorial.start();
+            }, 100);
+        }
+    };
+
+
+    document.getElementById("btn-tutorial-skip").addEventListener("click", function() { launchGame(false); });
+    document.getElementById("btn-tutorial-accept").addEventListener("click", function() { launchGame(true); });
+
+    document.getElementById("btn-start").addEventListener("click", function() {
+        if (this.getAttribute("data-locked") === "true") {
+            window.bypass_clicks++;
+            if (window.bypass_clicks >= 5) {
+                window.bypass_perks = true;
+                updatePlayButtonLighting(); 
+            }
+            return; 
+        }
+
+        var gameType = document.getElementById("gametype-select");
+        window.is_campaign_mode = (gameType && gameType.value === "campaign");
+        window.is_custom_mode = (gameType && gameType.value === "custom");
+        window.is_assault_mode = (gameType && gameType.value === "assault");
+
+        window.selectedSPECIALs = [];
+        var checkedSpecials = document.querySelectorAll(".special-chk:checked");
+        for (var i = 0; i < checkedSpecials.length; i++) {
+            window.selectedSPECIALs.push(checkedSpecials[i].value);
+        }
+        
+        if (window.is_campaign_mode) {
+            document.getElementById("tutorial-prompt-modal").style.display = "flex";
+        } else {
+            launchGame(false);
         }
     });
 
@@ -10476,14 +11350,14 @@ document.addEventListener("mousemove", function(e) {
             <div style="margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
                 <label for="modal-target-mode" style="font-size: 0.9em; font-weight: bold;">TARGETING:</label>
                 <select id="modal-target-mode" style="background: #222; color: #0f0; border: 1px solid #0f0; padding: 5px; font-family: 'Courier New', monospace; flex: 0.8;">
+                    <option value="first">First</option>
+                    <option value="last">Last</option>
                     <option value="closest">Closest</option>
-                    <option value="leader">Leader</option>
                     <option value="strongest">Strongest (Req. Intel)</option>
                     <option value="weakest">Weakest (Req. Intel)</option>
                 </select>
-
-
             </div>
+
             
             <!-- NEW: UPGRADE PATHS (BTD5 Style) -->
             <div style="border-top: 1px dashed #0f0; padding-top: 15px; margin-bottom: 15px;">
@@ -10578,21 +11452,30 @@ document.addEventListener("mousemove", function(e) {
         You must still spend Caps in-game to deploy or upgrade it.
     </div>
 
-    <!-- NEW: Research Confirmation Modal -->
-    <div id="research-confirm-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100001; justify-content: center; align-items: center;">
+    <!-- NEW: Bobblehead Consumption Warning Modal -->
+    <div id="bobblehead-confirm-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100001; justify-content: center; align-items: center;">
         <div style="background: #111; color: #0f0; padding: 30px; border: 2px solid #0f0; border-radius: 8px; width: 450px; text-align: center; font-family: 'Courier New', monospace; box-shadow: 0 0 30px rgba(0,255,0,0.5);">
-            <h2 style="margin-top: 0; color: #ffaa00;">CONFIRM RESEARCH</h2>
-            <p id="research-confirm-desc" style="font-size: 1.1em; line-height: 1.5; margin-bottom: 20px;">You do not currently have a [TOWER] placed on the map. Are you sure you want to research this upgrade?</p>
+            <h2 style="margin-top: 0; color: #ffaa00;">CONSUME ITEM?</h2>
+            
+            <p style="font-size: 1.1em; line-height: 1.5; margin-bottom: 10px;">
+                Activating this ability will consume the <span id="bobblehead-confirm-letter" style="color:#ffaa00; font-weight:bold;">[L]</span> Bobblehead and discard it. You will need to find another one in the wasteland to use it again.
+            </p>
+            
+            <p style="font-size: 1.1em; line-height: 1.5; margin-bottom: 20px;">
+                You will also lose the following passive perk:<br>
+                <span id="bobblehead-confirm-passive" style="color:#ff8800; font-weight:bold;">[Passive Effect]</span>
+            </p>
+            
             <div style="display: flex; gap: 15px; justify-content: center;">
-                <button id="btn-research-cancel" style="padding: 10px 20px; background-color: #2a7a2a; color: #fff; border: 2px solid #0f0; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 1.1em; font-weight: bold; cursor: pointer; flex: 1; box-shadow: 2px 2px 5px rgba(0,0,0,0.9); transition: transform 0.1s;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">CANCEL</button>
-                <button id="btn-research-confirm" style="padding: 10px 20px; background-color: #7a2a2a; color: #fff; border: 2px solid #ff5555; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 1.1em; font-weight: bold; cursor: pointer; flex: 1; box-shadow: 2px 2px 5px rgba(0,0,0,0.9); transition: transform 0.1s;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">PROCEED</button>
+                <button id="btn-bobblehead-cancel" style="padding: 10px 20px; background-color: #2a7a2a; color: #fff; border: 2px solid #0f0; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 1.1em; font-weight: bold; cursor: pointer; flex: 1; box-shadow: 2px 2px 5px rgba(0,0,0,0.9); transition: transform 0.1s;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">CANCEL</button>
+                <button id="btn-bobblehead-confirm" style="padding: 10px 20px; background-color: #7a4a2a; color: #fff; border: 2px solid #ff8800; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 1.1em; font-weight: bold; cursor: pointer; flex: 1; box-shadow: 2px 2px 5px rgba(0,0,0,0.9); transition: transform 0.1s;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">USE IT</button>
             </div>
         </div>
     </div>
 
     <!-- NEW: Tech Tree Modal Overlay -->
     <div id="techtree-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,20,0,0.95); z-index: 100000; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
-        <div style="background: #111; color: #0f0; padding: 20px; border: 2px solid #0f0; border-radius: 8px; width: 90vw; max-width: 1000px; height: 85vh; display: flex; flex-direction: column; font-family: 'Courier New', monospace; box-shadow: 0 0 30px rgba(0,255,0,0.4);">
+        <div style="background: #111; color: #0f0; padding: 20px; border: 2px solid #0f0; border-radius: 8px; width: 90vw; max-width: 1400px; height: 85vh; display: flex; flex-direction: column; font-family: 'Courier New', monospace; box-shadow: 0 0 30px rgba(0,255,0,0.4);">
             
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #0f0; padding-bottom: 10px; margin-bottom: 15px;">
                 <h2 style="margin: 0; font-size: 1.8em;">G.E.C.K. TECH TREE</h2>
@@ -10618,11 +11501,51 @@ document.addEventListener("mousemove", function(e) {
         </div>
     </div>
 
+    <!-- NEW: Tutorial Prompt Modal -->
+    <div id="tutorial-prompt-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 100001; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
+        <div style="background: #111; color: #0f0; padding: 30px; border: 2px solid #0f0; border-radius: 8px; width: 450px; text-align: center; font-family: 'Courier New', monospace; box-shadow: 0 0 30px rgba(0,255,0,0.5);">
+            <h2 style="margin-top: 0; color: #ffaa00;">TRAINING SIMULATION</h2>
+            <p style="font-size: 1.1em; line-height: 1.5; margin-bottom: 20px;">
+                Would you like to run the basic training simulation before deploying to the wasteland?
+            </p>
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button id="btn-tutorial-skip" style="padding: 10px 20px; background-color: #7a2a2a; color: #fff; border: 2px solid #f00; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 1.1em; font-weight: bold; cursor: pointer; flex: 1; transition: transform 0.1s;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'">SKIP</button>
+                <button id="btn-tutorial-accept" style="padding: 10px 20px; background-color: #2a7a2a; color: #fff; border: 2px solid #0f0; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 1.1em; font-weight: bold; cursor: pointer; flex: 1; transition: transform 0.1s;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'">RUN TUTORIAL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Tutorial Guide Dialog & Overlay -->
+    <div id="tutorial-dim-overlay"></div>
+    <div id="tutorial-focus-box"></div>
+    <div id="tutorial-guide-dialog">
+        <h3 style="margin-top: 0; color: #ffaa00; border-bottom: 1px dashed #0f0; padding-bottom: 5px;">TRAINING MODULE:</h3>
+        <p id="tutorial-guide-text" style="font-size: 1.1em; line-height: 1.4; margin-bottom: 15px; text-align: left; color: #fff;">
+            Welcome to the Wasteland.
+        </p>
+        <button id="btn-tutorial-next" style="width: 100%; padding: 10px; background-color: #2a7a2a; color: #fff; border: 2px solid #0f0; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: transform 0.1s;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'">NEXT</button>
+    </div>
+
         </div>
     </div>
 
 
-    <!-- --- NEW: Wasteland Guide Icon & Modal --- -->
+        <!-- NEW: Research Confirmation Modal -->
+    <div id="research-confirm-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100001; justify-content: center; align-items: center;">
+        <div style="background: #111; color: #0f0; padding: 30px; border: 2px solid #0f0; border-radius: 8px; width: 450px; text-align: center; font-family: 'Courier New', monospace; box-shadow: 0 0 30px rgba(0,255,0,0.5);">
+            <h2 style="margin-top: 0; color: #ffaa00;">CONFIRM RESEARCH</h2>
+            
+            <p id="research-confirm-desc" style="font-size: 1.1em; line-height: 1.5; margin-bottom: 20px;">
+                You do not currently have this tower placed on the map. Are you sure you want to research this upgrade?
+            </p>
+            
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button id="btn-research-cancel" style="padding: 10px 20px; background-color: #2a7a2a; color: #fff; border: 2px solid #0f0; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 1.1em; font-weight: bold; cursor: pointer; flex: 1; box-shadow: 2px 2px 5px rgba(0,0,0,0.9);">CANCEL</button>
+                <button id="btn-research-confirm" style="padding: 10px 20px; background-color: #7a4a2a; color: #fff; border: 2px solid #ff8800; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 1.1em; font-weight: bold; cursor: pointer; flex: 1; box-shadow: 2px 2px 5px rgba(0,0,0,0.9);">RESEARCH</button>
+            </div>
+        </div>
+    </div>
+
 
 
     <!-- --- NEW: Wasteland Guide Icon & Modal --- -->
@@ -10862,6 +11785,30 @@ document.addEventListener("mousemove", function(e) {
                 var optDiv = document.createElement("div");
                 optDiv.className = "custom-option";
                 optDiv.innerHTML = option.innerHTML;
+                
+                // NEW: Attach tooltip to individual option
+                var desc = option.getAttribute("data-desc");
+                if (desc) {
+                    optDiv.addEventListener("mouseover", function() {
+                        var tooltip = document.getElementById("tower-tooltip");
+                        if (tooltip) {
+                            tooltip.style.display = "block";
+                            tooltip.innerText = "Game Mode\n\n" + desc;
+                        }
+                    });
+                    optDiv.addEventListener("mouseout", function() {
+                        var tooltip = document.getElementById("tower-tooltip");
+                        if (tooltip) tooltip.style.display = "none";
+                    });
+                }
+                
+                // NEW: Handle disabled options
+                if (option.disabled) {
+                    optDiv.style.color = "#555";
+                    optDiv.style.cursor = "not-allowed";
+                    optionsContainer.appendChild(optDiv);
+                    return;
+                }
                 
                 // NEW: Mark the initially selected option so the arrow appears on load
                 if (option.selected) {
