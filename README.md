@@ -1,17 +1,19 @@
-# FalloutTower
+Campaign Roadmap Overview
+Chapter 1: The Resource Wars (Pre-War History)
+•	Story / Framing: An archival simulation of the Resource Wars, focusing on the Alaskan front and the collapse of the Old World. Factions learn about basic concrete fortifications and holding strategic chokepoints against unrelenting odds.
 
-The pathing and stuff works now, but it only loads after the instruction piece begins. I want it to load at the beginning of the tutorial
-With each level, increash base health by 2% (or something like that) and increashe speed, dmg, etc to all towers by 1%.
+Chapter 2: Capital Wasteland (Fallout 3 Era)
+•	Story / Framing: Time jump to 2277. The simulation shifts to the ruined Capital Wasteland. Factions must secure vital resources and deal with heavy radiation pockets and entrenched mutant strongholds.
+
+Chapter 3: The Commonwealth (Fallout 4 Era)
+•	Story / Framing: Fast forward to the Commonwealth. The focus shifts to holding settlements, dealing with advanced tech, and combating mutating legendary creatures that rise from the glowing sea.
+
+Chapter 4: Mojave Desert / New Vegas (Fallout NV Era)
+•	Story / Framing: The final simulation. The battle for Hoover Dam and the control of the Mojave. Absolute chaos, requiring perfect tactical synergies and ultimate weapons.
 
 
-Add to tutorial:
-Wait. For some reason, the game is playing fast. Its not sped up either. Only in tutorial mode its doing this.
-Add speed up feature after wave one (not working properly)
-Either when loot drops, or force one if not dropped by wave 2, then tutorial on picking it up.
-disabled chatter during tutorial
-After research, need to learn to apply update to towers (including all towers at once of same kind)
-Instead of "AREA CLEARED" at end of tutorial, change to something like training completed. There are alot more features, but they can be discovered by playing (dont say playing, though)
-Teach about the end and start points (the arrows) 
-Highlight the patch and teach about it.
-Once the tower button is pressed for first time to select fighter, close the modal.
-Dont go into the XP to upgrade yet until during around 3, and force the xp gauge to fill up for it.
+Level 1 introduces Ghouls and Ants (Swarm/Speed).
+Level 2 introduces Protectrons (Armor).
+Level 3 introduces Mr. Gutsy (Flight).
+Level 4 introduces Sentry Bots (Heavy Tanks).
+
