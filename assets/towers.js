@@ -1,23 +1,23 @@
 var ncr_towers = [
     {
-        id: "ncr_1", name: "NCR RECRUIT", visual_type: "rifle", sound_type: "snd_gun_light", cost: 50, damage: 8, range: 5, speed: 1.0, bullet_speed: 8, life: 100, shield: 10, is_unlocked: true,
+        id: "ncr_1", name: "NCR RECRUIT", damage_type: "Kinetic", visual_type: "rifle", sound_type: "snd_gun_light", cost: 50, damage: 8, range: 5, speed: 1.0, bullet_speed: 8, life: 100, shield: 10, is_unlocked: true,
         upgrades: {
             path1: [
                 { name: "Extended Mags", cost: 50, desc: "Fires more bullets per burst.", effects: { burst_count: 3 } },
                 { name: "Hair Trigger", cost: 120, desc: "Reduces the cooldown between bursts.", effects: { speed_mult: 1.5 } },
                 { name: "LMG Swap", cost: 350, desc: "Swaps to LMG. Bullets cause slight knockback.", effects: { visual_type: "LMG", knockback: true } },
-                { name: "5mm Shredder", cost: 1200, desc: "Swaps to Minigun. Every 10th bullet deals AoE damage.", effects: { visual_type: "HMG", speed_mult: 2.0 } }
+                { name: "5mm Shredder", cost: 1200, desc: "Swaps to Minigun. Every 10th bullet deals AoE damage.", effects: { visual_type: "HMG", speed_mult: 2.0, damage_type: "Explosive" } }
             ],
             path2: [
                 { name: "High-Powered Scope", cost: 75, desc: "+2 Grid Range.", effects: { range_add: 2 } },
                 { name: "Heavy Caliber", cost: 150, desc: "+50% Base Damage.", effects: { damage_mult: 1.5 } },
                 { name: "Anti-Materiel Rifle", cost: 400, desc: "Swaps to .50 Cal. Bullets pierce in a straight line.", effects: { pierce: 3 } },
-                { name: "Explosive Rounds", cost: 1500, desc: ".50 Cal rounds detonate on impact for massive AoE.", effects: { visual_type: "cannon" } }
+                { name: "Explosive Rounds", cost: 1500, desc: ".50 Cal rounds detonate on impact for massive AoE.", effects: { damage_type: "Explosive", visual_type: "cannon" } }
             ]
         }
     },
     {
-        id: "ncr_2", name: "NCR TROOPER", visual_type: "rifle", sound_type: "snd_gun_light", cost: 150, damage: 18, range: 6, speed: 1.2, bullet_speed: 8, life: 120, shield: 20, is_unlocked: true,
+        id: "ncr_2", name: "NCR TROOPER", damage_type: "Kinetic", visual_type: "rifle", sound_type: "snd_gun_light", cost: 150, damage: 18, range: 6, speed: 1.2, bullet_speed: 8, life: 120, shield: 20, is_unlocked: true,
         upgrades: {
             path1: [
                 { name: "Forward Grip", cost: 100, desc: "+15% Fire Rate.", effects: { speed_mult: 1.15 } },
@@ -34,25 +34,25 @@ var ncr_towers = [
         }
     },
     {
-        id: "ncr_3", name: "SCRAP TURRET", visual_type: "LMG", sound_type: "snd_gun_light", cost: 300, damage: 10, range: 4, speed: 4.0, bullet_speed: 6, life: 200, shield: 50, is_unlocked: true,
+        id: "ncr_3", name: "SCRAP TURRET", damage_type: "Kinetic", visual_type: "LMG", sound_type: "snd_gun_light", cost: 300, damage: 10, range: 4, speed: 4.0, bullet_speed: 6, life: 200, shield: 50, is_unlocked: true,
         upgrades: {
             path1: [
                 { name: "Hardened Receiver", cost: 80, desc: "+Damage per bullet.", effects: { damage_add: 3 } },
                 { name: "Twin-Barrels", cost: 250, desc: "Fires two projectiles simultaneously.", effects: { fire_pattern: "twin" } },
-                { name: "Auto-Cannon", cost: 600, desc: "Fires micro-explosive shells.", effects: { visual_type: "cannon", speed_mult: 0.25, damage_mult: 2.0 } },
+                { name: "Auto-Cannon", cost: 600, desc: "Fires micro-explosive shells.", effects: { damage_type: "Explosive", visual_type: "cannon", speed_mult: 0.25, damage_mult: 2.0 } },
                 { name: "Depleted Uranium", cost: 1800, desc: "Shells leave toxic pools on the track (DoT).", effects: { dot_duration: 3 } }
             ],
             path2: [
                 { name: "Upgraded Optics", cost: 100, desc: "+1 Grid Range.", effects: { range_add: 1 } },
                 { name: "Advanced Calculation", cost: 200, desc: "10% chance to deal double damage.", effects: { crit_chance: 0.10, crit_mult: 2.0 } },
                 { name: "V.A.T.S. Uplink", cost: 800, desc: "Can target Flying enemies. Every 5th shot is a 5x critical hit.", effects: { crit_req: 5, anti_air: true } },
-                { name: "Scrap Recycler", cost: 1400, desc: "Extracts 15-20 bonus Caps when landing a killing blow.", effects: { bonus_bounty: true } }
+                { name: "Scrap Recycler", cost: 1400, desc: "Extracts 15-20 bonus Caps when landing a killing blow.", effects: { bonus_bounty: true, anti_air: true } }
             ]
 
         }
     },
     {
-        id: "ncr_4", name: "RECON OUTPOST", visual_type: "wall", is_detector: true, cost: 450, damage: 0, range: 4, speed: 0.25, bullet_speed: 0, life: 150, shield: 20, is_unlocked: true,
+        id: "ncr_4", name: "RECON OUTPOST", damage_type: "Energy", visual_type: "wall", is_detector: true, cost: 450, damage: 0, range: 4, speed: 0.25, bullet_speed: 0, life: 150, shield: 20, is_unlocked: true,
         upgrades: {
             path1: [
                 { name: "Signal Boost", cost: 150, desc: "Increases radar radius.", effects: { range_add: 1 } },
@@ -69,24 +69,24 @@ var ncr_towers = [
         }
     },
     {
-        id: "ncr_5", name: "HEAVY TROOPER", visual_type: "HMG", sound_type: "snd_machine_gun", cost: 600, damage: 18, range: 4, speed: 5.0, bullet_speed: 6, life: 300, shield: 100, is_unlocked: false,
+        id: "ncr_5", name: "HEAVY TROOPER", damage_type: "Kinetic", visual_type: "HMG", sound_type: "snd_machine_gun", cost: 600, damage: 18, range: 4, speed: 5.0, bullet_speed: 6, life: 300, shield: 100, is_unlocked: false,
         upgrades: {
             path1: [
                 { name: "Belt Fed", cost: 200, desc: "+25% Fire Rate.", effects: { speed_mult: 1.25 } },
                 { name: "Tracer Rounds", cost: 300, desc: "Bullets apply a 2s burn DoT.", effects: { dot_duration: 2 } },
-                { name: "Flamer Swap", cost: 800, desc: "Swaps to Flamethrower. Hits all enemies in a short cone.", effects: { visual_type: "laser_gun", fire_pattern: "flamer", pellet_count: 5, range_add: -1 } },
+                { name: "Flamer Swap", cost: 800, desc: "Swaps to Flamethrower. Hits all enemies in a short cone.", effects: { damage_type: "Energy", visual_type: "laser_gun", fire_pattern: "flamer", pellet_count: 5, range_add: -1 } },
                 { name: "Napalm Infection", cost: 2200, desc: "Enemies burn for 4s after leaving fire, radiating damage to nearby monsters.", effects: { dot_duration: 4 } }
             ],
             path2: [
                 { name: "Grenade Pouch", cost: 250, desc: "Periodically lobs a frag grenade at target.", effects: { secondary: "grenade", secondary_cd: 4 } },
-                { name: "Frag Launcher", cost: 600, desc: "Basic attacks become small AoE explosions.", effects: { visual_type: "cannon" } },
+                { name: "Frag Launcher", cost: 600, desc: "Basic attacks become small AoE explosions.", effects: { damage_type: "Explosive", visual_type: "cannon" } },
                 { name: "Missile Launcher", cost: 1200, desc: "High damage seeking missiles with large splash.", effects: { damage_mult: 2.0 } },
                 { name: "Concussive Payload", cost: 2000, desc: "Missiles have 30% chance to stun for 1.5s.", effects: { stun_chance: 0.30 } }
             ]
         }
     },
     {
-        id: "ncr_6", name: "SALVAGED MISSILE", visual_type: "cannon", sound_type: "snd_missile_launch", cost: 800, damage: 80, range: 7, speed: 0.8, bullet_speed: 5, life: 150, shield: 20, is_unlocked: false,
+        id: "ncr_6", name: "SALVAGED MISSILE", damage_type: "Explosive", visual_type: "cannon", sound_type: "snd_missile_launch", cost: 800, damage: 80, range: 7, speed: 0.8, bullet_speed: 5, life: 150, shield: 20, is_unlocked: false,
         upgrades: {
             path1: [
                 { name: "Larger Payload", cost: 250, desc: "+1 Grid explosion radius.", effects: { range_add: 1 } },
@@ -94,35 +94,33 @@ var ncr_towers = [
                 { name: "HE Missiles", cost: 900, desc: "Dead-center hits take double damage.", effects: { damage_mult: 2.0 } },
                 { name: "Bunker Buster", cost: 2500, desc: "Missiles pierce through 3 targets before detonating.", effects: { pierce: 3 } }
             ],
-
             path2: [
                 { name: "Smoke Warheads", cost: 200, desc: "Periodically drops smoke grenades that slow enemies.", effects: { visual_type: "cannon", secondary: "gas_grenade", secondary_cd: 5 } },
                 { name: "White Phosphorus", cost: 450, desc: "Intense DoT burn to blast survivors.", effects: { dot_duration: 3 } },
                 { name: "Napalm Payload", cost: 1000, desc: "Missiles leave a massive fire pool for 5s.", effects: { dot_duration: 5, visual_type: "cannon" } },
                 { name: "Experimental Nuke", cost: 3000, desc: "Fires Mini-Nuke every 10s covering half the map.", effects: { secondary: "nuke", secondary_cd: 10, damage_add: 500 } }
             ]
-
         }
     },
     {
-        id: "ncr_7", name: "1ST RECON SNIPER", visual_type: "rifle", sound_type: "snd_gun_heavy", cost: 1100, damage: 150, range: 12, speed: 0.4, bullet_speed: 15, life: 100, shield: 10, is_unlocked: false,
+        id: "ncr_7", name: "1ST RECON SNIPER", damage_type: "Kinetic", visual_type: "rifle", sound_type: "snd_gun_heavy", cost: 1100, damage: 150, range: 12, speed: 0.4, bullet_speed: 15, life: 100, shield: 10, is_unlocked: false,
         upgrades: {
             path1: [
                 { name: "Breath Control", cost: 200, desc: "+20% Base Damage.", effects: { damage_mult: 1.20 } },
                 { name: "High-Voltage", cost: 350, desc: "+Fire Rate.", effects: { speed_mult: 1.25 } },
-                { name: "Gauss Rifle Swap", cost: 1000, desc: "Pierces enemies in a straight line to map edge.", effects: { pierce: 10, visual_type: "laser_gun" } },
+                { name: "Gauss Rifle Swap", cost: 1000, desc: "Pierces enemies in a straight line to map edge.", effects: { damage_type: "Energy", pierce: 10, visual_type: "laser_gun" } },
                 { name: "EMP Rounds", cost: 2200, desc: "Gauss impacts chain-lightning to 3 nearby enemies.", effects: { chain_max: 3 } }
             ],
             path2: [
                 { name: "Spotter", cost: 150, desc: "+2 Grid Range.", effects: { range_add: 2 } },
-                { name: "Hollow Points", cost: 300, desc: "+30% damage to high-HP Bosses.", effects: { boss_damage_mult: 1.3 } },
+                { name: "Hardened Rounds", cost: 300, desc: "+30% damage to Bosses and Mutated enemies.", effects: { boss_damage_mult: 1.3, bonus_damage_mutated: 1.3 } },
                 { name: "Night Vision", cost: 700, desc: "Target and shoot stealthed enemies map-wide.", effects: { is_detector: true, range_add: 5 } },
                 { name: "Headhunter", cost: 2000, desc: "Every 4th shot is a guaranteed 5x critical hit.", effects: { crit_req: 4 } }
             ]
         }
     },
     {
-        id: "ncr_8", name: "RIOT RANGER", visual_type: "rifle", is_cryo: true, sound_type: "snd_gun_heavy", cost: 1500, damage: 15, range: 8, speed: 0.25, bullet_speed: 12, life: 200, shield: 50, is_unlocked: false,
+        id: "ncr_8", name: "RIOT RANGER", damage_type: "Energy", visual_type: "rifle", is_cryo: true, sound_type: "snd_gun_heavy", cost: 1500, damage: 15, range: 8, speed: 0.25, bullet_speed: 12, life: 200, shield: 50, is_unlocked: false,
         upgrades: {
             path1: [
                 { name: "Liquid Nitrogen", cost: 150, desc: "Increases duration of the slow effect.", effects: { slow_duration_mult: 1.5 } },
@@ -136,15 +134,14 @@ var ncr_towers = [
                 { name: "Shock Lasers", cost: 900, desc: "Swaps to laser rifle. Beam chains to 2 enemies.", effects: { visual_type: "laser_gun", chain_max: 2 } },
                 { name: "Overcharged Cells", cost: 2000, desc: "Beams pierce 4 targets in a straight line.", effects: { pierce: 4 } }
             ]
-
         }
     },
     {
-        id: "ncr_9", name: "VERTIBIRD GUNNER", visual_type: "HMG", sound_type: "snd_machine_gun", cost: 2500, damage: 25, range: 7, speed: 6.0, bullet_speed: 8, life: 500, shield: 200, is_unlocked: false, is_flying: true,
+        id: "ncr_9", name: "VERTIBIRD GUNNER", damage_type: "Kinetic", visual_type: "HMG", sound_type: "snd_machine_gun", cost: 2500, damage: 25, range: 7, speed: 6.0, bullet_speed: 8, life: 500, shield: 200, is_unlocked: false, is_flying: true,
         upgrades: {
             path1: [
                 { name: "Wider Arc", cost: 300, desc: "Increases patrol engagement range.", effects: { range_add: 2 } },
-                { name: "Explosive Rounds", cost: 500, desc: "Bullets deal small AoE splash.", effects: { damage_mult: 1.5 } },
+                { name: "Explosive Rounds", cost: 500, desc: "Bullets deal small AoE splash.", effects: { damage_type: "Explosive", damage_mult: 1.5 } },
                 { name: "Napalm Drops", cost: 1200, desc: "Constantly drops fire trails below flight path.", effects: { secondary: "napalm_drop", secondary_cd: 2 } },
                 { name: "Heavy Ordnance", cost: 2500, desc: "Drops large bomb on front-most enemy every 15s.", effects: { secondary: "heavy_bomb", secondary_cd: 15 } }
             ],
@@ -157,19 +154,19 @@ var ncr_towers = [
         }
     },
     {
-        id: "ncr_10", name: "NCR POWER ARMOR", visual_type: "cannon", sound_type: "snd_machine_gun", cost: 4000, damage: 120, range: 6, speed: 2.0, bullet_speed: 10, life: 1000, shield: 500, is_unlocked: false,
+        id: "ncr_10", name: "NCR POWER ARMOR", damage_type: "Explosive", visual_type: "cannon", sound_type: "snd_machine_gun", cost: 4000, damage: 120, range: 6, speed: 2.0, bullet_speed: 10, life: 1000, shield: 500, is_unlocked: false,
         upgrades: {
             path1: [
                 { name: "Advanced Targeting", cost: 500, desc: "+1 Grid Range, +10% Fire Rate.", effects: { range_add: 1, speed_mult: 1.10 } },
                 { name: "Servo Motors", cost: 800, desc: "+20% Damage.", effects: { damage_mult: 1.20 } },
-                { name: "Minigun Swap", cost: 2000, desc: "Highest fire rate in the game.", effects: { visual_type: "HMG", speed_mult: 4.0, damage_mult: 0.5 } },
+                { name: "Minigun Swap", cost: 2000, desc: "Highest fire rate in the game.", effects: { damage_type: "Kinetic", visual_type: "HMG", speed_mult: 4.0, damage_mult: 0.5 } },
                 { name: "Avenger Minigun", cost: 4500, desc: "Kinetic force pushes non-boss enemies backward.", effects: { knockback: true } }
             ],
             path2: [
                 { name: "Fat Man Launcher", cost: 600, desc: "Massive AoE explosion, slow fire rate.", effects: { damage_mult: 3.0, speed_mult: 0.5 } },
                 { name: "MIRV Launcher", cost: 1200, desc: "Fires two mini-nukes simultaneously in V-spread.", effects: { fire_pattern: "mirv" } },
                 { name: "Radioactive Payload", cost: 2500, desc: "Nukes leave permanent irradiated DoT area.", effects: { nuke_radioactive: true } },
-                { name: "Liberty Prime Tech", cost: 5500, desc: "Fires catastrophic sweeping eye-laser every 15s.", effects: { secondary: "liberty_laser", secondary_cd: 15, visual_type: "laser_gun" } }
+                { name: "Liberty Prime Tech", cost: 5500, desc: "Fires catastrophic sweeping eye-laser every 15s.", effects: { damage_type: "Energy", secondary: "liberty_laser", secondary_cd: 15, visual_type: "laser_gun" } }
             ]
         }
     }
@@ -177,10 +174,10 @@ var ncr_towers = [
 
 var bos_towers = [
     {
-        id: "bos_1", name: "BOS SQUIRE", visual_type: "rifle", sound_type: "snd_gun_light", cost: 75, damage: 10, range: 5, speed: 1.0, bullet_speed: 8, life: 120, shield: 20, is_unlocked: true,
+        id: "bos_1", name: "BOS SQUIRE", damage_type: "Kinetic", visual_type: "rifle", sound_type: "snd_gun_light", cost: 75, damage: 10, range: 5, speed: 1.0, bullet_speed: 8, life: 120, shield: 20, is_unlocked: true,
         upgrades: {
             path1: [
-                { name: "Laser Swap", cost: 100, desc: "Swaps to a Laser Rifle.", effects: { visual_type: "laser_gun" } },
+                { name: "Laser Swap", cost: 100, desc: "Swaps to a Laser Rifle.", effects: { damage_type: "Energy", visual_type: "laser_gun" } },
                 { name: "Beam Splitter", cost: 250, desc: "Laser chains to a nearby target.", effects: { chain_max: 1 } },
                 { name: "Overcharged Cells", cost: 450, desc: "+Damage and chains to 2 targets.", effects: { damage_add: 10, chain_max: 2 } },
                 { name: "Plasma Caster", cost: 1200, desc: "High damage plasma blasts. Chains to 3 targets.", effects: { damage_mult: 2.0, chain_max: 3, visual_type: "cannon" } }
@@ -194,16 +191,16 @@ var bos_towers = [
         }
     },
     {
-        id: "bos_2", name: "INITIATE", visual_type: "rifle", sound_type: "snd_gun_light", cost: 175, damage: 22, range: 6, speed: 1.2, bullet_speed: 8, life: 150, shield: 30, is_unlocked: true,
+        id: "bos_2", name: "INITIATE", damage_type: "Kinetic", visual_type: "rifle", sound_type: "snd_gun_light", cost: 175, damage: 22, range: 6, speed: 1.2, bullet_speed: 8, life: 150, shield: 30, is_unlocked: true,
         upgrades: {
             path1: [
-                { name: "Gatling Laser", cost: 400, desc: "Insane fire rate. Swaps to LMG.", effects: { visual_type: "LMG", speed_mult: 3.0, damage_mult: 0.5 } },
+                { name: "Gatling Laser", cost: 400, desc: "Insane fire rate. Swaps to LMG.", effects: { damage_type: "Energy", visual_type: "LMG", speed_mult: 3.0, damage_mult: 0.5 } },
                 { name: "Focus Optics", cost: 600, desc: "+1 Range, +Damage.", effects: { range_add: 1, damage_mult: 1.5 } },
                 { name: "Charging Barrels", cost: 1500, desc: "Lasers now pierce enemies.", effects: { pierce: 3 } },
                 { name: "Sunburst Core", cost: 2800, desc: "Massive damage. Chains to nearby foes.", effects: { chain_max: 2, damage_mult: 1.5 } }
             ],
             path2: [
-                { name: "Tri-Beam Laser", cost: 350, desc: "Fires 3 lasers in a cone.", effects: { fire_pattern: "shotgun", pellet_count: 3, visual_type: "laser_gun" } },
+                { name: "Tri-Beam Laser", cost: 350, desc: "Fires 3 lasers in a cone.", effects: { damage_type: "Energy", fire_pattern: "shotgun", pellet_count: 3, visual_type: "laser_gun" } },
                 { name: "Photon Exciter", cost: 500, desc: "Lasers leave a burning DoT.", effects: { dot_duration: 2 } },
                 { name: "Wide Spread", cost: 1200, desc: "Fires 5 lasers in a cone.", effects: { pellet_count: 5 } },
                 { name: "Stun Pack", cost: 2200, desc: "Laser spread has a 20% chance to stun.", effects: { stun_chance: 0.20 } }
@@ -211,24 +208,24 @@ var bos_towers = [
         }
     },
     {
-        id: "bos_3", name: "KNIGHT", visual_type: "HMG", sound_type: "snd_machine_gun", cost: 300, damage: 15, range: 5, speed: 3.5, bullet_speed: 8, life: 400, shield: 150, is_unlocked: true,
+        id: "bos_3", name: "KNIGHT", damage_type: "Kinetic", visual_type: "HMG", sound_type: "snd_machine_gun", cost: 300, damage: 15, range: 5, speed: 3.5, bullet_speed: 8, life: 400, shield: 150, is_unlocked: true,
         upgrades: {
             path1: [
                 { name: "Heavy Barrel", cost: 300, desc: "+25% Damage.", effects: { damage_mult: 1.25 } },
-                { name: "Plasma Infusion", cost: 700, desc: "Swaps to Plasma. Leaves a burning DoT.", effects: { visual_type: "laser_gun", dot_duration: 2 } },
-                { name: "Plasma Caster", cost: 1500, desc: "Slow fire rate, massive AoE plasma explosions.", effects: { visual_type: "cannon", speed_mult: 0.2, damage_mult: 4.0 } },
+                { name: "Plasma Infusion", cost: 700, desc: "Swaps to Plasma. Leaves a burning DoT.", effects: { damage_type: "Energy", visual_type: "laser_gun", dot_duration: 2 } },
+                { name: "Plasma Caster", cost: 1500, desc: "Slow fire rate, massive AoE plasma explosions.", effects: { damage_type: "Explosive", visual_type: "cannon", speed_mult: 0.2, damage_mult: 4.0 } },
                 { name: "Meltdown", cost: 3000, desc: "Explosions chain to 3 extra targets.", effects: { chain_max: 3 } }
             ],
             path2: [
                 { name: "Kinetic Dampers", cost: 400, desc: "Basic attacks cause knockback.", effects: { knockback: true } },
                 { name: "Brotherhood Tactics", cost: 800, desc: "Grants +10% Damage aura to nearby allies.", effects: { aura_type: "damage" } },
                 { name: "Sky Watcher", cost: 1500, desc: "Can target Flying enemies. Grants +15% Speed aura to allies.", effects: { aura_type: "speed", anti_air: true } },
-                { name: "Paladin Commander", cost: 3000, desc: "Periodically drops a frag grenade.", effects: { secondary: "grenade", secondary_cd: 4 } }
+                { name: "Paladin Commander", cost: 3000, desc: "Periodically drops a frag grenade.", effects: { secondary: "grenade", secondary_cd: 4, anti_air: true } }
             ]
         }
     },
     {
-        id: "bos_4", name: "SENSOR RELAY", visual_type: "wall", is_detector: true, cost: 450, damage: 0, range: 4, speed: 0.25, bullet_speed: 0, life: 120, shield: 50, is_unlocked: true,
+        id: "bos_4", name: "SENSOR RELAY", damage_type: "Energy", visual_type: "wall", is_detector: true, cost: 450, damage: 0, range: 4, speed: 0.25, bullet_speed: 0, life: 120, shield: 50, is_unlocked: true,
         upgrades: {
             path1: [
                 { name: "Range Boost", cost: 150, desc: "Increases radar radius.", effects: { range_add: 1 } },
@@ -245,7 +242,7 @@ var bos_towers = [
         }
     },
     {
-        id: "bos_5", name: "HEAVY INCINERATOR", visual_type: "cannon", sound_type: "snd_missile_launch", cost: 600, damage: 25, range: 4, speed: 3.0, bullet_speed: 5, life: 300, shield: 100, is_unlocked: false,
+        id: "bos_5", name: "HEAVY INCINERATOR", damage_type: "Explosive", visual_type: "cannon", sound_type: "snd_missile_launch", cost: 600, damage: 25, range: 4, speed: 3.0, bullet_speed: 5, life: 300, shield: 100, is_unlocked: false,
         upgrades: {
             path1: [
                 { name: "Napalm Mix", cost: 300, desc: "Adds a severe 3s DoT.", effects: { dot_duration: 3 } },
@@ -255,14 +252,14 @@ var bos_towers = [
             ],
             path2: [
                 { name: "Heavy Arcs", cost: 400, desc: "+2 Grid Range.", effects: { range_add: 2 } },
-                { name: "Impact Detonation", cost: 800, desc: "Fireballs explode for AoE damage.", effects: { visual_type: "cannon", damage_mult: 1.5 } },
-                { name: "Scorched Earth", cost: 1800, desc: "Periodically leaves Napalm pools on track.", effects: { secondary: "napalm_drop", secondary_cd: 4 } },
+                { name: "Impact Detonation", cost: 800, desc: "Fireballs explode for AoE damage.", effects: { damage_mult: 1.5 } },
+                { name: "Purifier Protocol", cost: 1800, desc: "+30% extra damage to Mutated enemies.", effects: { bonus_damage_mutated: 1.3 } },
                 { name: "Cleansing Flame", cost: 3000, desc: "+50% extra damage to Bosses.", effects: { boss_damage_mult: 1.5 } }
             ]
         }
     },
     {
-        id: "bos_6", name: "CRYOLATOR KNIGHT", visual_type: "laser_gun", is_cryo: true, sound_type: "snd_gun_heavy", cost: 800, damage: 15, range: 5, speed: 0.25, bullet_speed: 10, life: 200, shield: 100, is_unlocked: false,
+        id: "bos_6", name: "CRYOLATOR KNIGHT", damage_type: "Energy", visual_type: "laser_gun", is_cryo: true, sound_type: "snd_gun_heavy", cost: 800, damage: 15, range: 5, speed: 0.25, bullet_speed: 10, life: 200, shield: 100, is_unlocked: false,
         upgrades: {
             path1: [
                 { name: "Crystallize", cost: 300, desc: "Increases base damage.", effects: { damage_mult: 1.5 } },
@@ -279,7 +276,7 @@ var bos_towers = [
         }
     },
     {
-        id: "bos_7", name: "PLASMA TURRET", visual_type: "laser_gun", sound_type: "snd_laser_fire", cost: 1300, damage: 80, range: 7, speed: 1.5, bullet_speed: 8, life: 350, shield: 200, is_unlocked: false,
+        id: "bos_7", name: "PLASMA TURRET", damage_type: "Energy", visual_type: "laser_gun", sound_type: "snd_laser_fire", cost: 1300, damage: 80, range: 7, speed: 1.5, bullet_speed: 8, life: 350, shield: 200, is_unlocked: false,
         upgrades: {
             path1: [
                 { name: "Twin Relays", cost: 500, desc: "Fires dual plasma bolts.", effects: { fire_pattern: "twin" } },
@@ -296,24 +293,24 @@ var bos_towers = [
         }
     },
     {
-        id: "bos_8", name: "PALADIN", visual_type: "laser_gun", sound_type: "snd_gun_heavy", cost: 1800, damage: 100, range: 6, speed: 2.5, bullet_speed: 10, life: 600, shield: 300, is_unlocked: false,
+        id: "bos_8", name: "PALADIN", damage_type: "Energy", visual_type: "laser_gun", sound_type: "snd_gun_heavy", cost: 1800, damage: 100, range: 6, speed: 2.5, bullet_speed: 10, life: 600, shield: 300, is_unlocked: false,
         upgrades: {
             path1: [
-                { name: "Gauss Rifle", cost: 800, desc: "Swaps to Gauss. Extremely fast, piercing shots.", effects: { visual_type: "rifle", fire_pattern: "gauss", pierce: 4 } },
+                { name: "Gauss Rifle", cost: 800, desc: "Swaps to Gauss. Extremely fast, piercing shots.", effects: { damage_type: "Energy", visual_type: "rifle", fire_pattern: "gauss", pierce: 4 } },
                 { name: "Magnetic Accelerator", cost: 1500, desc: "+50% Damage.", effects: { damage_mult: 1.5 } },
                 { name: "Shockwave", cost: 2500, desc: "Gauss rounds cause heavy knockback.", effects: { knockback: true } },
                 { name: "Anti-Materiel", cost: 4500, desc: "+50% damage to Bosses. Pierces 10 enemies.", effects: { boss_damage_mult: 1.5, pierce: 10 } }
             ],
             path2: [
                 { name: "Power Armor Servos", cost: 600, desc: "+25% Fire Rate.", effects: { speed_mult: 1.25 } },
-                { name: "Missile Pod", cost: 1500, desc: "Periodically fires a heavy missile.", effects: { secondary: "heavy_bomb", secondary_cd: 5 } },
-                { name: "Fat Man Swap", cost: 3000, desc: "Swaps main weapon to Nuclear MIRV.", effects: { visual_type: "cannon", speed_mult: 0.2, fire_pattern: "mirv", damage_mult: 4.0 } },
+                { name: "Missile Pod", cost: 1500, desc: "Periodically fires a heavy missile.", effects: { damage_type: "Explosive", secondary: "heavy_bomb", secondary_cd: 5 } },
+                { name: "Fat Man Swap", cost: 3000, desc: "Swaps main weapon to Nuclear MIRV.", effects: { damage_type: "Explosive", visual_type: "cannon", speed_mult: 0.2, fire_pattern: "mirv", damage_mult: 4.0 } },
                 { name: "Nuclear Fallout", cost: 5000, desc: "Nukes leave radioactive DoT pools.", effects: { nuke_radioactive: true } }
             ]
         }
     },
     {
-        id: "bos_9", name: "BOS GUNSHIP", visual_type: "HMG", sound_type: "snd_machine_gun", cost: 3200, damage: 35, range: 8, speed: 5.0, bullet_speed: 12, life: 800, shield: 300, is_unlocked: false, is_flying: true,
+        id: "bos_9", name: "BOS GUNSHIP", damage_type: "Kinetic", visual_type: "HMG", sound_type: "snd_machine_gun", cost: 3200, damage: 35, range: 8, speed: 5.0, bullet_speed: 12, life: 800, shield: 300, is_unlocked: false, is_flying: true,
         upgrades: {
             path1: [
                 { name: "Turbo Rotors", cost: 800, desc: "Increases flight patrol speed.", effects: { flight_speed_mult: 1.5 } },
@@ -322,15 +319,15 @@ var bos_towers = [
                 { name: "Twin Turrets", cost: 4500, desc: "Fires twin streams of bullets.", effects: { fire_pattern: "twin", damage_mult: 1.5 } }
             ],
             path2: [
-                { name: "Payload Drop", cost: 1000, desc: "Drops frag grenades occasionally.", effects: { secondary: "grenade", secondary_cd: 3 } },
-                { name: "Carpet Bombing", cost: 2000, desc: "Drops clusters of bombs.", effects: { fire_pattern: "shotgun", pellet_count: 5, visual_type: "cannon", speed_mult: 0.5 } },
-                { name: "Napalm Reserve", cost: 3500, desc: "Drops fire trails constantly on the path.", effects: { secondary: "napalm_drop", secondary_cd: 2 } },
-                { name: "Prydwen Strike", cost: 6000, desc: "Drops a massive Liberty Laser blast every 10s.", effects: { secondary: "liberty_laser", secondary_cd: 10 } }
+                { name: "Payload Drop", cost: 1000, desc: "Drops frag grenades occasionally.", effects: { damage_type: "Explosive", secondary: "grenade", secondary_cd: 3 } },
+                { name: "Carpet Bombing", cost: 2000, desc: "Drops clusters of bombs.", effects: { damage_type: "Explosive", fire_pattern: "shotgun", pellet_count: 5, visual_type: "cannon", speed_mult: 0.5 } },
+                { name: "Napalm Reserve", cost: 3500, desc: "Drops fire trails constantly on the path.", effects: { damage_type: "Explosive", secondary: "napalm_drop", secondary_cd: 2 } },
+                { name: "Prydwen Strike", cost: 6000, desc: "Drops a massive Liberty Laser blast every 10s.", effects: { damage_type: "Energy", secondary: "liberty_laser", secondary_cd: 10 } }
             ]
         }
     },
     {
-        id: "bos_10", name: "TESLA CANNON", visual_type: "laser_gun", sound_type: "snd_laser_fire", cost: 4500, damage: 250, range: 10, speed: 0.5, bullet_speed: 15, life: 1200, shield: 600, is_unlocked: false,
+        id: "bos_10", name: "TESLA CANNON", damage_type: "Energy", visual_type: "laser_gun", sound_type: "snd_laser_fire", cost: 4500, damage: 250, range: 10, speed: 0.5, bullet_speed: 15, life: 1200, shield: 600, is_unlocked: false,
         upgrades: {
             path1: [
                 { name: "Conductive Arcs", cost: 1500, desc: "Chains lightning to 2 additional targets.", effects: { chain_max: 2 } },
@@ -350,11 +347,11 @@ var bos_towers = [
 
 var mm_towers = [
     {
-        id: "mm_1", name: "VOLUNTEER", visual_type: "rifle", sound_type: "snd_gun_light", cost: 50, damage: 8, range: 4, speed: 1.2, bullet_speed: 6, life: 80, shield: 0, is_unlocked: true,
+        id: "mm_1", name: "VOLUNTEER", damage_type: "Kinetic", visual_type: "rifle", sound_type: "snd_gun_light", cost: 50, damage: 8, range: 4, speed: 1.2, bullet_speed: 6, life: 80, shield: 0, is_unlocked: true,
         upgrades: {
             path1: [
                 { name: "Rifled Barrel", cost: 50, desc: "+Damage.", effects: { damage_add: 3 } },
-                { name: "Laser Musket", cost: 150, desc: "Swaps to Laser Musket. Slow, piercing, high damage.", effects: { visual_type: "laser_gun", speed_mult: 0.5, damage_mult: 2.5, fire_pattern: "gauss", pierce: 2 } },
+                { name: "Laser Musket", cost: 150, desc: "Swaps to Laser Musket. Slow, piercing, high damage.", effects: { damage_type: "Energy", visual_type: "laser_gun", speed_mult: 0.5, damage_mult: 2.5, fire_pattern: "gauss", pierce: 2 } },
                 { name: "3-Crank Capacitor", cost: 400, desc: "Further drops speed, triples damage.", effects: { speed_mult: 0.5, damage_mult: 3.0 } },
                 { name: "6-Crank Capacitor", cost: 1000, desc: "Guaranteed 5x Crit every 2 shots.", effects: { crit_req: 2 } }
             ],
@@ -367,7 +364,7 @@ var mm_towers = [
         }
     },
     {
-        id: "mm_2", name: "SETTLER", visual_type: "rifle", sound_type: "snd_gun_light", cost: 120, damage: 18, range: 5, speed: 1.5, bullet_speed: 7, life: 100, shield: 0, is_unlocked: true,
+        id: "mm_2", name: "SETTLER", damage_type: "Kinetic", visual_type: "rifle", sound_type: "snd_gun_light", cost: 120, damage: 18, range: 5, speed: 1.5, bullet_speed: 7, life: 100, shield: 0, is_unlocked: true,
         upgrades: {
             path1: [
                 { name: "Double Barrel", cost: 120, desc: "Swaps to Shotgun.", effects: { fire_pattern: "shotgun", pellet_count: 3, range_add: -1 } },
@@ -384,7 +381,7 @@ var mm_towers = [
         }
     },
     {
-        id: "mm_3", name: "MILITIA LMG", visual_type: "LMG", sound_type: "snd_machine_gun", cost: 250, damage: 12, range: 5, speed: 4.0, bullet_speed: 6, life: 120, shield: 10, is_unlocked: true,
+        id: "mm_3", name: "MILITIA LMG", damage_type: "Kinetic", visual_type: "LMG", sound_type: "snd_machine_gun", cost: 250, damage: 12, range: 5, speed: 4.0, bullet_speed: 6, life: 120, shield: 10, is_unlocked: true,
         upgrades: {
             path1: [
                 { name: "Extended Mags", cost: 150, desc: "Fires 3 bullets per burst.", effects: { burst_count: 3 } },
@@ -395,13 +392,13 @@ var mm_towers = [
             path2: [
                 { name: "Bipod", cost: 100, desc: "+1 Range.", effects: { range_add: 1 } },
                 { name: "Incendiary Rounds", cost: 350, desc: "Adds a burn DoT.", effects: { dot_duration: 2 } },
-                { name: "Flak Grenades", cost: 700, desc: "Can target Flying enemies. Periodically tosses a grenade.", effects: { secondary: "grenade", secondary_cd: 4, anti_air: true } },
-                { name: "Artillery Flare", cost: 1800, desc: "Periodically drops a massive heavy bomb.", effects: { secondary: "heavy_bomb", secondary_cd: 10 } }
+                { name: "Flak Grenades", cost: 700, desc: "Can target Flying enemies. Periodically tosses a grenade.", effects: { damage_type: "Explosive", secondary: "grenade", secondary_cd: 4, anti_air: true } },
+                { name: "Artillery Flare", cost: 1800, desc: "Periodically drops a massive heavy bomb.", effects: { secondary: "heavy_bomb", secondary_cd: 10, anti_air: true } }
             ]
         }
     },
     {
-        id: "mm_4", name: "WATCHTOWER", visual_type: "wall", is_detector: true, cost: 400, damage: 0, range: 4, speed: 0.25, bullet_speed: 0, life: 300, shield: 80, is_unlocked: true,
+        id: "mm_4", name: "WATCHTOWER", damage_type: "Energy", visual_type: "wall", is_detector: true, cost: 400, damage: 0, range: 4, speed: 0.25, bullet_speed: 0, life: 300, shield: 80, is_unlocked: true,
         upgrades: {
             path1: [
                 { name: "Elevated View", cost: 300, desc: "+2 Radar Range.", effects: { range_add: 2 } },
@@ -418,7 +415,7 @@ var mm_towers = [
         }
     },
     {
-        id: "mm_5", name: "BROADSIDER", visual_type: "cannon", sound_type: "snd_missile_launch", cost: 600, damage: 60, range: 5, speed: 1.0, bullet_speed: 5, life: 250, shield: 50, is_unlocked: false,
+        id: "mm_5", name: "BROADSIDER", damage_type: "Explosive", visual_type: "cannon", sound_type: "snd_missile_launch", cost: 600, damage: 60, range: 5, speed: 1.0, bullet_speed: 5, life: 250, shield: 50, is_unlocked: false,
         upgrades: {
             path1: [
                 { name: "More Powder", cost: 300, desc: "+1 Range, +25% Speed.", effects: { range_add: 1, speed_mult: 1.25 } },
@@ -429,13 +426,13 @@ var mm_towers = [
             path2: [
                 { name: "Heavy Cannonballs", cost: 400, desc: "Double Damage.", effects: { damage_mult: 2.0 } },
                 { name: "Heated Shot", cost: 800, desc: "Adds burning DoT.", effects: { dot_duration: 3 } },
-                { name: "Incendiary Burst", cost: 1800, desc: "Cannonballs leave Napalm pools.", effects: { secondary: "napalm_drop", secondary_cd: 3 } },
+                { name: "Hardened Shot", cost: 1800, desc: "+40% Damage to Mutated enemies.", effects: { bonus_damage_mutated: 1.4 } },
                 { name: "The Big One", cost: 3500, desc: "Every 4th shot is a 5x Crit.", effects: { crit_req: 4 } }
             ]
         }
     },
     {
-        id: "mm_6", name: "LASER MUSKET GUARD", visual_type: "laser_gun", sound_type: "snd_laser_fire", cost: 800, damage: 80, range: 6, speed: 0.5, bullet_speed: 10, life: 100, shield: 10, is_unlocked: false,
+        id: "mm_6", name: "LASER MUSKET GUARD", damage_type: "Energy", visual_type: "laser_gun", sound_type: "snd_laser_fire", cost: 800, damage: 80, range: 6, speed: 0.5, bullet_speed: 10, life: 100, shield: 10, is_unlocked: false,
         upgrades: {
             path1: [
                 { name: "Beam Splitter", cost: 200, desc: "Fires a 3-beam shotgun spread.", effects: { fire_pattern: "shotgun", pellet_count: 3 } },
@@ -452,7 +449,7 @@ var mm_towers = [
         }
     },
     {
-        id: "mm_7", name: "MINUTEMAN SNIPER", visual_type: "rifle", sound_type: "snd_gun_heavy", cost: 1200, damage: 150, range: 10, speed: 0.5, bullet_speed: 12, life: 120, shield: 20, is_unlocked: false,
+        id: "mm_7", name: "MINUTEMAN SNIPER", damage_type: "Kinetic", visual_type: "rifle", sound_type: "snd_gun_heavy", cost: 1200, damage: 150, range: 10, speed: 0.5, bullet_speed: 12, life: 120, shield: 20, is_unlocked: false,
         upgrades: {
             path1: [
                 { name: "Match Grade", cost: 300, desc: "+50% Damage.", effects: { damage_mult: 1.5 } },
@@ -463,13 +460,13 @@ var mm_towers = [
             path2: [
                 { name: "Spotter Scope", cost: 250, desc: "Detects stealthed enemies map-wide.", effects: { is_detector: true, range_add: 10 } },
                 { name: "Recon Data", cost: 600, desc: "Grants +1 Range aura to allies.", effects: { aura_type: "range" } },
-                { name: "Target Painting", cost: 1200, desc: "Grants Vulnerability aura (Enemies take +15% dmg).", effects: { aura_vulnerability: 1.15 } },
+                { name: "Mutant Hunter", cost: 1200, desc: "+40% Damage to Mutated enemies.", effects: { bonus_damage_mutated: 1.4 } },
                 { name: "Serrated Rounds", cost: 2000, desc: "Applies a heavy bleed DoT for 5 seconds.", effects: { dot_duration: 5 } }
             ]
         }
     },
     {
-        id: "mm_8", name: "CASTLE ARTILLERY", visual_type: "cannon", sound_type: "snd_explosion", cost: 1800, damage: 200, range: 15, speed: 0.2, bullet_speed: 6, life: 400, shield: 100, is_unlocked: false,
+        id: "mm_8", name: "CASTLE ARTILLERY", damage_type: "Explosive", visual_type: "cannon", sound_type: "snd_explosion", cost: 1800, damage: 200, range: 15, speed: 0.2, bullet_speed: 6, life: 400, shield: 100, is_unlocked: false,
         upgrades: {
             path1: [
                 { name: "Faster Reload", cost: 600, desc: "Doubles fire rate.", effects: { speed_mult: 2.0 } },
@@ -486,7 +483,7 @@ var mm_towers = [
         }
     },
     {
-        id: "mm_9", name: "MILITIA GYROCOPT", visual_type: "LMG", sound_type: "snd_machine_gun", cost: 3000, damage: 30, range: 6, speed: 5.0, bullet_speed: 7, life: 400, shield: 100, is_unlocked: false, is_flying: true,
+        id: "mm_9", name: "MILITIA GYROCOPT", damage_type: "Kinetic", visual_type: "LMG", sound_type: "snd_machine_gun", cost: 3000, damage: 30, range: 6, speed: 5.0, bullet_speed: 7, life: 400, shield: 100, is_unlocked: false, is_flying: true,
         upgrades: {
             path1: [
                 { name: "Advanced Engine", cost: 600, desc: "Increases flight patrol speed.", effects: { flight_speed_mult: 1.5 } },
@@ -495,15 +492,15 @@ var mm_towers = [
                 { name: "Twin MGs", cost: 3500, desc: "Fires dual streams.", effects: { fire_pattern: "twin", damage_mult: 1.5 } }
             ],
             path2: [
-                { name: "Molotovs", cost: 800, desc: "Drops grenades on patrol.", effects: { secondary: "grenade", secondary_cd: 3 } },
-                { name: "Napalm Tanks", cost: 1500, desc: "Drops fire trails constantly.", effects: { secondary: "napalm_drop", secondary_cd: 2 } },
-                { name: "Gas Tanks", cost: 2500, desc: "Drops gas grenades that slow enemies.", effects: { secondary: "gas_grenade", secondary_cd: 4 } },
-                { name: "Payload Drop", cost: 5000, desc: "Drops a heavy bomb on the leader every 8s.", effects: { secondary: "heavy_bomb", secondary_cd: 8 } }
+                { name: "Molotovs", cost: 800, desc: "Drops grenades on patrol.", effects: { damage_type: "Explosive", secondary: "grenade", secondary_cd: 3 } },
+                { name: "Napalm Tanks", cost: 1500, desc: "Drops fire trails constantly.", effects: { damage_type: "Explosive", secondary: "napalm_drop", secondary_cd: 2 } },
+                { name: "Gas Tanks", cost: 2500, desc: "Drops gas grenades that slow enemies.", effects: { damage_type: "Explosive", secondary: "gas_grenade", secondary_cd: 4 } },
+                { name: "Payload Drop", cost: 5000, desc: "Drops a heavy bomb on the leader every 8s.", effects: { damage_type: "Explosive", secondary: "heavy_bomb", secondary_cd: 8 } }
             ]
         }
     },
     {
-        id: "mm_10", name: "THE CASTLE DEF", visual_type: "cannon", sound_type: "snd_missile_launch", cost: 4500, damage: 250, range: 8, speed: 1.0, bullet_speed: 7, life: 1200, shield: 400, is_unlocked: false,
+        id: "mm_10", name: "THE CASTLE DEF", damage_type: "Explosive", visual_type: "cannon", sound_type: "snd_missile_launch", cost: 4500, damage: 250, range: 8, speed: 1.0, bullet_speed: 7, life: 1200, shield: 400, is_unlocked: false,
         upgrades: {
             path1: [
                 { name: "Reinforced Walls", cost: 1000, desc: "Increases range and damage.", effects: { range_add: 2, damage_mult: 1.5 } },
@@ -512,10 +509,10 @@ var mm_towers = [
                 { name: "General's Fortress", cost: 8000, desc: "Massive speed aura and damage aura to all allies.", effects: { aura_type: "speed", aura_vulnerability: 1.3 } }
             ],
             path2: [
-                { name: "Radio Broadcaster", cost: 1500, desc: "Pulsing EMP stuns enemies in massive radius.", effects: { secondary: "emp", secondary_cd: 5, is_detector: true } },
+                { name: "Radio Broadcaster", cost: 1500, desc: "Pulsing EMP stuns enemies in massive radius.", effects: { damage_type: "Energy", secondary: "emp", secondary_cd: 5, is_detector: true } },
                 { name: "Artillery Barrage", cost: 3000, desc: "Drops heavy bombs on the leader.", effects: { secondary: "heavy_bomb", secondary_cd: 4 } },
                 { name: "Minutemen Swarm", cost: 5500, desc: "Every 5th shot is a 10x Crit.", effects: { crit_req: 5, crit_mult: 10.0 } },
-                { name: "Liberty Radio", cost: 9500, desc: "Fires a Liberty Laser sweeping the track every 10s.", effects: { secondary: "liberty_laser", secondary_cd: 10 } }
+                { name: "Liberty Radio", cost: 9500, desc: "Fires a Liberty Laser sweeping the track every 10s.", effects: { damage_type: "Energy", secondary: "liberty_laser", secondary_cd: 10 } }
             ]
         }
     }
@@ -523,7 +520,7 @@ var mm_towers = [
 
 var raider_towers = [
     {
-        id: "rk_1", name: "RAIDER SCAVENGER", visual_type: "rifle", sound_type: "snd_gun_light", cost: 45, damage: 9, range: 3, speed: 1.5, bullet_speed: 6, life: 90, shield: 0, is_unlocked: true,
+        id: "rk_1", name: "RAIDER SCAVENGER", damage_type: "Kinetic", visual_type: "rifle", sound_type: "snd_gun_light", cost: 45, damage: 9, range: 3, speed: 1.5, bullet_speed: 6, life: 90, shield: 0, is_unlocked: true,
         upgrades: {
             path1: [
                 { name: "Psycho Hit", cost: 60, desc: "+25% Fire Rate.", effects: { speed_mult: 1.25 } },
@@ -540,7 +537,7 @@ var raider_towers = [
         }
     },
     {
-        id: "rk_2", name: "RAIDER SCUM", visual_type: "rifle", sound_type: "snd_gun_light", cost: 120, damage: 20, range: 3, speed: 1.5, bullet_speed: 6, life: 110, shield: 0, is_unlocked: true,
+        id: "rk_2", name: "RAIDER SCUM", damage_type: "Kinetic", visual_type: "rifle", sound_type: "snd_gun_light", cost: 120, damage: 20, range: 3, speed: 1.5, bullet_speed: 6, life: 110, shield: 0, is_unlocked: true,
         upgrades: {
             path1: [
                 { name: "Sawed-Off", cost: 150, desc: "Swaps to shotgun.", effects: { fire_pattern: "shotgun", pellet_count: 3 } },
@@ -549,15 +546,15 @@ var raider_towers = [
                 { name: "Riot Shotgun", cost: 1500, desc: "Increases pellets to 12. 10% stun chance.", effects: { pellet_count: 12, stun_chance: 0.1 } }
             ],
             path2: [
-                { name: "Molotovs", cost: 200, desc: "Periodically throws grenades.", effects: { secondary: "grenade", secondary_cd: 4 } },
-                { name: "Flamer Swap", cost: 500, desc: "Swaps to Flamer. Applies burn DoT.", effects: { visual_type: "laser_gun", fire_pattern: "flamer", pellet_count: 4, dot_duration: 2 } },
-                { name: "Napalm Blend", cost: 1000, desc: "Drops fire pools on the path.", effects: { secondary: "napalm_drop", secondary_cd: 3 } },
-                { name: "Incinerator", cost: 2200, desc: "Swaps to Cannon. Massive fire AoE.", effects: { visual_type: "cannon", speed_mult: 0.2, damage_mult: 4.0 } }
+                { name: "Molotovs", cost: 200, desc: "Periodically throws grenades.", effects: { damage_type: "Explosive", secondary: "grenade", secondary_cd: 4 } },
+                { name: "Flamer Swap", cost: 500, desc: "Swaps to Flamer. Applies burn DoT.", effects: { damage_type: "Energy", visual_type: "laser_gun", fire_pattern: "flamer", pellet_count: 4, dot_duration: 2 } },
+                { name: "Napalm Blend", cost: 1000, desc: "Drops fire pools on the path.", effects: { damage_type: "Explosive", secondary: "napalm_drop", secondary_cd: 3 } },
+                { name: "Incinerator", cost: 2200, desc: "Swaps to Cannon. Massive fire AoE.", effects: { damage_type: "Explosive", visual_type: "cannon", speed_mult: 0.2, damage_mult: 4.0 } }
             ]
         }
     },
     {
-        id: "rk_3", name: "RAIDER PSYCHO", visual_type: "LMG", sound_type: "snd_machine_gun", cost: 260, damage: 12, range: 3, speed: 4.5, bullet_speed: 6, life: 150, shield: 10, is_unlocked: true,
+        id: "rk_3", name: "RAIDER PSYCHO", damage_type: "Kinetic", visual_type: "LMG", sound_type: "snd_machine_gun", cost: 260, damage: 12, range: 3, speed: 4.5, bullet_speed: 6, life: 150, shield: 10, is_unlocked: true,
         upgrades: {
             path1: [
                 { name: "Frenzy", cost: 200, desc: "+50% Fire rate.", effects: { speed_mult: 1.5 } },
@@ -569,12 +566,12 @@ var raider_towers = [
                 { name: "Scrap Armor", cost: 150, desc: "+1 Range.", effects: { range_add: 1 } },
                 { name: "Intimidation", cost: 450, desc: "Vulnerability aura (enemies take +15% dmg).", effects: { aura_vulnerability: 1.15 } },
                 { name: "Terror Aura", cost: 900, desc: "Can target Flying enemies. Enemies in range are slowed by 25%.", effects: { aura_slow: 0.75, anti_air: true } },
-                { name: "Overboss Gear", cost: 2000, desc: "Guaranteed 5x Crit every 5 shots.", effects: { crit_req: 5 } }
+                { name: "Overboss Gear", cost: 2000, desc: "Guaranteed 5x Crit every 5 shots.", effects: { crit_req: 5, anti_air: true } }
             ]
         }
     },
     {
-        id: "rk_4", name: "ALARM POST", visual_type: "wall", is_detector: true, cost: 400, damage: 0, range: 4, speed: 0.25, bullet_speed: 0, life: 350, shield: 60, is_unlocked: true,
+        id: "rk_4", name: "ALARM POST", damage_type: "Energy", visual_type: "wall", is_detector: true, cost: 400, damage: 0, range: 4, speed: 0.25, bullet_speed: 0, life: 350, shield: 60, is_unlocked: true,
         upgrades: {
             path1: [
                 { name: "Loudspeakers", cost: 400, desc: "+2 Range.", effects: { range_add: 2 } },
@@ -591,10 +588,10 @@ var raider_towers = [
         }
     },
     {
-        id: "rk_5", name: "THE FORGED", visual_type: "HMG", sound_type: "snd_machine_gun", cost: 650, damage: 25, range: 4, speed: 5.0, bullet_speed: 6, life: 250, shield: 30, is_unlocked: false,
+        id: "rk_5", name: "THE FORGED", damage_type: "Kinetic", visual_type: "HMG", sound_type: "snd_machine_gun", cost: 650, damage: 25, range: 4, speed: 5.0, bullet_speed: 6, life: 250, shield: 30, is_unlocked: false,
         upgrades: {
             path1: [
-                { name: "Flamer Swap", cost: 400, desc: "Swaps to Flamer. Applies burn DoT.", effects: { visual_type: "laser_gun", fire_pattern: "flamer", pellet_count: 4, dot_duration: 2 } },
+                { name: "Flamer Swap", cost: 400, desc: "Swaps to Flamer. Applies burn DoT.", effects: { damage_type: "Energy", visual_type: "laser_gun", fire_pattern: "flamer", pellet_count: 4, dot_duration: 2 } },
                 { name: "Hotter Flames", cost: 800, desc: "Doubles damage.", effects: { damage_mult: 2.0 } },
                 { name: "Napalm Spray", cost: 1500, desc: "Leaves fire pools everywhere.", effects: { secondary: "napalm_drop", secondary_cd: 2 } },
                 { name: "Searing Heat", cost: 2800, desc: "+50% Damage to Bosses. Pierces 3.", effects: { boss_damage_mult: 1.5, pierce: 3 } }
@@ -602,13 +599,13 @@ var raider_towers = [
             path2: [
                 { name: "Tracer Rounds", cost: 350, desc: "Bullets ignite targets (DoT).", effects: { dot_duration: 2 } },
                 { name: "Heavy Gunner", cost: 700, desc: "Double fire rate.", effects: { speed_mult: 2.0 } },
-                { name: "Explosive Ammo", cost: 1600, desc: "Bullets deal AoE splash.", effects: { visual_type: "cannon" } },
+                { name: "Explosive Ammo", cost: 1600, desc: "Bullets deal AoE splash.", effects: { damage_type: "Explosive", visual_type: "cannon" } },
                 { name: "Bullet Hell", cost: 3000, desc: "Fires twin streams of explosive bullets.", effects: { fire_pattern: "twin", damage_mult: 1.5 } }
             ]
         }
     },
     {
-        id: "rk_6", name: "JUNK JET TURRET", visual_type: "cannon", sound_type: "snd_gun_heavy", cost: 800, damage: 60, range: 5, speed: 1.5, bullet_speed: 5, life: 300, shield: 50, is_unlocked: false,
+        id: "rk_6", name: "JUNK JET TURRET", damage_type: "Kinetic", visual_type: "cannon", sound_type: "snd_gun_heavy", cost: 800, damage: 60, range: 5, speed: 1.5, bullet_speed: 5, life: 300, shield: 50, is_unlocked: false,
         upgrades: {
             path1: [
                 { name: "Heavy Junk", cost: 400, desc: "Massive knockback effect.", effects: { knockback: true } },
@@ -619,13 +616,13 @@ var raider_towers = [
             path2: [
                 { name: "Motorized", cost: 350, desc: "Double fire rate.", effects: { speed_mult: 2.0 } },
                 { name: "Shrapnel Blast", cost: 900, desc: "Fires in a shotgun spread.", effects: { fire_pattern: "shotgun", pellet_count: 5 } },
-                { name: "Rusty Sawblades", cost: 1800, desc: "Shotgun spread pierces 3 targets and adds bleed.", effects: { pierce: 3, dot_duration: 3 } },
+                { name: "Rusty Sawblades", cost: 1800, desc: "+30% damage to Mutated enemies. Adds bleed.", effects: { bonus_damage_mutated: 1.3, dot_duration: 3 } },
                 { name: "Trash Tornado", cost: 3500, desc: "Increases to 10 pellets. Adds 10% stun chance.", effects: { pellet_count: 10, stun_chance: 0.1 } }
             ]
         }
     },
     {
-        id: "rk_7", name: "TAR TRAPPER", visual_type: "cannon", is_cryo: true, sound_type: "snd_missile_launch", cost: 1000, damage: 15, range: 4, speed: 0.25, bullet_speed: 5, life: 180, shield: 10, is_unlocked: false,
+        id: "rk_7", name: "TAR TRAPPER", damage_type: "Explosive", visual_type: "cannon", is_cryo: true, sound_type: "snd_missile_launch", cost: 1000, damage: 15, range: 4, speed: 0.25, bullet_speed: 5, life: 180, shield: 10, is_unlocked: false,
         upgrades: {
             path1: [
                 { name: "Thick Sludge", cost: 200, desc: "Increases slow duration.", effects: { slow_duration_mult: 1.5 } },
@@ -642,24 +639,24 @@ var raider_towers = [
         }
     },
     {
-        id: "rk_8", name: "SURVIVALIST", visual_type: "rifle", sound_type: "snd_gun_heavy", cost: 1600, damage: 120, range: 8, speed: 1.0, bullet_speed: 12, life: 400, shield: 100, is_unlocked: false,
+        id: "rk_8", name: "SURVIVALIST", damage_type: "Kinetic", visual_type: "rifle", sound_type: "snd_gun_heavy", cost: 1600, damage: 120, range: 8, speed: 1.0, bullet_speed: 12, life: 400, shield: 100, is_unlocked: false,
         upgrades: {
             path1: [
                 { name: "Scope", cost: 500, desc: "+2 Range.", effects: { range_add: 2 } },
                 { name: "Armor Piercing", cost: 1000, desc: "Pierces 3 enemies.", effects: { pierce: 3 } },
-                { name: "Explosive Rounds", cost: 2000, desc: "Swaps to Cannon. Huge AoE.", effects: { visual_type: "cannon", damage_mult: 2.0 } },
+                { name: "Explosive Rounds", cost: 2000, desc: "Swaps to Cannon. Huge AoE.", effects: { damage_type: "Explosive", visual_type: "cannon", damage_mult: 2.0 } },
                 { name: "Fat Man", cost: 4500, desc: "Fires a nuke every 10s.", effects: { secondary: "nuke", secondary_cd: 10 } }
             ],
             path2: [
                 { name: "Trigger Happy", cost: 600, desc: "Double fire rate.", effects: { speed_mult: 2.0 } },
-                { name: "Bleed Out", cost: 1200, desc: "Adds DoT.", effects: { dot_duration: 3 } },
+                { name: "Mutant Slayer", cost: 1200, desc: "+40% damage to Mutated enemies.", effects: { bonus_damage_mutated: 1.4 } },
                 { name: "Acid Grenades", cost: 2200, desc: "Tosses gas grenades (slow).", effects: { secondary: "gas_grenade", secondary_cd: 4 } },
                 { name: "Lone Wolf", cost: 4000, desc: "Guaranteed 5x Crit every 3 shots.", effects: { crit_req: 3 } }
             ]
         }
     },
     {
-        id: "rk_9", name: "JETPACK PSYCHO", visual_type: "LMG", sound_type: "snd_machine_gun", cost: 3000, damage: 30, range: 5, speed: 6.0, bullet_speed: 8, life: 450, shield: 100, is_unlocked: false, is_flying: true,
+        id: "rk_9", name: "JETPACK PSYCHO", damage_type: "Kinetic", visual_type: "LMG", sound_type: "snd_machine_gun", cost: 3000, damage: 30, range: 5, speed: 6.0, bullet_speed: 8, life: 450, shield: 100, is_unlocked: false, is_flying: true,
         upgrades: {
             path1: [
                 { name: "More Jet", cost: 800, desc: "Increases flight patrol speed.", effects: { flight_speed_mult: 1.5 } },
@@ -668,27 +665,27 @@ var raider_towers = [
                 { name: "Twin MGs", cost: 4500, desc: "Fires dual streams.", effects: { fire_pattern: "twin", damage_mult: 1.5 } }
             ],
             path2: [
-                { name: "Molotovs", cost: 1000, desc: "Drops grenades on patrol.", effects: { secondary: "grenade", secondary_cd: 3 } },
-                { name: "Napalm Tanks", cost: 2000, desc: "Drops fire trails constantly.", effects: { secondary: "napalm_drop", secondary_cd: 2 } },
-                { name: "Kamikaze", cost: 3500, desc: "Drops a heavy bomb on the leader every 8s.", effects: { secondary: "heavy_bomb", secondary_cd: 8 } },
-                { name: "Nuka-Drop", cost: 6000, desc: "Drops a Nuke every 15s.", effects: { secondary: "nuke", secondary_cd: 15 } }
+                { name: "Molotovs", cost: 1000, desc: "Drops grenades on patrol.", effects: { damage_type: "Explosive", secondary: "grenade", secondary_cd: 3 } },
+                { name: "Napalm Tanks", cost: 2000, desc: "Drops fire trails constantly.", effects: { damage_type: "Explosive", secondary: "napalm_drop", secondary_cd: 2 } },
+                { name: "Kamikaze", cost: 3500, desc: "Drops a heavy bomb on the leader every 8s.", effects: { damage_type: "Explosive", secondary: "heavy_bomb", secondary_cd: 8 } },
+                { name: "Nuka-Drop", cost: 6000, desc: "Drops a Nuke every 15s.", effects: { damage_type: "Explosive", secondary: "nuke", secondary_cd: 15 } }
             ]
         }
     },
     {
-        id: "rk_10", name: "RAIDER OVERBOSS", visual_type: "cannon", sound_type: "snd_explosion", cost: 4500, damage: 350, range: 7, speed: 0.5, bullet_speed: 8, life: 1500, shield: 500, is_unlocked: false,
+        id: "rk_10", name: "RAIDER OVERBOSS", damage_type: "Explosive", visual_type: "cannon", sound_type: "snd_explosion", cost: 4500, damage: 350, range: 7, speed: 0.5, bullet_speed: 8, life: 1500, shield: 500, is_unlocked: false,
         upgrades: {
             path1: [
                 { name: "Power Armor", cost: 1000, desc: "+Damage.", effects: { damage_mult: 1.5 } },
-                { name: "Minigun Swap", cost: 2500, desc: "Swaps to HMG. Insane fire rate.", effects: { visual_type: "HMG", speed_mult: 5.0, damage_mult: 0.3 } },
-                { name: "Explosive Minigun", cost: 5000, desc: "Bullets cause AoE splash.", effects: { visual_type: "cannon" } },
+                { name: "Minigun Swap", cost: 2500, desc: "Swaps to HMG. Insane fire rate.", effects: { damage_type: "Kinetic", visual_type: "HMG", speed_mult: 5.0, damage_mult: 0.3 } },
+                { name: "Explosive Minigun", cost: 5000, desc: "Bullets cause AoE splash.", effects: { damage_type: "Explosive", visual_type: "cannon" } },
                 { name: "Warlord", cost: 8000, desc: "Guaranteed 10x Crit every 5 shots.", effects: { crit_req: 5, crit_mult: 10.0 } }
             ],
             path2: [
                 { name: "Fat Man Swap", cost: 1500, desc: "Swaps to Nuke. Slower, massive damage.", effects: { damage_mult: 3.0, speed_mult: 0.5 } },
                 { name: "MIRV", cost: 3000, desc: "Fires two nukes.", effects: { fire_pattern: "mirv" } },
                 { name: "Radioactive", cost: 5500, desc: "Nukes leave radiation pools.", effects: { nuke_radioactive: true } },
-                { name: "Nuka-World King", cost: 9500, desc: "Fires a Liberty Laser sweeping the track every 10s.", effects: { secondary: "liberty_laser", secondary_cd: 10 } }
+                { name: "Nuka-World King", cost: 9500, desc: "Fires a Liberty Laser sweeping the track every 10s.", effects: { damage_type: "Energy", secondary: "liberty_laser", secondary_cd: 10 } }
             ]
         }
     }

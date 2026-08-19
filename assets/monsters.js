@@ -44,26 +44,41 @@ _TD.a.push(function (TD) {
 
 	TD.getDefaultMonsterAttributes = function (monster_idx) {
 		var monster_attributes = [
-			{ name: "Radroach", desc: "Weak, fast-ish pest", speed: 3, max_speed: 10, life: 50, damage: 1, shield: 0, money: 5 },
-			{ name: "Feral Ghoul", desc: "Mindless irradiated human", speed: 6, max_speed: 20, life: 50, damage: 2, shield: 1 },
-			{ name: "Mole Rat", desc: "Fast underground creature", speed: 12, max_speed: 30, life: 50, damage: 3, shield: 1 },
-			{ name: "Super Mutant", desc: "Large, mutated brute", speed: 5, max_speed: 10, life: 500, damage: 3, shield: 1 },
-			{ name: "Protectron", desc: "Armored security bot", speed: 5, max_speed: 10, life: 50, damage: 3, shield: 20 },
-			{ name: "Glowing One", desc: "Highly irradiated, deals massive base damage", speed: 7, max_speed: 14, life: 50, damage: 10, shield: 2 },
-			{ name: "Deathclaw", desc: "Extremely fast, tough apex predator", speed: 15, max_speed: 30, life: 1200, damage: 15, shield: 5 },
-			{ name: "Sentry Bot", desc: "Heavily armored military robot", speed: 3, max_speed: 10, life: 300, damage: 5, shield: 15 },
+            // --- TIER 1: SWARM & CHAFF ---
+            { name: "Radroach",           desc: "Weak, fast-ish pest.",                                                           speed: 4,  life: 75,   damage: 1, shield: 0,  money: 5 },
+            { name: "Giant Ant",          desc: "An extremely fast, swarming insect.",                                            speed: 26, life: 45,   damage: 1, shield: 1,  money: 4 },
+            { name: "Stingwing",          is_flying: true, desc: "Agile flying pest.",                                            speed: 15, life: 38,   damage: 2, shield: 0,  money: 5, color: "#88cc33" },
+            { name: "Feral Ghoul",        desc: "Mindless irradiated human.",                                                     speed: 8,  life: 75,   damage: 2, shield: 1,  money: 6 },
+            { name: "Giant Gecko",        desc: "A quick and nimble mutated lizard.",                                             speed: 11, life: 105,  damage: 3, shield: 1,  money: 6 },
+            { name: "Mole Rat",           desc: "Fast underground creature.",                                                     speed: 15, life: 75,   damage: 3, shield: 1,  money: 8 },
             
-            // --- NEW: PHASED MONSTERS ---
-			{ name: "Cazador", is_flying: true, desc: "Lightning fast flying wasp", speed: 15, max_speed: 25, life: 40, damage: 4, shield: 1, color: "#dd9900" },
-            { name: "Stingwing", is_flying: true, desc: "Agile flying pest", speed: 12, max_speed: 20, life: 25, damage: 2, shield: 0, color: "#88cc33" },
-            { name: "Scorchbeast", is_flying: true, desc: "Massive flying terror", speed: 4, max_speed: 10, life: 2500, damage: 30, shield: 5, color: "#551111" },
-            { name: "Nightkin", is_stealthed: true, desc: "Tough, stealthed mutant", speed: 8, max_speed: 15, life: 800, damage: 8, shield: 2, color: "#330066" },
+            // --- TIER 2: STANDARD & ARMORED ---
+            { name: "Protectron",         resist_kinetic: 0.6, desc: "Armored security bot.",                                     speed: 6,  life: 75,   damage: 3, shield: 20, money: 10 },
+            { name: "Cazador",            is_flying: true, desc: "Lightning fast flying wasp.",                                   speed: 19, life: 60,   damage: 4, shield: 1,  money: 10, color: "#dd9900" },
+            { name: "Mirelurk",           resist_kinetic: 0.6, desc: "Slow-moving, heavily-armored crustacean.",                  speed: 5,  life: 225,  damage: 5, shield: 10, money: 12 },
+            { name: "Mr. Gutsy",          is_flying: true, resist_kinetic: 0.6, special_on_leak: "double_damage", desc: "Durable, flying robot that deals double damage to the base.", speed: 10, life: 450, damage: 5, shield: 5, money: 18, color: "#aab59c" },
+            { name: "Radscorpion",        resist_kinetic: 0.6, special_on_death: "spawn_hatchlings", desc: "Tough all-rounder that spawns 3-6 hatchlings on death.", speed: 11, life: 375, damage: 8, shield: 3, money: 15 },
+
+            // --- TIER 3: SPECIALIZED & DANGEROUS ---
+            { name: "Glowing One",        resist_energy: 0.6, desc: "Highly irradiated, deals massive base damage.",              speed: 9,  life: 75,   damage: 10, shield: 2, money: 15 },
+            { name: "Assaultron",         resist_kinetic: 0.6, special_behavior: "assaultron_laser", desc: "Fast robot that fires a laser at the base when it gets close.", speed: 18, life: 900, damage: 1, shield: 8, money: 20 },
+            { name: "Super Mutant",       resist_kinetic: 0.6, desc: "Large, mutated brute.",                                     speed: 6,  life: 750,  damage: 3, shield: 1,  money: 15 },
+            { name: "Nightkin",           is_stealthed: true, resist_kinetic: 0.6, desc: "Tough, stealthed mutant.",              speed: 10, life: 1200, damage: 8, shield: 2,  money: 20, color: "#330066" },
             
-            // --- NEW: PRE-MUTATED LEGENDARIES ---
-            { name: "Legendary Ghoul", is_mutated: true, desc: "Glowing, hyper-fast ghoul", speed: 8, max_speed: 25, life: 75, damage: 4, shield: 2 },
-            { name: "Legendary Mutant", is_mutated: true, desc: "Enraged giant brute", speed: 6, max_speed: 15, life: 750, damage: 6, shield: 2 },
-            { name: "Legendary Deathclaw", is_mutated: true, desc: "Unstoppable apex predator", speed: 19, max_speed: 35, life: 1800, damage: 25, shield: 8 },
-            { name: "Legendary Nightkin", is_mutated: true, is_stealthed: true, desc: "Invisible enraged assassin", speed: 10, max_speed: 20, life: 1200, damage: 15, shield: 3, color: "#330066" }
+            // --- TIER 4: APEX PREDATORS & BOSSES ---
+            { name: "Yao Guai",           resist_kinetic: 0.6, desc: "A ferocious, high-speed predator.",                         speed: 16, life: 1350, damage: 12, shield: 4,  money: 25 },
+            { name: "Sentry Bot",         resist_kinetic: 0.6, resist_explosive: 0.6, desc: "Heavily armored military robot.",   speed: 4,  life: 450,  damage: 5, shield: 15, money: 25 },
+            { name: "Deathclaw",          resist_kinetic: 0.6, resist_explosive: 0.6, desc: "Extremely fast, tough apex predator.", speed: 19, life: 1800, damage: 15, shield: 5,  money: 40 },
+            { name: "Scorchbeast",        is_flying: true, resist_kinetic: 0.6, resist_explosive: 0.6, desc: "Massive flying terror.", speed: 5, life: 3750, damage: 30, shield: 5,  money: 60, color: "#551111" },
+            
+            // --- LEGENDARIES (PRE-MUTATED) ---
+            { name: "Legendary Ghoul",        is_mutated: true, desc: "Glowing, hyper-fast ghoul.",                                 speed: 10, life: 115,  damage: 4,  shield: 2 },
+            { name: "Legendary Mirelurk",     is_mutated: true, resist_kinetic: 0.4, desc: "A super-heavy, shielded behemoth.",      speed: 6,  life: 375,  damage: 8,  shield: 15 },
+            { name: "Legendary Radscorpion",  is_mutated: true, resist_kinetic: 0.4, special_on_death: "spawn_hatchlings", desc: "A faster, tougher scorpion.", speed: 15, life: 600,  damage: 12, shield: 5 },
+            { name: "Legendary Mutant",       is_mutated: true, resist_kinetic: 0.4, desc: "Enraged giant brute.",                   speed: 8,  life: 1125, damage: 6,  shield: 2 },
+            { name: "Legendary Yao Guai",     is_mutated: true, resist_kinetic: 0.4, desc: "A terrifyingly fast alpha predator.",    speed: 20, life: 1950, damage: 18, shield: 6 },
+            { name: "Legendary Nightkin",     is_mutated: true, is_stealthed: true, resist_kinetic: 0.4, desc: "Invisible enraged assassin.", speed: 13, life: 1800, damage: 15, shield: 3, color: "#330066" },
+            { name: "Legendary Deathclaw",    is_mutated: true, resist_kinetic: 0.4, resist_explosive: 0.4, desc: "Unstoppable apex predator.", speed: 24, life: 2700, damage: 25, shield: 8 }
 		];
 
 		if (typeof monster_idx == "undefined") { return monster_attributes.length; }
@@ -267,19 +282,23 @@ _TD.a.push(function (TD) {
             this.is_mutated = !!attr.is_mutated; // NEW: Apply mutation flag on spawn
 			this.speed = Math.floor((attr.speed + this.difficulty / 2) * (Math.random() * 0.5 + 0.75));
 			if (this.speed < 1) this.speed = 1; if (this.speed > cfg.max_speed) this.speed = cfg.max_speed;
-            // Universally increased HP modifier (changed from 0.5 to 1.5 for a massive 300% boost)
-			this.life = this.life0 = Math.floor(attr.life * (this.difficulty + 1) * (Math.random() + 0.5) * 1.5);
+            // HP is now exactly: Base * Difficulty * RNG Variance
+			this.life = this.life0 = Math.floor(attr.life * this.difficulty * (Math.random() + 0.5));
 			if (this.life < 1) this.life = this.life0 = 1;
 			this.shield = Math.floor(attr.shield + this.difficulty / 2); if (this.shield < 0) this.shield = 0;
 			this.damage = Math.floor((attr.damage || 1) * (Math.random() * 0.5 + 0.75)); if (this.damage < 1) this.damage = 1;
 			this.money = attr.money || Math.floor(Math.sqrt((this.speed + this.life) * (this.shield + 1) * this.damage)); if (this.money < 1) this.money = 1;
-			this.color = attr.color || TD.lang.rndRGB(); this.r = Math.floor(this.damage * 3.6) * _TD.retina;
-			if (this.r < (12 * _TD.retina)) this.r = 12 * _TD.retina; if (this.r > TD.grid_size - (4 * _TD.retina)) this.r = TD.grid_size - (4 * _TD.retina);
-			this.render = attr.render; this.grid = null; this.map = null; this.next_grid = null; this.way = []; this.toward = 2; this._dx = 0; this._dy = 0; this.is_blocked = false;
+			this.color = attr.color || TD.lang.rndRGB(); 
             
-            // NEW: Initial random lane assignments & Preferred drift target
-            this.offset_x = (Math.random() * (TD.grid_size * 0.6)) - (TD.grid_size * 0.3);
-            this.offset_y = (Math.random() * (TD.grid_size * 0.6)) - (TD.grid_size * 0.3);
+            // --- 1. UNIFORM HITBOX ---
+            this.r = 12 * _TD.retina; // Shrunk size to make them harder to hit with AoE
+            
+            this.render = attr.render; this.grid = null; this.map = null; this.next_grid = null; this.way = []; this.toward = 2; this._dx = 0; this._dy = 0; this.is_blocked = false;
+            
+            // --- 2. CLAMPED WIDENED SPAWN SCATTER ---
+            // Tightened the scatter to 40% of the grid size so they safely fit within path boundaries
+            this.offset_x = (Math.random() * (TD.grid_size * 0.4)) - (TD.grid_size * 0.2);
+            this.offset_y = (Math.random() * (TD.grid_size * 0.4)) - (TD.grid_size * 0.2);
             this.preferred_offset_x = this.offset_x;
             this.preferred_offset_y = this.offset_y;
             
@@ -290,25 +309,44 @@ _TD.a.push(function (TD) {
                 this.state_timer = TD.exp_fps * (4 + Math.random() * 2); // 4-6 seconds initially
             }
 
-            // ENDLESS SCALING: +2% HP every 2 waves, +0.6% Speed every 3 waves (Caps at Wave 40)
+            // --- 3. DYNAMIC STAT RAMPING ---
+            /* DISABLED FOR BALANCE
             var current_wave = (TD.stage && TD.stage.current_act && TD.stage.current_act.current_scene) ? TD.stage.current_act.current_scene.wave : 1;
-            if (current_wave > 10) {
-                var past_10 = current_wave - 10;
-                var stat_waves = Math.min(past_10, 30); // Locks scaling at 30 waves past 10 (Wave 40)
-
-                var hp_mult = 1.0 + (Math.floor(stat_waves / 2) * 0.02);
-                var spd_mult = 1.0 + (Math.floor(stat_waves / 3) * 0.006);
+            if (current_wave >= 6) {
+                var scaling_waves = current_wave - 5;
+                // Cumulative +3% Health and +1% Speed per wave starting at Wave 6
+                var hp_mult = 1.0 + (scaling_waves * 0.03);
+                var spd_mult = 1.0 + (scaling_waves * 0.01);
 
                 this.life0 = Math.floor(this.life0 * hp_mult);
                 this.life = this.life0;
                 this.speed = this.speed * spd_mult;
             }
-		},
+            */
 
+		},
 
 		caculatePos: function () { var r = this.r; this.x = this.cx - r; this.y = this.cy - r; this.x2 = this.cx + r; this.y2 = this.cy + r; },
 		beHit: function (building, damage) {
 			if (!this.is_valid) return;
+
+            // --- NEW: Damage Resistance & Bonus Calculation ---
+            if (building && building.damage_type) {
+                var resistance_multiplier = 1.0;
+                if (building.damage_type === "Kinetic" && this.resist_kinetic) {
+                    resistance_multiplier = this.resist_kinetic;
+                } else if (building.damage_type === "Energy" && this.resist_energy) {
+                    resistance_multiplier = this.resist_energy;
+                } else if (building.damage_type === "Explosive" && this.resist_explosive) {
+                    resistance_multiplier = this.resist_explosive;
+                }
+                damage = Math.floor(damage * resistance_multiplier);
+
+                // Bonus damage against mutated
+                if (this.is_mutated && building.bonus_damage_mutated) {
+                    damage = Math.floor(damage * building.bonus_damage_mutated);
+                }
+            }
             
             // --- NEW: Vulnerability Aura Check ---
             var _this = this;
@@ -336,11 +374,11 @@ _TD.a.push(function (TD) {
             }
 
             
-            // --- NEW: Award XP just for hitting the target (2 to 5 XP) ---
+            // --- NEW: Award XP just for hitting the target (50% chance for 1 XP) ---
             if (building && building.gainXp) {
-
-                var hitXp = Math.floor(Math.random() * 4) + 2; 
-                building.gainXp(hitXp);
+                if (Math.random() < 0.5) {
+                    building.gainXp(1);
+                }
             }
 
 
@@ -352,9 +390,10 @@ _TD.a.push(function (TD) {
 				var offsetY = (Math.random() * 10) - 5;  // Scatters slightly vertically
 				
 				new TD.FloatingText("dmg-" + TD.lang.rndStr(), {
-					cx: this.cx + offsetX, cy: (this.cy - 10) + offsetY, text: "-" + damage, color: "#ff5555", map: this.map, size: 10, life: 16
+					cx: this.cx + offsetX, cy: (this.cy - 10) + offsetY, text: "-" + damage, color: "#ff5555", map: this.map, size: 14, life: 16
 				});
 			}
+
             
 			if (this.life <= 0) { 
 
@@ -366,7 +405,12 @@ _TD.a.push(function (TD) {
                         mutations_allowed = cData.mutations_enable;
                     }
                 }
+                // --- NEW: Disable mutations in tutorial ---
+                if (typeof TD !== 'undefined' && TD.is_tutorial_active) {
+                    mutations_allowed = false;
+                }
                 // --- NEW: LEGENDARY MUTATION MECHANIC ---
+
                 // Only allow mutation once, and prevent weak swarms (idx 0,8,9 = Roaches/Wasps) from mutating
                 if (mutations_allowed && !this.is_mutated && this.idx !== 0 && this.idx !== 8 && this.idx !== 9) {
                     var mutChance = (window.customDifficulty > 1) ? 0.05 : 0.03; // 3% Normal, 5% Hard
@@ -424,14 +468,28 @@ _TD.a.push(function (TD) {
                 var forceLoot = null;
                 
                 // NEW: Tutorial forced drop
-                if (typeof TD !== 'undefined' && TD.is_tutorial_active && this.scene && this.scene.wave === 2 && !this.scene._tutDropW2) {
-                    forceLoot = "lunchbox"; this.scene._tutDropW2 = true;
-                } else if (this.scene && this.scene.wave === 3 && !this.scene._dropW3) {
-                    forceLoot = "money"; this.scene._dropW3 = true;
-                } else if (this.scene && this.scene.wave === 7 && !this.scene._dropW7) {
-                    forceLoot = "stimpak"; this.scene._dropW7 = true;
-                } else if (this.scene && this.scene.wave === 15 && !this.scene._dropW15) {
-                    forceLoot = "stimpak"; this.scene._dropW15 = true;
+                if (typeof TD !== 'undefined' && TD.is_tutorial_active && this.scene) {
+                    // Drop Lunchbox on the LAST monster of Wave 2
+                    var active_m = 0;
+                    TD.lang.each(this.map.monsters, function(m) { if (m.is_valid && m.life > 0) active_m++; });
+                    var incoming_m = this.map._wait_add_monsters > 0 || this.map._wait_add_monsters_arr.length > 0;
+                    
+                    if (this.scene.wave === 2 && !this.scene._tutDropW2 && active_m === 0 && !incoming_m) {
+                        forceLoot = "lunchbox"; this.scene._tutDropW2 = true;
+                    }
+                    
+                    // Drop Stimpak on the very first kill of Wave 4
+                    if (this.scene.wave === 4 && !this.scene._tutDropStim) {
+                        forceLoot = "stimpak"; this.scene._tutDropStim = true;
+                    }
+                } else if (this.scene) {
+                    if (this.scene.wave === 3 && !this.scene._dropW3) {
+                        forceLoot = "money"; this.scene._dropW3 = true;
+                    } else if (this.scene.wave === 7 && !this.scene._dropW7) {
+                        forceLoot = "stimpak"; this.scene._dropW7 = true;
+                    } else if (this.scene.wave === 15 && !this.scene._dropW15) {
+                        forceLoot = "stimpak"; this.scene._dropW15 = true;
+                    }
                 }
 
                 // --- NEW: BOBBLEHEAD PITY TIMER ---
@@ -443,8 +501,14 @@ _TD.a.push(function (TD) {
                         this.scene._dropPityBobble = true;
                     }
                 }
+
+                // Prevent random drops during the tutorial to maintain strict pacing
+                if (typeof TD !== 'undefined' && TD.is_tutorial_active) {
+                    dropChance = 0;
+                }
                 
                 if (!window.is_demo_mode && (forceLoot || Math.random() < dropChance)) {
+
                     var newLoot = new TD.Loot("loot-" + TD.lang.rndStr(), {
                         cx: this.cx,
                         cy: this.cy,
@@ -459,12 +523,93 @@ _TD.a.push(function (TD) {
                     }
                 }
 
-
                 this.beKilled(building); 
+                
+                // --- NEW: LAST MONSTER IN WAVE DETECTION (TUTORIAL PHASE 4 & 5) ---
+                if (typeof TD !== 'undefined' && TD.is_tutorial_active && TD.Tutorial && this.map) {
+                    var active_monsters = 0;
+                    TD.lang.each(this.map.monsters, function(m) {
+                        if (m.is_valid && m.life > 0) active_monsters++;
+                    });
+                    
+                    var incoming_monsters = this.map._wait_add_monsters > 0 || this.map._wait_add_monsters_arr.length > 0;
+                    
+                    if (active_monsters === 0 && !incoming_monsters) {
+                        // End of Wave 1
+                        if (this.scene.wave === 1) {
+                            TD.Tutorial.next("wave_1_end");
+                        }
+                        // End of Wave 2
+                        else if (this.scene.wave === 2) {
+                            TD.Tutorial.pause_wave_timer = true;
+                            // Prevent softlock if they killed everything before clicking speed
+                            if (TD.Tutorial.steps[TD.Tutorial.step].trigger === "speed_up") {
+                                TD.Tutorial.next("speed_up");
+                            }
+                            TD.Tutorial.next("loot_wait");
+                        }
+
+                        // End of Wave 3
+
+                        else if (this.scene.wave === 3) {
+
+                            TD.Tutorial.pause_wave_timer = true;
+                            var lvl = TD.account_level || 1;
+                            var xp_needed = Math.floor(150 * Math.pow(1.25, lvl - 1));
+                            if (TD.account_xp < xp_needed) {
+                                TD.addAccountXp(xp_needed - TD.account_xp); // Instantly fill XP
+                            }
+                            
+                            var xpBtn = document.getElementById("btn-open-techtree");
+                            if (xpBtn) {
+                                xpBtn.style.setProperty("box-shadow", "0 0 20px #0f0, inset 0 0 10px #0f0", "important");
+                                xpBtn.addEventListener("click", function _rmGlow() {
+                                    this.style.removeProperty("box-shadow");
+                                    this.removeEventListener("click", _rmGlow);
+                                });
+                            }
+                            TD.Tutorial.next("wave_3_delay"); // Triggers XP modal
+                        }
+                        // End of Wave 8
+                        else if (this.scene.wave === 8) {
+                            if (TD.Tutorial.steps[TD.Tutorial.step].trigger === "wave_8_end") {
+                                TD.Tutorial.pause_wave_timer = true;
+                                TD.Tutorial.next("wave_8_end");
+                            }
+                        }
+                    }
+                }
 
             }
-            
+			// --- NEW: ASSAULTRON SELF-DESTRUCT SEQUENCE ---
+            if (this.special_behavior === "assaultron_laser" && this.life > 0) {
+                var critical_hp_threshold = this.life0 * 0.05;
+                if (this.life <= critical_hp_threshold) {
+                    // Start the self-destruct timer if it hasn't started already
+                    if (typeof this.self_destruct_timer === 'undefined') {
+                        this.self_destruct_timer = TD.exp_fps * 6; // 6 seconds
+                        this.is_flashing_red = true; // Visual trigger
+                    }
+
+                    this.self_destruct_timer--;
+
+                    if (this.self_destruct_timer <= 0) {
+                        // Check if in final 25% of path before dealing damage
+                        if (this.way) {
+                             var percentTraveled = 100 - Math.floor((this.way.length / this._total_path_len) * 100);
+                             if (percentTraveled >= 75) {
+                                TD.life -= 25; // Deal 25 damage to base
+                             }
+                        }
+                        this.beKilled({ killed: 0, gainXp: function(){} }); // Self-destruct
+                        TD.Explode("assaultron-self-destruct-" + TD.lang.rndStr(), { cx: this.cx, cy: this.cy, r: 80, color: "#ff2200", scene: this.map.scene, time: 1.2 });
+                        return; // Exit beHit function immediately
+                    }
+                }
+            }
+
 			var balloontip = this.scene.panel.balloontip;
+
 			if (balloontip.el == this) { 
                 if (this.is_hp_visible) {
                     var tags = [];
@@ -474,15 +619,20 @@ _TD.a.push(function (TD) {
                     if (this.life0 >= 500) tags.push("[VERY STRONG]");
                     if (this.life0 >= 2000) tags.push("[BOSS]");
                     var tagStr = tags.length > 0 ? "\n" + tags.join(" ") : "";
-                    balloontip.text = this.name.toUpperCase() + "\nHP: " + this.life + " / " + this.life0 + tagStr; 
+                    
+                    var sd_text = "";
+                    if (this.self_destruct_timer > 0) {
+                        var secs_left = Math.ceil(this.self_destruct_timer / TD.exp_fps);
+                        sd_text = "\n<span style='color:#ff0000; font-weight:bold;'>SELF-DESTRUCT IN " + secs_left + "s</span>";
+                    }
+
+                    balloontip.text = this.name.toUpperCase() + "\nHP: " + this.life + " / " + this.life0 + tagStr + sd_text; 
                 } else {
                     // No Intel: Keep the generic name
                     balloontip.text = this.name.toUpperCase();
                 }
             }
 		},
-
-
 		beKilled: function (building) {
 			if (!this.is_valid) return;
 			this.life = 0; this.is_valid = false; building.killed++;
@@ -506,7 +656,9 @@ _TD.a.push(function (TD) {
             if (current_wave >= 13) wave_bonus = 10;
             if (current_wave >= 17) wave_bonus = 15;
             
-            var final_bounty = this.money + wave_bonus;
+            // --- 4. ECONOMY REDUCTION ---
+            // Flat 50% reduction to caps earned per kill (including wave bonuses), minimum 1 cap
+            var final_bounty = Math.max(1, Math.floor((this.money + wave_bonus) * 0.5));
             TD.money += final_bounty;
             
             // --- NEW: BONUS BOUNTY PAYOUT ---
@@ -538,9 +690,18 @@ _TD.a.push(function (TD) {
                 });
             }
 
+			// --- NEW: Special On-Death Effects ---
+			if (this.special_on_death === "spawn_hatchlings" && this.grid) {
+                var spawn_count = Math.floor(Math.random() * 4) + 3; // 3 to 6
+                for (var i = 0; i < spawn_count; i++) {
+                    // Spawns a weak hatchling (using Radroach stats, idx: 0) with half difficulty
+                    var hatchling = new TD.Monster(null, { idx: 0, difficulty: TD.difficulty / 2, step_level: this.step_level, render_level: this.render_level + 2 });
+                    this.grid.addMonster(hatchling);
+                }
+            }
+
 			TD.Explode(this.id + "-explode", { cx: this.cx, cy: this.cy, color: this.color, r: this.r, step_level: this.step_level, render_level: this.render_level, scene: this.map.scene });
 		},
-
 
 		arrive: function () { this.grid = this.next_grid; this.next_grid = null; this.checkFinish(); },
 		findWay: function () {
@@ -563,6 +724,12 @@ _TD.a.push(function (TD) {
 
                 // --- NEW: ENDURANCE OVERDRIVE DAMAGE MITIGATION ---
                 var final_damage = this.damage;
+
+                // --- NEW: Special On-Leak Effects ---
+                if (this.special_on_leak === "double_damage") {
+                    final_damage *= 2;
+                }
+                
                 if (typeof TD !== 'undefined' && TD.overdrive && TD.overdrive.E > 0) {
                     // "Large" monsters defined as base life >= 1000 (Bosses)
                     if (this.life0 >= 1000) {
@@ -571,6 +738,7 @@ _TD.a.push(function (TD) {
                         final_damage = 0; // Take no damage from anything else
                     }
                 }
+
 
                 // Trigger Screen Shake visually on the board container (ONLY if taking damage)
                 if (final_damage > 0) {
@@ -585,8 +753,8 @@ _TD.a.push(function (TD) {
                 var is_critical = false;
                 var took_damage = false;
                 if (this.map.map_type === "siege") {
-                    TD.base_health -= (final_damage * 10);
-                    if (TD.base_health <= 0) { TD.base_health = 0; TD.stage.gameover(); } else { this.pause(); this.del(); took_damage = true; is_critical = (TD.base_health <= 300); }
+                    this.is_attacking_base = true;
+                    return; // Prevent deletion and keep them alive on the base
                 } else {
                     TD.life -= final_damage;
                     if (TD.life <= 0) { TD.life = 0; TD.stage.gameover(); } else { this.pause(); this.del(); took_damage = true; is_critical = (TD.life <= 25); }
@@ -652,7 +820,6 @@ _TD.a.push(function (TD) {
                 }
             }
 
-            
 			if (!this.next_grid) { 
                 this.getNextGrid(); 
                 if (!this.next_grid) { 
@@ -662,6 +829,34 @@ _TD.a.push(function (TD) {
                         
                         if (this.attack_cooldown > 0) {
                             this.attack_cooldown--;
+                        } else if (this.is_attacking_base) {
+                            // DEAL DAMAGE TO BASE CONTINUOUSLY
+                            var final_damage = this.damage;
+                            if (typeof TD !== 'undefined' && TD.overdrive && TD.overdrive.E > 0) {
+                                final_damage = (this.life0 >= 1000) ? 1 : 0;
+                            }
+                            
+                            if (final_damage > 0) {
+                                TD.base_health -= (final_damage * 10);
+                                TD.Explode(this.id + "-base-atk", { cx: this.cx, cy: this.cy, r: 15 * _TD.retina, step_level: this.step_level, render_level: 9, color: "#ff0000", scene: this.map.scene, time: 0.3 });
+                                
+                                var board = document.getElementById("td-board");
+                                if (board) {
+                                    board.classList.remove("shake-active");
+                                    void board.offsetWidth;
+                                    board.classList.add("shake-active");
+                                }
+                                
+                                if (typeof TD.triggerMetaChatter === 'function' && Math.random() < 0.2) {
+                                    TD.triggerMetaChatter(TD.base_health <= 300 ? "base_critical" : "base_damage");
+                                }
+                                
+                                if (TD.base_health <= 0) {
+                                    TD.base_health = 0;
+                                    TD.stage.gameover();
+                                }
+                            }
+                            this.attack_cooldown = 24; // Attack base once per second
                         } else {
                             // Look for adjacent blocking towers
                             var adj = [
@@ -693,6 +888,19 @@ _TD.a.push(function (TD) {
                                 }
                             }
                         }
+
+                        // Ensure poison and fire still damages them while attacking the base
+                        if (this.is_poisoned) {
+                            this.poison_timer--;
+                            if (this.poison_timer <= 0) this.is_poisoned = false;
+                            if (this.poison_timer % 12 === 0) {
+                                var pDmg = this.poison_damage || 5;
+                                this.life -= pDmg;
+                                new TD.FloatingText("pdmg-" + TD.lang.rndStr(), { cx: this.cx + (Math.random()*10-5), cy: this.cy - 10, text: "-" + pDmg, color: "#ff8800", map: this.map, size: 10, life: 12 });
+                                if (this.life <= 0) this.beKilled({ killed: 0, gainXp: function(){} });
+                            }
+                        }
+
                     } else {
                         this.beBlocked(); 
                     }
@@ -740,8 +948,8 @@ _TD.a.push(function (TD) {
                     this.offset_y += (this.preferred_offset_y - this.offset_y) * 0.05;
                 }
                 
-                // Wider clamping (50%) so they don't clip entirely off the tile
-                var maxOff = TD.grid_size * 0.5;
+                // Tighter clamping (35%) so they safely fit on the path while walking
+                var maxOff = TD.grid_size * 0.35;
                 if (this.offset_x > maxOff) this.offset_x = maxOff; else if (this.offset_x < -maxOff) this.offset_x = -maxOff;
                 if (this.offset_y > maxOff) this.offset_y = maxOff; else if (this.offset_y < -maxOff) this.offset_y = -maxOff;
                 
@@ -756,33 +964,89 @@ _TD.a.push(function (TD) {
                 
                 // --- NEW: PATH PROGRESS ANNOUNCER ---
                 // Calculate how far they are based on their remaining path length
-                if (this.way && this.map && this.map.entrance && this.map.exit && window.IntelData && TD.Announcer) {
+                if (this.way && this.map && this.map.entrance && this.map.exit) { // Simplified condition
                     // Estimate total path length (just once)
                     if (!this._total_path_len) this._total_path_len = this.way.length + 1;
                     
                     var percentTraveled = 100 - Math.floor((this.way.length / this._total_path_len) * 100);
-                    
-                    // Trigger warnings at 50% and 75% marks
-                    if (percentTraveled >= 50 && !this._warned_50) {
-                        this._warned_50 = true;
-                        // Only 10% chance to warn for generic mobs to prevent spam, 100% chance for Bosses
-                        if (this.life0 >= 2000 || Math.random() < 0.1) {
-                            TD.Announcer.add(window.IntelData.getEvent("path_progress", TD.current_faction, null, this.name, 50), 4);
+
+                    // --- NEW: ASSAULTRON SPECIAL BEHAVIOR LOGIC ---
+                    if (this.special_behavior === "assaultron_laser") {
+                        // Final Stand at 95%
+                        if (percentTraveled >= 95) {
+                            if (typeof this.final_stand_timer === 'undefined') this.final_stand_timer = 0;
+                            this.final_stand_timer--;
+                            
+                            if (this.final_stand_timer <= 0) {
+                                // Charge (1.5s) -> Fire -> Rest (3s)
+                                this.final_stand_timer = TD.exp_fps * 4.5;
+                                
+                                // Laser Charge-up Visual
+                                TD.Explode("assaultron-charge-" + TD.lang.rndStr(), { cx: this.cx, cy: this.cy, r: 30, color: "#ff5555", scene: this.map.scene, time: 1.5 });
+                                
+                                // Fire after 1.5 seconds
+                                setTimeout(function() {
+                                    if (TD.life > 0) TD.life -= 10;
+                                    TD.Explode("assaultron-fire-" + TD.lang.rndStr(), { cx: this.cx, cy: this.cy, r: 20, color: "#ff0000", scene: this.map.scene, time: 0.2 });
+                                    var board = document.getElementById("td-board");
+                                    if (board) { board.classList.remove("shake-active"); void board.offsetWidth; board.classList.add("shake-active"); }
+                                }.bind(this), 1500);
+                            }
+                            // Halt all forward movement
+                            this.caculatePos();
+                            return; 
+                        }
+                        // One-time laser shots
+                        else if (percentTraveled >= 85 && !this._fired_85) {
+                            this._fired_85 = true; TD.life -= 10;
+                            TD.Explode("assaultron-fire-" + TD.lang.rndStr(), { cx: this.cx, cy: this.cy, r: 15, color: "#ff0000", scene: this.map.scene, time: 0.2 });
+                        }
+                        else if (percentTraveled >= 75 && !this._fired_75) {
+                            this._fired_75 = true; TD.life -= 10;
+                            TD.Explode("assaultron-fire-" + TD.lang.rndStr(), { cx: this.cx, cy: this.cy, r: 15, color: "#ff0000", scene: this.map.scene, time: 0.2 });
                         }
                     }
-                    if (percentTraveled >= 75 && !this._warned_75) {
-                        this._warned_75 = true;
-                        if (this.life0 >= 2000 || Math.random() < 0.2) {
-                            TD.Announcer.add(window.IntelData.getEvent("path_progress", TD.current_faction, null, this.name, 75), 5);
+                    
+                    // Original Announcer Logic
+                    if (window.IntelData && TD.Announcer) {
+                        if (percentTraveled >= 50 && !this._warned_50) {
+                            this._warned_50 = true;
+                            if (this.life0 >= 2000 || Math.random() < 0.1) {
+                                TD.Announcer.add(window.IntelData.getEvent("path_progress", TD.current_faction, null, this.name, 50), 4);
+                            }
+                        }
+                        if (percentTraveled >= 75 && !this._warned_75) {
+                            this._warned_75 = true;
+                            if (this.life0 >= 2000 || Math.random() < 0.2) {
+                                TD.Announcer.add(window.IntelData.getEvent("path_progress", TD.current_faction, null, this.name, 75), 5);
+                            }
                         }
                     }
                 }
 
                 // --- STATUS EFFECT TIMERS ---
 
+                // --- NEW: LEGENDARY HEALTH REGENERATION ---
+                if (this.is_mutated && this.life < this.life0) {
+                    if (typeof this.regen_timer === 'undefined') this.regen_timer = TD.exp_fps; // 1 second timer
+                    this.regen_timer--;
+                    if (this.regen_timer <= 0) {
+                        this.regen_timer = TD.exp_fps; // Reset timer
+                        var regen_amt = Math.max(1, Math.floor(this.life0 * 0.02)); // Heals 2% of Max HP per second
+                        this.life += regen_amt;
+                        if (this.life > this.life0) this.life = this.life0; // Cap at Max HP
+                        
+                        // Small visual green floating text to show the healing
+                        if (TD.iframe % 2 === 0) { // Throttle visual slightly to prevent clutter
+                            new TD.FloatingText("regen-" + TD.lang.rndStr(), { cx: this.cx + (Math.random()*10-5), cy: this.cy - 15, text: "+" + regen_amt, color: "#00ff00", map: this.map, size: 10, life: 16 });
+                        }
+                    }
+                }
+
                 if (typeof this.stealth_alpha === 'undefined') this.stealth_alpha = 0.0;
                 
                 if (this.reveal_timer > 0) {
+
                     this.reveal_timer--;
                     if (this.reveal_timer <= 0) this.is_revealed = false;
                 }
