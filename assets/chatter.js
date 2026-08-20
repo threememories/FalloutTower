@@ -30,6 +30,32 @@ window.ChatterDB = {
         return null;
     },
 
+    getFormattedTime: function() {
+        var d = new Date();
+        var hours = d.getHours(); // 0-23
+        var minutes = d.getMinutes();
+        var ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0'+minutes : minutes;
+        var strTime = hours + ':' + minutes + ' ' + ampm;
+        return "It's " + strTime + ".";
+    },
+
+    getTimeReaction: function() {
+        var d = new Date();
+        var h = d.getHours(); // 0-23
+
+        if (h >= 23 || h < 4) return ["Past my bedtime.", "Ugh, it's late.", "Shouldn't we be asleep?"];
+        if (h >= 4 && h < 7) return ["Ugh, it's too early.", "The sun's not even up...", "Rise and shine... I guess."];
+        if (h >= 7 && h < 11) return ["Morning. Got any coffee?", "Alright, let's get to work.", "Still plenty of daylight left."];
+        if (h >= 11 && h < 14) return ["Almost lunchtime.", "Is that my stomach or a radroach?", "Time flies when you're getting shot at."];
+        if (h >= 14 && h < 18) return ["Long day.", "Sun's getting low.", "Hope we get relieved soon."];
+        if (h >= 18 && h < 23) return ["Night shift again.", "Getting dark out.", "The freaks come out at night."];
+        
+        return ["Time to kill something.", "Same time as it was a minute ago.", "Time is a flat circle."]; // Fallback
+    },
+
     factions: {
         "NCR": {
             // SINGLE CHATTER
@@ -273,13 +299,22 @@ window.ChatterDB = {
                 ["Anyone see anything out there?", "Nothing yet, keeping watch.", "Keep your eyes peeled."],
                 ["You ever met a Ranger?", "Once. Guy didn't say a word.", "Sounds about right."],
                 ["Knock knock.", "Who's there?", "Deathclaw.", "Deathclaw who?", "Exactly, shoot it!"],
-                
+                ["Hey, you got the time?", "[PC_TIME]", "[TIME_REACTION]"],
+                ["I'm thinking of starting a Brahmin farm after my tour.", "You? A farmer?", "Hey, it's honest work.", "Good luck. I hear the soil is mostly glass and disappointment."],
+                ["What's the first thing you'll do when you get back to the Hub?", "Take a shower. A real one, with water that isn't green.", "I'm gonna eat a steak. A real one, not a bloatfly."],
+                ["This wind... it's getting on my nerves.", "Better than the sound of a mini nuke whistling.", "You got a point there.", "Still annoying, though."],
+                ["Remember that Ranger who took on three Deathclaws with just a knife?", "Yeah, what a legend.", "I heard it was five Deathclaws and a shovel.", "Either way, he's got my respect."],
+                ["You ever think about what we're fighting for?", "A steady paycheck and a pension.", "I was thinking more about... you know, democracy."],
                 ["What's the strangest thing you've seen in the wastes?", "A guy in a blue vault suit drinking from a toilet.", "Yeah, that tracks.", "He survived, too. Vault Dwellers are weird."],
                 ["Hey, let me borrow five caps.", "No way. You still owe me from that Caravan game.", "Come on, I'm good for it!", "Pay me back first, deadbeat."],
                 ["Do you think mutants ever get sunburns?", "They're immune to radiation, idiot. The sun doesn't hurt them.", "Well excuse me for asking a scientific question."],
                 ["I swear I saw a UFO last night.", "You've been hitting the Jet again, haven't you?", "No! It was green and went zooming over the mountains!", "Sure it was. Back to your post."],
                 ["If we survive this, first round is on me.", "Make it a sunset sarsaparilla and you've got a deal.", "Deal. Try not to die before then."],
-                ["Did you pack the Iguana on a stick?", "I ate it. I got hungry.", "You ate my lunch?! You're dead to me.", "Look, shoot the mutants first, then you can yell at me."]
+                ["Did you pack the Iguana on a stick?", "I ate it. I got hungry.", "You ate my lunch?! You're dead to me.", "Look, shoot the mutants first, then you can yell at me."],
+["♫ To the town of Agua Fria rode a stranger one fine day... ♫", "♫ Hardly spoke to folks around him, didn't have too much to say... ♫", "♫ No one dared to ask his business, no one dared to make a slip... ♫", "♫ For the stranger there among them had a big iron on his hip. ♫", "♫ Big iron on his hip... ♫"],
+["♫ I don't want to set the world on fire... ♫", "♫ I just want to start...♫ ", "♫ a flame in your heart... which is a tactical liability, Brother. ♫"],
+["♫ Wouldn't it be nice if we were older... ♫", "♫ Then we wouldn't have to wait so long... ♫", "♫ And wouldn't it be nice to live together... ♫", "♫ In the kind of world where we belong... ♫"],
+["♫ Almost heaven, West Virginia... ♫", "♫ Blue Ridge Mountains, Shenandoah River... ♫", "♫ Life is old there, older than the trees... ♫", "♫ Country roads, take me home... ♫", "♫ To the place I belong... ♫", "♫ West Virginia, mountain mama... ♫", "♫ Take me home, country roads. ♫"]
             ]
         },
 
@@ -526,7 +561,15 @@ window.ChatterDB = {
                 ["Why are we fighting over this specific patch of dirt?", "Ours is not to question the Elder's orders.", "I know, I know. It just seems pointless.", "If there's pre-war tech here, it's worth it."],
                 ["My power armor joint is squeaking.", "Did you requisition oil from the quartermaster?", "He told me to use mutant grease.", "Disgusting. But effective."],
                 ["Have you read the latest Scribe report?", "I don't read. I shoot.", "You should read it. The mutant migration patterns are alarming.", "Let them migrate into my crosshairs."],
-                ["Are those civilians scavenging our battlefield?", "Warning shots authorized.", "Gladly. Firing now.", "That scattered them."]
+                ["Are those civilians scavenging our battlefield?", "Warning shots authorized.", "Gladly. Firing now.", "That scattered them."],
+                ["Anyone got the time?", "[PC_TIME]", "[TIME_REACTION]"],
+                ["This salvaged sensor... should we send it to the Scribes or repurpose it?", "Scribes will just put it in a box. We can use it for targeting.", "That's a violation of protocol 7-Delta.", "Write me up for it after the battle, then."],
+                ["Initiate, your power armor maintenance is overdue.", "But I polished it this morning, Paladin!", "The diagnostic shows micro-fractures in the chest plate. Report to the armory.", "(Sighs) Yes, Paladin."],
+["♫ To the town of Agua Fria rode a stranger one fine day... ♫", "♫ Hardly spoke to folks around him, didn't have too much to say... ♫", "♫ No one dared to ask his business, no one dared to make a slip... ♫", "♫ For the stranger there among them had a big iron on his hip. ♫", "♫ Big iron on his hip... ♫"],
+["♫ I don't want to set the world on fire... ♫", "♫ I just want to start...♫ ", "♫ a flame in your heart... which is a tactical liability, Brother. ♫"],
+["♫ Wouldn't it be nice if we were older... ♫", "♫ Then we wouldn't have to wait so long... ♫", "♫ And wouldn't it be nice to live together... ♫", "♫ In the kind of world where we belong... ♫"],
+["♫ Almost heaven, West Virginia... ♫", "♫ Blue Ridge Mountains, Shenandoah River... ♫", "♫ Life is old there, older than the trees... ♫", "♫ Country roads, take me home... ♫", "♫ To the place I belong... ♫", "♫ West Virginia, mountain mama... ♫", "♫ Take me home, country roads. ♫"]
+
             ]
         },
         "MINUTEMEN": {
@@ -770,7 +813,15 @@ window.ChatterDB = {
                 ["You ever seen the General fight?", "Yeah. Took down a Deathclaw with a rolling pin.", "You're lying.", "I swear on my favorite hat!"],
                 ["Did you remember to lock the gate?", "I thought you locked the gate.", "Oh no.", "We don't even have a gate, calm down."],
                 ["What do you want to do when we rebuild the Commonwealth?", "Open a bakery. Sell mutfruit pies.", "I'll be your first customer.", "I'll give you the militia discount."],
-                ["Look at this pipe rifle. It's practically held together with rust.", "As long as the bullet comes out the front, it's fine.", "I think it's pointing slightly left.", "Just aim slightly right, then."]
+                ["Look at this pipe rifle. It's practically held together with rust.", "As long as the bullet comes out the front, it's fine.", "I think it's pointing slightly left.", "Just aim slightly right, then."],
+                ["Anyone got the time?", "[PC_TIME]", "[TIME_REACTION]"],
+                ["We saved Abernathy Farm last week.", "I heard. Good people over there.", "They gave me a whole crate of tatos as thanks.", "We do it for the people, not the tatos.", "I know. But the tatos are nice."],
+                ["This wall won't hold forever.", "It'll hold long enough. We just need to keep rebuilding.", "Just once I'd like to build something that isn't immediately shot at.", "That's the dream, friend."],
+["♫ To the town of Agua Fria rode a stranger one fine day... ♫", "♫ Hardly spoke to folks around him, didn't have too much to say... ♫", "♫ No one dared to ask his business, no one dared to make a slip... ♫", "♫ For the stranger there among them had a big iron on his hip. ♫", "♫ Big iron on his hip... ♫"],
+["♫ I don't want to set the world on fire... ♫", "♫ I just want to start...♫ ", "♫ a flame in your heart... which is a tactical liability, Brother. ♫"],
+["♫ Wouldn't it be nice if we were older... ♫", "♫ Then we wouldn't have to wait so long... ♫", "♫ And wouldn't it be nice to live together... ♫", "♫ In the kind of world where we belong... ♫"],
+["♫ Almost heaven, West Virginia... ♫", "♫ Blue Ridge Mountains, Shenandoah River... ♫", "♫ Life is old there, older than the trees... ♫", "♫ Country roads, take me home... ♫", "♫ To the place I belong... ♫", "♫ West Virginia, mountain mama... ♫", "♫ Take me home, country roads. ♫"]
+
             ],
             militia_blockade: [
                 "Hold the line!",
@@ -1054,7 +1105,15 @@ window.ChatterDB = {
                 ["Give me your Jet.", "No way, get your own.", "I'm taking it.", "I'll stab you in the eye."],
                 ["Why do we hang bodies from hooks?", "To scare people.", "It just smells bad to me.", "You lack artistic vision."],
                 ["You think the Brotherhood will come here?", "Let 'em. I want a shiny metal suit.", "You can't even read the manual for one.", "I'll figure it out!"],
-                ["I haven't taken a bath in three months.", "I can tell.", "What's that supposed to mean?!", "It means stay downwind of me."]
+                ["I haven't taken a bath in three months.", "I can tell.", "What's that supposed to mean?!", "It means stay downwind of me."],
+                ["Anyone got the time?", "[PC_TIME]", "[TIME_REACTION]"],
+                ["I dare you to eat that glowing fungus over there.", "For how many caps?", "Ten.", "Make it twenty and you've got a deal.", "Fine. But I get to watch."],
+                ["This is my spot! I saw it first!", "I was here yesterday! It's my spot!", "I'll fight you for it!", "Fine! After we kill these things!"],
+["♫ To the town of Agua Fria rode a stranger one fine day... ♫", "♫ Hardly spoke to folks around him, didn't have too much to say... ♫", "♫ No one dared to ask his business, no one dared to make a slip... ♫", "♫ For the stranger there among them had a big iron on his hip. ♫", "♫ Big iron on his hip... ♫"],
+["♫ I don't want to set the world on fire... ♫", "♫ I just want to start...♫ ", "♫ a flame in your heart... which is a tactical liability, Brother. ♫"],
+["♫ Wouldn't it be nice if we were older... ♫", "♫ Then we wouldn't have to wait so long... ♫", "♫ And wouldn't it be nice to live together... ♫", "♫ In the kind of world where we belong... ♫"],
+["♫ Almost heaven, West Virginia... ♫", "♫ Blue Ridge Mountains, Shenandoah River... ♫", "♫ Life is old there, older than the trees... ♫", "♫ Country roads, take me home... ♫", "♫ To the place I belong... ♫", "♫ West Virginia, mountain mama... ♫", "♫ Take me home, country roads. ♫"]
+
             ]
         }
 
@@ -1190,7 +1249,10 @@ window.ChatterDB = {
             ],
             convo_script: [
                 // THE SINGING TOWERS!
-                ["Jingle bells!", "Mutants smell!", "Deathclaw laid an egg!", "The Fat Man blew its target through...", "...and the Raider got away, hey!"]
+                ["Jingle bells!", "Mutants smell!", "Deathclaw laid an egg!", "The Fat Man blew its target through...", "...and the Raider got away, hey!"],
+                ["Deck the halls with Mirelurk shells!", "Fa la la la la, la la la la!", "Tis the season to give them hell!", "Fa la la la la, la la la la!"],
+                ["Glowing One, with your nose so bright,", "won't you guide my shot tonight?", "Wait, that's not Rudolph...", "OPEN FIRE!"],
+                ["Oh the weather outside is frightful,", "but this fire is so delightful!", "Since we've no place to go,", "Let it glow, let it glow, let it glow!"]
             ]
         },
         "NewYearsEve": {
@@ -1225,7 +1287,28 @@ window.ChatterDB = {
 
         if (pool.length === 0) return "...";
         
-        // Return a random entry (can be a string or a script array!)
-        return pool[Math.floor(Math.random() * pool.length)];
+        var result = pool[Math.floor(Math.random() * pool.length)];
+        
+        // --- NEW: Dynamic Script Processing ---
+        // Check if the result is a conversation script (an array)
+        if (Array.isArray(result)) {
+            // Create a new array to avoid modifying the original database
+            var processedScript = [];
+            for (var i = 0; i < result.length; i++) {
+                var line = result[i];
+                if (line === "[PC_TIME]") {
+                    processedScript.push(this.getFormattedTime());
+                } else if (line === "[TIME_REACTION]") {
+                    var reactions = this.getTimeReaction();
+                    // Pick a random reaction from the returned array
+                    processedScript.push(reactions[Math.floor(Math.random() * reactions.length)]);
+                } else {
+                    processedScript.push(line);
+                }
+            }
+            return processedScript;
+        }
+        
+        return result; // Return the original string if it's not a script
     }
 };

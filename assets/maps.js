@@ -180,15 +180,13 @@ _TD.a.push(function (TD) {
 
 		var config_base = {
 			endless: false, wait_new_wave: TD.exp_fps * 5, difficulty: window.customDifficulty || 1.0, wave: 0, max_wave: 20, wave_damage: 0, max_monsters_per_wave: 100, money: 100000000, score: 0, life: 100,
-			waves: [ [], [[1, 0]], [[1, 0], [1, 1]], [[2, 0], [1, 1]], [[2, 0], [1, 1]], [[3, 0], [2, 1]], [[4, 0], [2, 1]], [[5, 0], [3, 1], [1, 2]], [[6, 0], [4, 1], [1, 2]], [[7, 0], [3, 1], [2, 2]], [[8, 0], [4, 1], [3, 2]] ]
+			waves: [] 
 		};
         
-        // Ensure waves array is pre-populated up to wave 20 for campaign maps
-        for (var w = config_base.waves.length; w <= 20; w++) {
-            config_base.waves.push(TD.makeMonsters(Math.min(Math.floor(Math.pow(w, 1.1)), 100)));
-        }
+        // PRE-GENERATION LOOP DELETED SO ENDLESS WAVES GENERATE DYNAMICALLY
 
 		var newWave_func = function (cfg) {
+
 
 			cfg = cfg || {}; var map = cfg.map, wave = cfg.wave || 1, wave_damage = TD.wave_damage || 0;
             /* DISABLED DYNAMIC SCALER

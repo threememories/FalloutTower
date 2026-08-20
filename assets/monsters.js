@@ -92,17 +92,18 @@ _TD.a.push(function (TD) {
 		consecutive_breather_waves: 0,
 		survival_waves: [
 			[], // Index 0 (unused)
-			[[3, 0]], // Wave 1: 3 Roaches
-			[[5, 0]], // Wave 2: 5 Roaches
-			[[4, 0], [1, 1]], // Wave 3: 4 Roaches, 1 Ghoul
-			[[4, 0], [3, 1]], // Wave 4: 4 Roaches, 3 Ghouls
-			[[1, 0], [5, 1]], // Wave 5: 1 Roach, 5 Ghouls
-			[[2, 0], [2, 1], [1, 3]], // Wave 6: 2 Roaches, 2 Ghouls, 1 Mutant
-			[[3, 0], [3, 1], [2, 3]], // Wave 7: 3 Roaches, 3 Ghouls, 2 Mutants
-			[[2, 1], [3, 3]], // Wave 8: 2 Ghouls, 3 Mutants
-			[[4, 3]], // Wave 9: 4 Mutants
-			[[10, 1]]  // Wave 10: 10 Ghouls (The Swarm)
+			[[3, 0]], // Wave 1: 3 Radroaches
+			[[5, 0]], // Wave 2: 5 Radroaches
+			[[8, 0]], // Wave 3: 8 Radroaches
+			[[12, 0]], // Wave 4: 12 Radroaches
+			[[15, 0]], // Wave 5: 15 Radroaches
+			[[4, 3]], // Wave 6: 4 Feral Ghouls
+			[[10, 0], [3, 3]], // Wave 7: 10 Radroaches, 3 Feral Ghouls
+			[[6, 3]], // Wave 8: 6 Feral Ghouls
+			[[15, 0], [5, 3]], // Wave 9: 15 Radroaches, 5 Feral Ghouls
+			[[10, 3]]  // Wave 10: 10 Feral Ghouls
 		],
+
 
 		generateDynamicWave: function(wave_idx, is_campaign, map) {
 			var difficulty = TD.difficulty || 1.0;
@@ -124,15 +125,15 @@ _TD.a.push(function (TD) {
 
             // 2. DYNAMIC BUDGETING
             // Smoothly curve the base budget using wave count, and heavily nerf the DPS tax (from 70% to 15%)
-            var baseline_threat = (total_dps * 0.15) + (wave_idx * 3) + 15; 
+            var baseline_threat = (total_dps * 0.15) + (wave_idx * 4) + 15; 
             var budget = baseline_threat * difficulty; 
             
-            var minimum_budget = wave_idx * 4;
-            var maximum_budget = 30 + (wave_idx * 10); 
+            var minimum_budget = wave_idx * 5;
+            // Greatly expand the maximum budget ceiling to support late-game scaling
+            var maximum_budget = 100 + (wave_idx * 25); 
             
             if (budget < minimum_budget) budget = minimum_budget;
             if (budget > maximum_budget) budget = maximum_budget; // STOPS INFINITE INFLATION
-
 			
 			// 3. THE BREATHER CHECK
 
@@ -153,20 +154,29 @@ _TD.a.push(function (TD) {
 			}
 
 			// Bestiary: [Monster ID, Cost, Type, Max Per Wave, Batch Limit] 
-            // Types: 0=Swarm, 1=Tank, 2=Flyer, 3=Stealth, 4=Boss
+            // Types: 0=Swarm, 1=Tank, 2=Flyer, 3=Stealth/Special, 4=Boss, 5=Legendary
 			var bestiary = [
-				[0, 2, 0, 99, 5], [1, 3, 0, 99, 5], [2, 4, 0, 99, 5],              // Swarms (Cheap, unlimited, max 5)
-				[4, 8, 1, 99, 3], [3, 12, 1, 99, 3], [5, 15, 1, 99, 2], [7, 25, 1, 99, 2], // Tanks (Slightly restricted)
-				[9, 5, 2, 99, 3], [8, 6, 2, 99, 3],                               // Flyers (Max 3 per cluster)
-				[11, 20, 3, 5, 1],                                                // Stealth (Max 5 total, 1 at a time)
-				[6, 40, 4, 1, 1], [10, 60, 4, 1, 1]                               // Bosses (Max 1 total, 1 at a time)
+                // Type 0: Swarms
+				[0, 2, 0, 99, 8], [1, 3, 0, 99, 8], [3, 4, 0, 99, 6], [4, 5, 0, 99, 6],
+                // Type 1: Tanks & Brutes
+				[6, 8, 1, 99, 4], [8, 15, 1, 99, 3], [13, 18, 1, 99, 3], [10, 20, 1, 99, 2],
+                // Type 2: Flyers
+				[2, 6, 2, 99, 4], [7, 8, 2, 99, 4], [9, 15, 2, 99, 2],
+                // Type 3: Stealth & Special Hazards
+				[5, 7, 3, 20, 3], [11, 20, 3, 10, 2], [12, 25, 3, 5, 1], [14, 30, 3, 5, 1],
+                // Type 4: Bosses
+				[15, 35, 4, 3, 1], [16, 40, 4, 2, 1], [17, 50, 4, 2, 1], [18, 60, 4, 1, 1],
+                // Type 5: Legendaries
+                [19, 45, 5, 4, 1], [20, 60, 5, 3, 1], [22, 65, 5, 3, 1], [21, 70, 5, 2, 1], [23, 80, 5, 2, 1], [24, 90, 5, 2, 1], [25, 120, 5, 1, 1]
 			];
+
 
 			// 4. TELEGRAPHED SCHEDULE & RESTRICTIONS
 			var allowed = bestiary.filter(function(m) {
-				if (m[2] === 4 && (wave_idx < 18 || force_breather)) return false; 
-				if (m[2] === 3 && (wave_idx < 14 || force_breather)) return false; 
-				if (m[2] === 2 && (wave_idx < 11)) return false; 
+				if (m[2] === 5 && (wave_idx < 50 || force_breather)) return false; // Legendaries
+				if (m[2] === 4 && (wave_idx < 30 || force_breather)) return false; // Bosses
+				if (m[2] === 3 && (wave_idx < 20 || force_breather)) return false; // Stealth/Special
+				if (m[2] === 2 && (wave_idx < 15)) return false; // Flyers
 				return true;
 			});
             
@@ -175,11 +185,13 @@ _TD.a.push(function (TD) {
             var spawn_counts = { 3: 0, 4: 0 }; 
             
             // --- NEW: STRICT UNIT CAP TO PREVENT BLOBS ---
-            // HORDE MODE: Gentle growth until Wave 40, then explosive swarm growth
-            var max_units_this_wave = 10 + Math.floor(wave_idx * 0.5); 
-            if (wave_idx > 40) {
-                max_units_this_wave += (wave_idx - 40) * 2; // AI swarm limit unleashes
+            // HORDE MODE: Gentle growth to prevent browser crash
+            var max_units_this_wave = 15 + Math.floor(wave_idx * 0.8); 
+            if (wave_idx > 60) {
+                // Hard cap the absolute maximum number of physical entities rendered at once to maintain FPS
+                max_units_this_wave = Math.min(150, max_units_this_wave + (wave_idx - 60)); 
             }
+
             var total_spawned = 0;
 
 
@@ -274,7 +286,7 @@ _TD.a.push(function (TD) {
 
 	var monster_obj = {
 		_init: function (cfg) {
-			cfg = cfg || {}; this.is_monster = true; this.idx = cfg.idx || 1; this.difficulty = cfg.difficulty || 1.0;
+			cfg = cfg || {}; this.is_monster = true; this.idx = typeof cfg.idx !== 'undefined' ? cfg.idx : 1; this.difficulty = cfg.difficulty || 1.0;
 			var attr = TD.getDefaultMonsterAttributes(this.idx);
 			this.name = attr.name || "Unknown"; // NEW: Store the name so VATS tooltip can read it without crashing
 			this.is_flying = !!attr.is_flying;
