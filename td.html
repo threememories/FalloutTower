@@ -2993,8 +2993,20 @@ _TD.a.push(function (TD) {
 
                 // Dynamically assign unlock cost: Towers 5-11 (index 4-10) cost 1000 + 500 per tier
                 tData.unlock_cost = (i >= 4) ? (1000 + ((i - 4) * 500)) : 0;
+                
+                // --- NEW: ENDLESS MODE ACCOUNT LEVEL GATING ---
+                var isLevelLocked = false;
+                var reqLevel = 1;
+                if (!window.is_campaign_mode) {
+                    if (i >= 2 && i <= 3) reqLevel = 5;       // Towers 3 & 4
+                    else if (i >= 4 && i <= 5) reqLevel = 10; // Towers 5 & 6
+                    else if (i >= 6 && i <= 7) reqLevel = 15; // Towers 7 & 8
+                    else if (i >= 8) reqLevel = 20;           // Towers 9, 10, 11
+                    
+                    isLevelLocked = (typeof TD.account_level !== 'undefined' && TD.account_level < reqLevel);
+                }
 
-                if (tData.is_unlocked) {
+                if (tData.is_unlocked && !isLevelLocked) {
                     var displayCost = tData.free_first_build ? "<span style='color:#0f0;'>(READY)</span>" : "(" + tData.cost + "c)";
                     btn.innerHTML = tData.name + " " + displayCost;
                     
@@ -3023,9 +3035,15 @@ _TD.a.push(function (TD) {
                 } else {
                     var svgLock = "<svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align:middle;margin-right:3px;'><rect x='3' y='11' width='18' height='11' rx='2' ry='2'></rect><path d='M7 11V7a5 5 0 0 1 10 0v4'></path></svg>";
                     
-                    // Locked but available to purchase
-                    btn.innerHTML = svgLock + tData.name;
-                    btn.classList.add('unlit'); 
+                    if (isLevelLocked) {
+                        // Hard locked by Account Level
+                        btn.innerHTML = svgLock + "LVL " + reqLevel;
+                        btn.classList.add('unlit'); 
+                    } else {
+                        // Locked but available to purchase with Caps
+                        btn.innerHTML = svgLock + tData.name;
+                        btn.classList.add('unlit'); 
+                    }
                     
                     // Closure fix: capture the correct reference to tData
                     (function(td) {
@@ -5601,11 +5619,12 @@ xpBtn.style.setProperty('background-image', 'linear-gradient(to top, ' + fillCol
                         total_units += mQty;
                         total_hp += (mQty * mAttrs.life);
                         
-                        if (mAttrs.is_flying || mIdx === 8 || mIdx === 9 || mIdx === 10) hasAir = true;
-                        if (mAttrs.is_stealthed || mIdx === 11 || mAttrs.name === "Mole Rat") hasStealth = true;
+                        if (mAttrs.is_flying) hasAir = true;
+                        if (mAttrs.is_stealthed || mAttrs.name === "Mole Rat") hasStealth = true;
                         if (mAttrs.speed >= 12) hasFast = true;
                         if (mAttrs.life >= 500) hasHeavy = true;
                     }
+
                     
                     var threatTag = "";
                     var totalRatio = total_hp / total_dps; // The true threat calculation
@@ -6544,8 +6563,8 @@ _TD.a.push(function (TD) {
                 if (obj.is_valid) {
                     var is_perception_active = (typeof TD !== 'undefined' && TD.overdrive && TD.overdrive.P > 0);
                     var in_range = is_perception_active || (Math.pow(obj.cx - cx, 2) + Math.pow(obj.cy - cy, 2) <= range2);
-                    var isFlying = !!obj.is_flying || obj.idx === 8 || obj.idx === 9 || obj.idx === 10;
-                    var isStealthed = !!obj.is_stealthed || obj.idx === 11 || obj.is_burrowing; 
+                    var isFlying = !!obj.is_flying;
+                    var isStealthed = !!obj.is_stealthed || !!obj.is_burrowing; 
                     
                     if (in_range) {
                         if (isFlying && !canHitAir) return; 
